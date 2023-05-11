@@ -1,0 +1,775 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Ai - Source and Fuzzing</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="The example book covers examples.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="./theme/custom.css">
+        <link rel="stylesheet" href="theme/pagetoc.css">
+        <link rel="stylesheet" href="./theme/catppuccin.css">
+        <link rel="stylesheet" href="./theme/catppuccin-highlight.css">
+
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="1.Github.html"><strong aria-hidden="true">1.</strong> Github</a></li><li class="chapter-item expanded "><a href="11.AI.html" class="active"><strong aria-hidden="true">2.</strong> Ai</a></li><li class="chapter-item expanded "><a href="12.libfuzzer-asan.html"><strong aria-hidden="true">3.</strong> Libfuzzer Asan</a></li><li class="chapter-item expanded "><a href="2.Fuzzing.html"><strong aria-hidden="true">4.</strong> Fuzzing</a></li><li class="chapter-item expanded "><a href="3.Fuzzing.html"><strong aria-hidden="true">5.</strong> Fuzzing</a></li><li class="chapter-item expanded "><a href="4.source-code.html"><strong aria-hidden="true">6.</strong> Source Code</a></li><li class="chapter-item expanded "><a href="5.compile.html"><strong aria-hidden="true">7.</strong> Compile</a></li><li class="chapter-item expanded "><a href="6.static-analysis.html"><strong aria-hidden="true">8.</strong> Static Analysis</a></li><li class="chapter-item expanded "><a href="7.dynamic-analysis.html"><strong aria-hidden="true">9.</strong> Dynamic Analysis</a></li><li class="chapter-item expanded "><a href="8.llvm.html"><strong aria-hidden="true">10.</strong> Llvm</a></li><li class="chapter-item expanded "><a href="9.klee.html"><strong aria-hidden="true">11.</strong> Klee</a></li><li class="chapter-item expanded "><a href="chapter_1.html"><strong aria-hidden="true">12.</strong> Chapter 1</a></li><li class="chapter-item expanded "><a href="#.html"><strong aria-hidden="true">13.</strong> Libfuzzer Asan</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="12.libfuzzer-asan/深入解析libfuzzer与asan.html"><strong aria-hidden="true">13.1.</strong> 深入解析libfuzzer与asan</a></li><li class="chapter-item expanded "><a href="#.html"><strong aria-hidden="true">13.2.</strong> 深入解析libfuzzer与asan</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="12.libfuzzer-asan/深入解析libfuzzer与asan/ASAN原理.html"><strong aria-hidden="true">13.2.1.</strong> Asan原理</a></li><li class="chapter-item expanded "><a href="12.libfuzzer-asan/深入解析libfuzzer与asan/LLVM下的插桩简述.html"><strong aria-hidden="true">13.2.2.</strong> Llvm下的插桩简述</a></li><li class="chapter-item expanded "><a href="12.libfuzzer-asan/深入解析libfuzzer与asan/libFuzzer原理.html"><strong aria-hidden="true">13.2.3.</strong> libFuzzer原理</a></li><li class="chapter-item expanded "><a href="12.libfuzzer-asan/深入解析libfuzzer与asan/参考引用.html"><strong aria-hidden="true">13.2.4.</strong> 参考引用</a></li><li class="chapter-item expanded "><a href="12.libfuzzer-asan/深入解析libfuzzer与asan/实战中ASAN会有哪些坑.html"><strong aria-hidden="true">13.2.5.</strong> 实战中asan会有哪些坑</a></li><li class="chapter-item expanded "><a href="12.libfuzzer-asan/深入解析libfuzzer与asan/深入解析libFuzzer参数与回显.html"><strong aria-hidden="true">13.2.6.</strong> 深入解析libFuzzer参数与回显</a></li><li class="chapter-item expanded "><a href="12.libfuzzer-asan/深入解析libfuzzer与asan/玩转Sanitizer-Coverage.html"><strong aria-hidden="true">13.2.7.</strong> 玩转Sanitizer Coverage</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="#.html"><strong aria-hidden="true">14.</strong> Static Analysis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="6.static-analysis/静态程序分析原理.html"><strong aria-hidden="true">14.1.</strong> 静态程序分析原理</a></li><li class="chapter-item expanded "><a href="#.html"><strong aria-hidden="true">14.2.</strong> 静态程序分析原理</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="6.static-analysis/静态程序分析原理/必备工具.html"><strong aria-hidden="true">14.2.1.</strong> 必备工具</a></li><li class="chapter-item expanded "><a href="6.static-analysis/静态程序分析原理/附录一--各图的Graphiz生成代码.html"><strong aria-hidden="true">14.2.2.</strong> 附录一  各图的Graphiz生成代码</a></li><li class="chapter-item expanded "><a href="6.static-analysis/静态程序分析原理/附录二--静态审计工具完整源码.html"><strong aria-hidden="true">14.2.3.</strong> 附录二  静态审计工具完整源码</a></li><li class="chapter-item expanded "><a href="6.static-analysis/静态程序分析原理/静态代码分析基本原理.html"><strong aria-hidden="true">14.2.4.</strong> 静态代码分析基本原理</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="#.html"><strong aria-hidden="true">15.</strong> Dynamic Analysis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="7.dynamic-analysis/动态程序分析原理.html"><strong aria-hidden="true">15.1.</strong> 动态程序分析原理</a></li><li class="chapter-item expanded "><a href="#.html"><strong aria-hidden="true">15.2.</strong> 动态程序分析原理</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="7.dynamic-analysis/动态程序分析原理/内存监控.html"><strong aria-hidden="true">15.2.1.</strong> 内存监控</a></li><li class="chapter-item expanded "><a href="7.dynamic-analysis/动态程序分析原理/动态代码分析基本原理.html"><strong aria-hidden="true">15.2.2.</strong> 动态代码分析基本原理</a></li><li class="chapter-item expanded "><a href="7.dynamic-analysis/动态程序分析原理/必备工具.html"><strong aria-hidden="true">15.2.3.</strong> 必备工具</a></li><li class="chapter-item expanded "><a href="7.dynamic-analysis/动态程序分析原理/污点追踪.html"><strong aria-hidden="true">15.2.4.</strong> 污点追踪</a></li><li class="chapter-item expanded "><a href="7.dynamic-analysis/动态程序分析原理/程序插桩与代码覆盖率.html"><strong aria-hidden="true">15.2.5.</strong> 程序插桩与代码覆盖率</a></li><li class="chapter-item expanded "><a href="7.dynamic-analysis/动态程序分析原理/符号执行.html"><strong aria-hidden="true">15.2.6.</strong> 符号执行</a></li></ol></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Source and Fuzzing</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main><div class="sidetoc"><nav class="pagetoc"></nav></div>
+                        <h1 id="2-ai-算法挖洞的一些尝试"><a class="header" href="#2-ai-算法挖洞的一些尝试">2. AI 算法挖洞的一些尝试</a></h1>
+<ul>
+<li><a href="#%E6%BC%8F%E6%B4%9E%E7%89%B9%E5%BE%81%E7%A0%81%E7%AD%9B%E9%80%89">漏洞特征码筛选</a>
+<ul>
+<li><a href="#%E6%BC%8F%E6%B4%9E%E4%BB%A3%E7%A0%81%E7%89%B9%E5%BE%81%E5%AF%B9%E6%AF%94">漏洞代码特征对比</a></li>
+<li><a href="#basicblock-%E5%89%AA%E6%9E%9D">BasicBlock 剪枝</a></li>
+<li><a href="#ast-%E7%89%B9%E5%BE%81%E5%BA%8F%E5%88%97%E5%8C%96">AST 特征序列化</a></li>
+<li><a href="#doc2vec-%E7%AE%97%E6%B3%95%E4%B8%8E%E7%89%B9%E5%BE%81%E5%AF%B9%E6%AF%94">Doc2Vec 算法与特征对比</a></li>
+</ul>
+</li>
+<li><a href="#%E6%BC%8F%E6%B4%9E%E9%AA%8C%E8%AF%81%E9%98%B6%E6%AE%B5">漏洞验证阶段</a>
+<ul>
+<li><a href="#example-1----%E5%8D%95%E5%8F%98%E9%87%8F%E4%B8%8E%E5%B8%B8%E6%95%B0%E5%80%BC%E5%88%A4%E6%96%AD">Example 1 -- 单变量与常数值判断</a></li>
+<li><a href="#example-2----%E5%8D%95%E5%8F%98%E9%87%8F%E4%B8%8E%E5%8D%95%E5%8F%98%E9%87%8F%E5%88%A4%E6%96%AD">Example 2 -- 单变量与单变量判断</a></li>
+<li><a href="#example-3----%E5%8D%95%E5%8F%98%E9%87%8F%E4%B8%8E%E5%B8%B8%E6%95%B0%E5%80%BC%E5%A4%9A%E6%AC%A1%E5%88%A4%E6%96%AD">Example 3 -- 单变量与常数值多次判断</a></li>
+<li><a href="#example-4----%E5%A4%9A%E5%8F%98%E9%87%8F%E5%BC%95%E7%94%A8%E4%B8%8E%E5%8D%95%E6%AC%A1%E5%88%A4%E6%96%AD">Example 4 -- 多变量引用与单次判断</a></li>
+<li><a href="#example-5----%E6%95%B0%E7%BB%84%E5%BC%95%E7%94%A8">Example 5 -- 数组引用</a></li>
+<li><a href="#example-6----%E4%BB%BB%E6%84%8F%E5%9C%B0%E5%9D%80%E8%AF%BB%E5%86%99%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90">Example 6 -- 任意地址读写漏洞分析</a></li>
+<li><a href="#%E5%8F%96%E5%80%BC%E8%8C%83%E5%9B%B4%E4%B8%8E%E5%87%BD%E6%95%B0%E7%9B%B8%E4%BA%A4">取值范围与函数相交</a></li>
+<li><a href="#%E6%BC%8F%E6%B4%9E%E6%A0%B7%E6%9C%AC%E6%A3%80%E9%AA%8C">漏洞样本检验</a></li>
+<li><a href="#%E6%80%BB%E7%BB%93">总结</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="漏洞特征码筛选"><a class="header" href="#漏洞特征码筛选">漏洞特征码筛选</a></h2>
+<h4 id="漏洞代码特征对比"><a class="header" href="#漏洞代码特征对比">漏洞代码特征对比</a></h4>
+<p>NLP 算法普遍运用在恶意代码识别分类,最核心的一点还是通过黑白代码样本进行分类(参考https://xz.aliyun.com/t/5666 ,https://xz.aliyun.com/t/5848 ).NLP 算法对数据分类来说是很友好的,因为它能够通过给定的分类样本和特征来对数据进行识别,但是要使用这些算法应用到漏洞挖掘,除了分类识别还需要一步就是要对漏洞进行校验(符号执行在从入口点开始递归路径时,因为条件分支和求解速度的问题往往会导致性能非常慢,那么能不能通过事先筛选一些可以的特征然后来探索可执行的路径再检验漏洞呢?).接下来分别探讨这两个步骤的一些细节.</p>
+<h4 id="basicblock-剪枝"><a class="header" href="#basicblock-剪枝">BasicBlock 剪枝</a></h4>
+<p>我们用第五章里的一个示例来研究,因为Condition 条件判断的引入,代码结构其实是二维的.</p>
+<p><img src="pic11/pic20.png" alt="" /></p>
+<p>如果需要使用NLP 的方式来对代码进行识别,那么就需要把二维的代码结构转化为一维,这样代码序列看起来才会和文章的内容一样(转化成为一段英文语句),所以就需要对函数内的BasicBlock 进行剪枝,修剪之后的结构如下.</p>
+<p><img src="pic11/pic21.png" alt="" /></p>
+<p>代码实现不难,主要是通过if /switch 等语句进行处理,for /while 语句可以忽略不处理.</p>
+<pre><code class="language-python">def basic_block_preprocess(code_ast_subnode) :  # BasicBlock 剪枝
+    flatten_basic_block_list = []
+    root_basic_block = []
+
+    for root_ast_node_index in code_ast_subnode :
+        ast_node_type = get_type(root_ast_node_index)  #  获取AST 节点类型
+
+        if 'CIfStatement' == ast_node_type :  #  目前只筛选if 语句
+            if_ast_node = root_ast_node_index.body  #  获取if AST 的内容
+            if_ast_node_type = get_type(if_ast_node)
+
+            if 'CBody' == if_ast_node_type :  #  对应的是if (???) {xxx} 的写法
+                sub_basic_block_list = basic_block_preprocess(if_ast_node.contentlist)  #  递归遍历if 语句
+
+                for sub_basic_block_index in sub_basic_block_list :
+                    flatten_basic_block_list.append( root_basic_block + sub_basic_block_index)  #  合并剪枝之后的代码序列
+            else :  #  对应的是if (???) xxx; 的写法
+                if_basic_block_ast_node = root_ast_node_index.body  #  if 里面语句代码块的内容
+                if_basic_block_ast_node_type = get_type(if_basic_block_ast_node)  #  获取这个语句的类型
+
+                flatten_basic_block_list.append(root_basic_block + [ (if_basic_block_ast_node_type,if_basic_block_ast_node) ])  #  合并代码序列
+
+            if root_ast_node_index.elsePart :  #  如果这个if 语句还存在else if 或else ..
+                if_else_ast_node_type = get_type(root_ast_node_index.elsePart.body)
+
+                if 'CBody' == if_else_ast_node_type :
+                    if_else_ast_node = root_ast_node_index.elsePart.body
+                else :
+                    if_else_ast_node = root_ast_node_index.elsePart.body.body
+
+                sub_basic_block_list = basic_block_preprocess(if_else_ast_node.contentlist)  #  继续递归它的body 代码
+
+                for sub_basic_block_index in sub_basic_block_list :
+                    flatten_basic_block_list.append( root_basic_block + sub_basic_block_index)  #  合并剪枝之后的代码序列
+
+            continue
+
+        root_basic_block.append((ast_node_type,root_ast_node_index))  #  这是当前层的代码序列
+
+    flatten_basic_block_list.append(root_basic_block)
+
+    return flatten_basic_block_list
+</code></pre>
+<h4 id="ast-特征序列化"><a class="header" href="#ast-特征序列化">AST 特征序列化</a></h4>
+<p>AST 结构树并不合适直接使用NLP 算法来对它进行识别,我们需要对它进行预处理,变成合适由NLP 算法处理的格式.</p>
+<pre><code class="language-python">def reduce_ast_node_list(code_ast_list) :  #  AST 预处理
+    def get_var_type(var_type) :  #  获取变量类型
+        var_type_string = ''
+
+        for var_type_index in var_type :
+            if 'unsigned' == var_type_index :  #  unsigned int ,unsigned char .drop the keyword unsigned
+                continue
+
+            var_type_string += var_type_index + '.'
+
+        if var_type_string :
+            var_type_string = var_type_string[ : -1 ]
+
+        return var_type_string
+
+    result_list = []
+
+    for code_ast_index in code_ast_list :
+        code_ast_node_type = code_ast_index[0]  #  AST 节点类型
+        code_ast_node_data = code_ast_index[1]  #  AST 节点数据
+
+        if 'CVarDecl' == code_ast_node_type :  #  变量声明
+            is_type = get_type(code_ast_node_data.type)  #  变量类型
+
+            if 'CArrayType' == is_type :  #  数组
+                var_type = get_var_type(code_ast_node_data.type.arrayOf.builtinType)
+
+                result_list.append('variable_define_array:%s' % (var_type))
+            elif 'CBuiltinType' == is_type :  #  普通变量
+                var_type = get_var_type(code_ast_node_data.type.builtinType)
+
+                result_list.append('variable_define:%s' % (var_type))
+            elif 'CPointerType' == is_type :  #  指针变量
+                var_type = get_var_type(code_ast_node_data.type.pointerOf.builtinType)
+
+                result_list.append('variable_define_point:%s' % (var_type))
+
+        elif 'CStatement' == code_ast_node_type :  #  赋值
+            assigment_data = code_ast_node_data._leftexpr
+            sub_ast_node_type = get_type(assigment_data)
+
+            if 'CFuncCall' == sub_ast_node_type :  #  函数调用
+                function_name = assigment_data.base.name
+
+                result_list.append('function_call:%s' % (function_name))
+            elif 'CArrayIndexRef' == sub_ast_node_type :  #  数组引用
+                access_type = assigment_data.base.type
+
+                if 'CArrayType' == access_type :      #  buffer[10] = ???;
+                    result_list.append('assigment_array_index')
+                elif 'CPointerType' == access_type :  # *buffer[10] = ???;
+                    result_list.append('assigment_point_index')
+            elif 'CStatement' == sub_ast_node_type :  #  变量数据值
+                assigment_data = assigment_data._rightexpr._leftexpr
+                assigment_type = assigment_data.type
+
+                if 'CArrayType' == assigment_type :      #  buffer[10] = ???;
+                    result_list.append('assigment_array_index')
+                elif 'CPointerType' == assigment_type :  # *buffer[10] = ???;
+                    result_list.append('assigment_point_index')
+                #.pointerOf.builtinType
+
+        else :
+            result_list.append(code_ast_node_type)
+
+    return result_list
+</code></pre>
+<h4 id="doc2vec-算法与特征对比"><a class="header" href="#doc2vec-算法与特征对比">Doc2Vec 算法与特征对比</a></h4>
+<p>Doc2Vec 算法用来对一段文本进行识别,判断这段文本属于哪一类型.我们假设了一系列的黑白样本:</p>
+<pre><code class="language-python">code_sample_memcpy_check_1 = '''
+void main() {
+    char* buffer = (char*)malloc(20);
+    char* command_buffer = (char*)malloc(10);
+
+    memcpy(&amp;command_buffer,&amp;buffer,20);
+}
+'''
+code_sample_memcpy_check_2 = '''
+void main() {
+    char buffer[20] = {0};
+    char command_buffer[10] = {0};
+
+    memcpy(&amp;command_buffer,&amp;buffer,20);
+}
+'''
+code_sample_buffer_check_1 = '''
+void main() {
+    char buffer[10] = {0};
+
+    buffer[10] = '\0';
+}
+'''
+code_sample_buffer_check_2 = '''
+void main() {
+    char* buffer = (char*)malloc(10);
+
+    buffer[20] = '\0';
+}
+'''
+code_sample_arbitrarily_write_check_1 = '''
+void main(char* point) {
+    char* buffer = point;
+
+    *buffer = 0x1;
+}
+'''
+code_sample_arbitrarily_write_check_2 = '''
+void main(char* offset) {
+    char buffer[10] = {0};
+
+    *(buffer + offset) = 0x1;
+}
+'''
+code_sample_arbitrarily_read_check_1 = '''
+void main(char* point) {
+    char* buffer = point;
+    char  data = *buffer;
+}
+'''
+code_sample_arbitrarily_read_check_2 = '''
+void main(char* offset) {
+    char buffer[10] = {0};
+    char  data = *(buffer + offset);
+}
+'''
+
+code_sample_white_call_1 = '''
+void main() {
+    printf(&quot;123123&quot;);
+}
+'''
+code_sample_white_return_1 = '''
+int main() {
+    int result = 1;
+
+    return result;
+}
+'''
+code_sample_white_add_1 = '''
+void main() {
+    int a = 1;
+    int b = 2;
+    int result = 0;
+
+    result = a + b;
+}
+'''
+
+tranning_sample_code = {
+    'memcpy' : [
+        # ...
+    ] ,
+    'overflow' : [
+        # ...
+    ] ,
+    'null_access' : [
+        # ...
+    ] ,
+    'arbitrarily_write' : [
+        # ...
+    ] ,
+    'arbitrarily_read' : [
+        # ...
+    ] ,
+    'white_code' : [
+        # ...
+    ] ,
+}
+</code></pre>
+<p>经过之前的预处理之后,返回的代码序列如下(演示的Demo 对AST 处理比较粗糙,是导致后面分类出现误差的主要原因):</p>
+<pre><code class="language-text">[['variable_define_point:char', 'variable_define_point:char', 'function_call:memcpy']]
+[['variable_define_array:char', 'variable_define_array:char', 'function_call:memcpy']]
+[['variable_define_point:char', 'variable_define_array:char', 'function_call:memcpy']]
+[['variable_define_array:char', 'variable_define_point:char', 'function_call:memcpy']]
+[['variable_define_point:char', 'variable_define_point:char', 'function_call:memset', 'function_call:memcpy']]
+[['variable_define_array:char', 'variable_define_array:char', 'function_call:memset', 'function_call:memcpy']]
+[['variable_define_point:char', 'variable_define_array:char', 'function_call:memset', 'function_call:memcpy']]
+[['variable_define_array:char', 'variable_define_point:char', 'function_call:memset', 'function_call:memcpy']]
+[['variable_define_array:char']]
+[['variable_define_point:char']]
+[['variable_define_point:char']]
+[['variable_define_point:char']]
+[['variable_define_array:char']]
+[['variable_define_point:char']]
+[['variable_define_point:char', 'variable_define:char']]
+[['variable_define_array:char', 'variable_define:char']]
+[['variable_define_point:char', 'variable_define:char']]
+[['function_call:printf']]
+[['function_call:printf', 'function_call:printf', 'function_call:printf', 'function_call:printf', 'function_call:printf']]
+[['variable_define:int', 'function_call:printf']]
+[['variable_define_array:char', 'function_call:memset', 'function_call:printf']]
+[['variable_define_point:char', 'function_call:printf']]
+[['variable_define:int', 'CReturnStatement']]
+[['variable_define_point:char', 'CReturnStatement']]
+[['variable_define_array:char', 'CReturnStatement']]
+[['variable_define:int', 'variable_define:int', 'variable_define:int', 'assigment_value:int']]
+[['variable_define:int', 'variable_define:int', 'function_call:printf'], ['variable_define:int', 'variable_define:int', 'function_call:printf'], ['variable_defi
+ne:int', 'variable_define:int']]
+[['variable_define:int', 'function_call:printf']]
+</code></pre>
+<p>接下来使用Gensim Doc2ver 对样本进行训练,代码如下:</p>
+<pre><code class="language-python">TaggededDocument = gensim.models.doc2vec.TaggedDocument
+
+model_tranning_sample_list = []
+
+for tranning_sample_code_type,tranning_sample_code_data_list in tranning_sample_code.items() :
+    for tranning_sample_code_data in tranning_sample_code_data_list :
+        model_tranning_sample_list.append(TaggededDocument(tranning_sample_code_data, tags = [ tranning_sample_code_type ]))
+
+model = gensim.models.Doc2Vec(model_tranning_sample_list,min_count = 1,window = 3,vector_size = 200,workers = 4)
+
+model.train(model_tranning_sample_list, total_examples = model.corpus_count, epochs=70)
+</code></pre>
+<p>我们构造一些测试代码,然后使用样本进行识别:</p>
+<pre><code class="language-python">code_test_1 = '''
+int main(const unsigned char* buffer) {
+    unsigned char buffer_l[10] = {0};
+    unsigned char buffer_length = buffer[0];
+
+    if (2 &lt;= buffer_length)
+        return 0;
+
+    if (MessageType_Hello == buffer[1]) {
+        printf(&quot;Hello\n&quot;);
+    } else if (MessageType_Execute == buffer[1]) {
+        unsigned char* command_buffer = (unsigned char*)malloc(buffer_length - 1);
+
+        memset(&amp;command_buffer,0,buffer_length);
+        memcpy(&amp;command_buffer,&amp;buffer[2],buffer_length - 2);
+
+        execute_command(command_buffer);
+    } else if (MessageType_Data == buffer[1]) {
+        decrypt_data(&amp;buffer[2],buffer_length - 2);
+    }
+
+    return 1;
+}
+'''
+# ... Sample code so more that we leave out it .
+
+test_code = [
+    make_code(test_sample_code.code_test_1) ,
+    # ....
+]
+
+for test_code_index in test_code :
+    print ' ---- '
+
+    for test_code_flatten_index in test_code_index :
+        inferred_vector = model.infer_vector(test_code_flatten_index)
+
+        output.valid_state_output(str(test_code_flatten_index),str(model.docvecs.most_similar([inferred_vector], topn=10)))
+</code></pre>
+<p>训练样本再分类的效果如下:</p>
+<p><img src="pic11/pic19.png" alt="" /></p>
+<p>第一部分特征识别的整体难度不大,最困难的一步是要在代码序列中做好预处理,保证特征容易被算法识别而且又不能从AST 精简转化特征的过程中丢掉太多的细节,最后让Doc2Vec 来更准确地对代码序列进行识别.</p>
+<p>定位出了可以的代码序列之后,下一步就是要对漏洞进行验证,到这一步骤一定是要使用符号执行来对变量进行取值范围的构建,然后再引入漏洞判断的条件组合起来交由求解器来实现,但是这样就不够&quot;AI&quot; 了.<strong>符号执行的步骤是不能够缺少的,如果没有符号执行,那就无法知道某个特定变量的变化函数与取值范围</strong>.我们常说深度学习的算法都是由样本来拟合出一条回归函数,让回归函数和算法来对数据进行分类计算,那么能不能拟合出这么样的一条曲线呢?漏洞判断的条件能不能推断出一条回归函数呢?下面就绕过符号执行技术直接来探讨这个问题.</p>
+<hr />
+<h2 id="漏洞验证阶段"><a class="header" href="#漏洞验证阶段">漏洞验证阶段</a></h2>
+<h4 id="example-1----单变量与常数值判断"><a class="header" href="#example-1----单变量与常数值判断">Example 1 -- 单变量与常数值判断</a></h4>
+<pre><code class="language-c">int calcu(int a) {
+    int number = a * a;  // pow(a,2);
+
+    if (number &gt; 100)
+        return 1;
+
+    return 0;
+}
+</code></pre>
+<p>calcu() 函数输入输出关系</p>
+<p><img src="pic11/pic1.png" alt="pic11/pic1.png" /></p>
+<p>我们知道,calcu() 函数是由if 判断来控制不同的return 返回的,那么calcu() 函数的输出因果关系如下(注意,C_100 特指if 判断表达式的右侧常数值100 ;Symblo(x) 则是指if 表达式的左则number 变量的符号表达式number = a*a):</p>
+<p><img src="pic11/pic2.png" alt="" /></p>
+<p>以(10,100)为交点,左侧黄色虚线勾画的区域是Zero (此时C_100 &gt; Symblo(x)),右侧灰色区域是One (此时Symblo(x) &gt; C_100).Zero 代表函数返回0 ,One 代表函数返回1 .</p>
+<p><img src="pic11/pic3.png" alt="" /></p>
+<p>所以,函数返回值是0/1 取决于函数Symblo(x) 和直线C_100 的关系.我们回过头来详细分析上述例子if 判断.</p>
+<pre><code class="language-c">if (number &gt; 100)
+    return 1;
+
+return 0;
+//  number = Symblo(x)  ;  C_100 = 100
+</code></pre>
+<p>那么可知,<strong>当if 要执行到return 1 时,必须要number &gt; 100,就是Symblo(x) &gt; C_100;反之则是number &lt;= 100,也就是Symblo(x) &lt;= C_100)</strong>.基于这个原理,总结如下:</p>
+<pre><code class="language-text">Condition_True  =&gt; Symblo(x) Condition_Flag C_?  =&gt; Symblo(x) - C_? Condition_Flag 0
+Condition_False =&gt; Symblo(x) !Condition_Flag C_? =&gt; Symblo(x) - C_? Condition_Flag 0
+
+Symblo(x) 指的是number ,Condition_Flag 是指逻辑运算符,C_? 指常数值
+
+例子:
+
+1.if (number == 10086)
+Condition_True  =&gt; Symblo(number) == 10086 =&gt; Symblo(number) - 10086 = 0
+Condition_False =&gt; Symblo(number) != 10086 =&gt; Symblo(number) - 10086 != 0
+
+2.if (number &lt;= 72)
+Condition_True  =&gt; Symblo(number) &lt;= 72 =&gt; Symblo(number) - 72 &lt;= 0
+Condition_False =&gt; Symblo(number) &gt; 72  =&gt; Symblo(number) - 72 &gt; 0
+
+</code></pre>
+<h4 id="example-2----单变量与单变量判断"><a class="header" href="#example-2----单变量与单变量判断">Example 2 -- 单变量与单变量判断</a></h4>
+<pre><code class="language-c">int valid_key(int number) {
+    int a = cos(number);
+    int b = sin(number);
+
+    if (a / b &gt; number)
+        return 1;
+
+    return 1;
+}
+</code></pre>
+<p>calcu() 函数输入输出关系</p>
+<p><img src="pic11%5Cpic4.png" alt="" /></p>
+<p>calcu() 函数的输出因果关系</p>
+<p><img src="pic11/pic5.png" alt="" /></p>
+<p>在if 判断这里,我们可知Symblo(a_b) = cos(x)/sin(x) ,Symblo(number) = x .那么这个坐标系的横坐标就是x ,纵坐标就是y (<strong>y = Symblo(x) ,意思是变量经过一系列的运算然后得出的结果,因为是对单个变量进行操作,所以就很容易知道这个变量经过很多次操作之后的具体函数.比如当前示例的calcu() ,有一个传递进来的参数number ,然后我们遍历到分支判断if 时,发现当前if 表达式的左值和右值都是对calcu() 函数的参数number 的值进行引用对比,那么通过符号执行可以推测出if 表达式左值:Symblo(a_b) = a / b = cos(number) / sin(number),右值:Symblo(number) = number</strong>).黄色虚线区域代表Condition True ,灰色代表Condition False .使用上一个示例的总结,我们可以知道:</p>
+<pre><code class="language-text">Conditon_True  =&gt; Symblo(a_b) &gt;  Symblo(number) =&gt; cos(number) / sin(number) &gt;  number =&gt; cot(number) &gt;  number =&gt; cot(number) - number &gt;  0
+Conditon_False =&gt; Symblo(a_b) &lt;= Symblo(number) =&gt; cos(number) / sin(number) &lt;= number =&gt; cot(number) &lt;= number =&gt; cot(number) - number &lt;= 0
+</code></pre>
+<p>事实上,我们所列出的Condition_True 和Condition_False ,实际上指的是一个取值范围(Value_Range),<strong>当变量值出现在某个区域时,我们就认为它属于True / False</strong> .所以,也可以说是Condition_True_Range ,Condition_False_Range .</p>
+<h4 id="example-3----单变量与常数值多次判断"><a class="header" href="#example-3----单变量与常数值多次判断">Example 3 -- 单变量与常数值多次判断</a></h4>
+<pre><code class="language-c">int calcu(int number) {
+    int result = pow(number,2);
+
+    if (result &gt; 100)
+        return 2;
+    else if (result &gt; 25)
+        return 1;
+
+    return 0;
+}
+</code></pre>
+<p>calcu() 函数输入输出关系</p>
+<p><img src="pic11/pic6.png" alt="" /></p>
+<p>calcu() 函数的输出因果关系</p>
+<p><img src="pic11/pic7.png" alt="" /></p>
+<p>我们分析上述两个if 判断.判断1: result &gt; 100 ,满足符合条件的区域为Symblo(number) &gt; 100 ,对应上图紫色区域;判断2: result &gt; 25 &amp;&amp; result &lt;=100 (注意,<strong>result &lt;= 100 是隐含条件,在这个else if 前面还有一个先决条件,所以不能忽略这个result &lt;=100 这个表达式</strong>),满足符合条件的区域为**Symblo(number) &lt;= 100 ∩ Symblo(number) &gt; 25  &lt;=&gt;  x^2 &lt;= 100 ∩ x^2 &gt; 25 <strong>,对应上图黄色区域;最后的return 0 对应上述的两个先决条件:1.result&lt;=100 ;2.result&lt;=25 ,合并起来就是</strong>result &lt;= 100 &amp;&amp; result &lt;= 25  &lt;=&gt;  Symblo(number) &lt;= 25 &amp;&amp; Symblo(number) &lt;= 100  &lt;=&gt;  Symblo(number) &lt;= 25 **,对应上图橙色区域.总结如下:</p>
+<pre><code class="language-text">Condition_Express_1 &amp;&amp; Condition_Express_2 =&gt; Condition_True_Range_1 ∩ Condition_True_Range_2 (&amp;&amp; 是逻辑And )
+Condition_Express_1 || Condition_Express_2 =&gt; Condition_True_Range_1 ∪ Condition_True_Range_2 (|| 是逻辑Or )
+</code></pre>
+<p><strong>变量经过多次赋值和运算,那么它的值一定能够可以通过一条函数表达式来计算的(参考符号执行原理,通过变量间的赋值与计算关系推导出结果).那么if 判断的实质就是要限制变量的取值范围,所以Symblo(x) 是变量结果的计算函数,Condition_Range 则是变量的取值范围</strong></p>
+<h4 id="example-4----多变量引用与单次判断"><a class="header" href="#example-4----多变量引用与单次判断">Example 4 -- 多变量引用与单次判断</a></h4>
+<pre><code class="language-c">int calcu(int a,int b) {
+    if (a &gt; b)
+    	return 1;
+
+    return 0;
+}
+</code></pre>
+<p>calcu() 函数的输出因果关系</p>
+<p><img src="pic11/pic8.png" alt="" /></p>
+<p>首先,calcu() 函数引入了两个变量,在if 判断这里引用两个变量a 和b ,因为a 与b 的值关系最终决定了y (返回值)的值,所以这就需要构造三维坐标系.于是Condition_True_Range &lt;=&gt; Symblo(a) &gt; Symblo(b) .当a = b 相等时,我们可以在a b 的二维平面上勾画出一条直线,f(b) =  b .那么当a &gt; b 时,也就是在One 区域;当b &lt; a 时,那就在Zero 区域.</p>
+<h4 id="example-5----数组引用"><a class="header" href="#example-5----数组引用">Example 5 -- 数组引用</a></h4>
+<pre><code class="language-c">void access(int index) {
+    char buffer[10] = {0};
+
+    buffer[index] = 'A';
+}
+</code></pre>
+<p>现在我们要研究的是index 与buffer 变量的关系.我们在写白盒审计工具时,如果要对代码<code>buffer[index] = 'A';</code> 漏洞校验时,如果index &gt;= sizeof(buffer) 那就认为这行代码存在越界漏洞,我们把index 变量的关系和buffer 这么来处理.先来看看index 变量与buffer 索引之间的关系函数.</p>
+<p><img src="pic11/pic11.png" alt="" /></p>
+<p>可以知道,这是一个<code>buffer_index = Symblo(index) = index</code>,横坐标是index 变量,纵坐标是buffer_index .再看看看其它例子:</p>
+<pre><code class="language-c">void access(int index) {
+    char buffer[10] = {0};
+
+    buffer[index + 2] = 'A';
+}
+</code></pre>
+<p>此时index 变量与buffer 索引之间的关系函数为<code>buffer_index = Symblo(index) = index + 2</code>.</p>
+<p><img src="pic11/pic12.png" alt="" /></p>
+<pre><code class="language-c">void access(int index) {
+    char buffer[10] = {0};
+
+    buffer[index &amp; 8] = 'A';
+}
+</code></pre>
+<p>此时index 变量与buffer 索引之间的关系函数为<code>buffer_index = Symblo(index) = index &amp; 8</code>.因为引入了逻辑运算,其实上也可以通过坐标系画出Symblo(index) 的函数曲线的,图像如下.</p>
+<p><img src="pic11/pic13.png" alt="" /></p>
+<p>回过头来继续深入数组访问的第一个示例程序,我们把buffer_size (由<code>char buffer[10]={0}</code> 可知buffer_size = (x = 10))也引入到坐标系中,得到下图:</p>
+<p><img src="pic11/pic14.png" alt="" /></p>
+<p>在此我们分为两条函数:Symblo(buffer_size) 和Symblo(index) ,两条函数相交于(10,10) .那么有:<strong>1.Symblo(buffer_size) &gt; Symblo(index) 意味着对这个数组的访问是正常的; 2.Symblo(buffer_size) &lt; Symblo(index) 意味着访问这个数组是异常的(越界访问)</strong> .所以我们就需要对<strong>变量index 的取值范围进行限制</strong>,示例代码修改如下:</p>
+<pre><code class="language-c">void access(int index) {
+    char buffer[10] = {0};
+
+    if (index &lt; sizeof(buffer))
+    	buffer[index] = 'A';
+}
+</code></pre>
+<p>现在我们引入了if 判断,对变量index 的取值范围进行了限制(x = 10),对应图像如下:</p>
+<p><img src="pic11/pic15.png" alt="" /></p>
+<p>橙色区域是合法的buffer 引用范围,红色区域是buffer 引用越界的范围.<strong>横坐标的index 经过一系列的运算(Symblo(index)) 最后得出纵坐标buffer_index 的值;而且,对index 所做的if 校验,实际上都是对index 的范围进行限制,只有Symblo(index) 在符合index 的取值范围内能够让buffer_index 的值大于10 才能导致的越界,所以就把y = 10 表示为漏洞边界表达式,只要存在越过这一边界的值,那么就存在越界漏洞.</strong></p>
+<h4 id="example-6----任意地址读写漏洞分析"><a class="header" href="#example-6----任意地址读写漏洞分析">Example 6 -- 任意地址读写漏洞分析</a></h4>
+<pre><code class="language-c">int resolve_buffer(int* recv_buffer) {
+    int offset = recv_buffer[1];
+
+    return *(recv_buffer + offset);
+}
+</code></pre>
+<p>代码语句*(recv_buffer + offset) 的意思是要获取这个地址中的内容.一般来说,recv_buffer 是一个特定的内存地址(一个固定的常数值),offset 则是一个变量值(因为是来自用户输入),那么最后**读取的地址函数式与recv_buffer ,offset 对应的关系为address = Symblo(offset) &lt;=&gt; recv_buffer + offset &lt;=&gt; C_recv_buffer + offset.**对应的变化关系图如下,横坐标为offset ,纵坐标为address :</p>
+<p><img src="pic11/pic16.gif" alt="" /></p>
+<p>我们知道,C_recv_buffer 是一个正整数常数(0 &lt;= C_recv_buffer &lt;= max(int)),offset 则是一个变量,接下来对offset 的长度进行校验,代码如下:</p>
+<pre><code class="language-c">int resolve_buffer(int* recv_buffer) {
+    int offset = recv_buffer[1];
+
+    if (offset &lt; 20)
+    	return *(recv_buffer + offset);
+
+    return 0;
+}
+</code></pre>
+<p>对应的关系图如下:</p>
+<p><img src="pic11/pic17.png" alt="" /></p>
+<p>在此我们假设C_recv_buffer 的值为25 ,offset 是变量,但是被约束offset &lt; 20 ,那么橙色区域是合法的访问区域,红色区域则是不合法的访问区域,因为offset 是int 类型,可以取值为负数,那么久可以越过recv_buffer 的合法读取往前读取地址空间小于20 的位置.</p>
+<p><img src="pic11/pic18.png" alt="" /></p>
+<p>所以我们分析这个图形,漏洞的边界函数有两个,分别是C_recv_buffer_lower_bound = 25 与C_recv_buffer_upper_bound = 45 .只有<strong>C_recv_buffer_lower_bound  &lt;= address &lt; C_recv_buffer_upper_bound</strong> 时访问数组才是合法的.</p>
+<p>实际上,我们在用Symblo Executge (符号执行)和Coverage (代码覆盖率)就是为了不断探索出if 判断对于变量所设定的取值范围.对变量每增多一个if 判断,那么取值范围就会相应地减小.</p>
+<h4 id="取值范围与函数相交"><a class="header" href="#取值范围与函数相交">取值范围与函数相交</a></h4>
+<p>下面是一个函数C1 穿过一个数据集R1 的例子.</p>
+<p><img src="pic11/pic9.png" alt="" /></p>
+<p>我们假设R1 是某个变量的取值范围,C1 是边界函数.<strong>使用机器学习的思想,边界函数C1 根据数据出现在边界函数的左右两则位置而确定数据的分类,我们只需要给定数据,那么就可以拟合出边界函数C1 的曲线,然后给数据进行分类</strong>.<em>那么我们能不能通过对这些数据集进行分类进而确定是否存在漏洞呢?</em></p>
+<h5 id="曲线拟合"><a class="header" href="#曲线拟合">曲线拟合</a></h5>
+<p>我们知道,对一些已经打好分类标签的数据集再传递给模型学习,那么模型就能够拟合出一条曲线C(x) ,如下图:</p>
+<p><img src="pic11/pic10.png" alt="" /></p>
+<p>但是,<strong>对于某种特定的漏洞检验函数,它是唯一的</strong>.比如说:任意地址写对应的检验函数为C(x) = x ;数组越界检验函数为C_upper(buffer) = C1 ,C_lower(buffer) = C2 .这些漏洞边界函数都是较为<strong>固定</strong>的,并不是像需要依靠分类的样本数据使用算法来拟合出的边界函数,<strong>漏洞的产生存在因果关系,而不是相关性</strong>.</p>
+<h4 id="漏洞样本检验"><a class="header" href="#漏洞样本检验">漏洞样本检验</a></h4>
+<p>我们研究一下样本代码,看看能不能发现些什么.</p>
+<pre><code class="language-c">//  Buffer Overflow
+
+code_sample_buffer_check_1 = '''
+void main() {
+    char buffer[10] = {0};
+
+    buffer[10] = '\0';
+}
+'''
+code_sample_buffer_check_2 = '''
+void main() {
+    char* buffer = (char*)malloc(10);
+
+    buffer[20] = '\0';
+}
+'''
+</code></pre>
+<p>前面已经说过,漏洞之所以会产生,那是因为buffer_size 和buffer_index 的关系.**因为只有buffer_index &gt; buffer_size 时,才导致了buffer 访问溢出.**我们使用ASAN ,Gflags 的目的就是要挖掘出来这两者之间的关系(通过代码插桩或者内存读写权限控制实现越界检测).对于code_sample_buffer_check_1 来说,buffer 大小是显式表达的(变量语句中已经声明了buffer 大小为10 );code_sample_buffer_check_2 则是隐式表达的(因为是通过malloc 分配指定,大部分情况下不容易确定它具体的值).</p>
+<pre><code class="language-c">//  Arbitrarily_Write
+
+code_sample_arbitrarily_write_check_1 = '''
+void main(char* point) {
+    char* buffer = point;
+
+    *buffer = 0x1;
+}
+'''
+code_sample_arbitrarily_write_check_2 = '''
+void main(char* offset) {
+    char buffer[10] = {0};
+
+    *(buffer + offset) = 0x1;
+}
+'''
+code_sample_arbitrarily_read_check_1 = '''
+void main(char* point) {
+    char* buffer = point;
+    char  data = *buffer;
+}
+'''
+code_sample_arbitrarily_read_check_2 = '''
+void main(char* offset) {
+    char buffer[10] = {0};
+    char data = *(buffer + offset);
+}
+'''
+</code></pre>
+<p>任意地址读写也是一样的,对于buffer 的边界还是需要上下文来推断,offset 的变化函数容易推算出来,但是buffer 的边界函数却不容易推算.</p>
+<h4 id="总结"><a class="header" href="#总结">总结</a></h4>
+<p>漏洞验证阶段是最头疼的,**验证一个漏洞是否有效,本质上是对变量的取值范围与漏洞边界进行探讨.通过上述的一些讨论发现如果要使用AI 的算法去拟合出漏洞边界函数其实是不现实的,因为这些边界函数是根据相关变量动态变化的,倒不如让我们把所有的限制条件和变量初值设置好让求解器来运算.**博主太菜了,他真的没有办法了,写到这里的时候,不知不觉留下了没有技术的泪水...</p>
+<p>那么因果推断能用上来吗? https://zhuanlan.zhihu.com/p/33860572</p>
+<p><img src="pic11/pic22.png" alt="" /></p>
+<p>在线函数画图URL</p>
+<p>https://zh.numberempire.com/graphingcalculator.php</p>
+<p>https://www.desmos.com/calculator</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="1.Github.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next" href="12.libfuzzer-asan.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="1.Github.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next" href="12.libfuzzer-asan.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="theme/pagetoc.js"></script>
+
+
+    </div>
+    </body>
+</html>

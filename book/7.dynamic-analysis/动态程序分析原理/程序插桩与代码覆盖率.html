@@ -1,0 +1,567 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>程序插桩与代码覆盖率 - Source and Fuzzing</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="The example book covers examples.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../../highlight.css">
+        <link rel="stylesheet" href="../../tomorrow-night.css">
+        <link rel="stylesheet" href="../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../.././theme/custom.css">
+        <link rel="stylesheet" href="../../theme/pagetoc.css">
+        <link rel="stylesheet" href="../.././theme/catppuccin.css">
+        <link rel="stylesheet" href="../.././theme/catppuccin-highlight.css">
+
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../../1.Github.html"><strong aria-hidden="true">1.</strong> Github</a></li><li class="chapter-item expanded "><a href="../../11.AI.html"><strong aria-hidden="true">2.</strong> Ai</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan.html"><strong aria-hidden="true">3.</strong> Libfuzzer Asan</a></li><li class="chapter-item expanded "><a href="../../2.Fuzzing.html"><strong aria-hidden="true">4.</strong> Fuzzing</a></li><li class="chapter-item expanded "><a href="../../3.Fuzzing.html"><strong aria-hidden="true">5.</strong> Fuzzing</a></li><li class="chapter-item expanded "><a href="../../4.source-code.html"><strong aria-hidden="true">6.</strong> Source Code</a></li><li class="chapter-item expanded "><a href="../../5.compile.html"><strong aria-hidden="true">7.</strong> Compile</a></li><li class="chapter-item expanded "><a href="../../6.static-analysis.html"><strong aria-hidden="true">8.</strong> Static Analysis</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis.html"><strong aria-hidden="true">9.</strong> Dynamic Analysis</a></li><li class="chapter-item expanded "><a href="../../8.llvm.html"><strong aria-hidden="true">10.</strong> Llvm</a></li><li class="chapter-item expanded "><a href="../../9.klee.html"><strong aria-hidden="true">11.</strong> Klee</a></li><li class="chapter-item expanded "><a href="../../chapter_1.html"><strong aria-hidden="true">12.</strong> Chapter 1</a></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">13.</strong> Libfuzzer Asan</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan.html"><strong aria-hidden="true">13.1.</strong> 深入解析libfuzzer与asan</a></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">13.2.</strong> 深入解析libfuzzer与asan</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/ASAN原理.html"><strong aria-hidden="true">13.2.1.</strong> Asan原理</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/LLVM下的插桩简述.html"><strong aria-hidden="true">13.2.2.</strong> Llvm下的插桩简述</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/libFuzzer原理.html"><strong aria-hidden="true">13.2.3.</strong> libFuzzer原理</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/参考引用.html"><strong aria-hidden="true">13.2.4.</strong> 参考引用</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/实战中ASAN会有哪些坑.html"><strong aria-hidden="true">13.2.5.</strong> 实战中asan会有哪些坑</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/深入解析libFuzzer参数与回显.html"><strong aria-hidden="true">13.2.6.</strong> 深入解析libFuzzer参数与回显</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/玩转Sanitizer-Coverage.html"><strong aria-hidden="true">13.2.7.</strong> 玩转Sanitizer Coverage</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">14.</strong> Static Analysis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../6.static-analysis/静态程序分析原理.html"><strong aria-hidden="true">14.1.</strong> 静态程序分析原理</a></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">14.2.</strong> 静态程序分析原理</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../6.static-analysis/静态程序分析原理/必备工具.html"><strong aria-hidden="true">14.2.1.</strong> 必备工具</a></li><li class="chapter-item expanded "><a href="../../6.static-analysis/静态程序分析原理/附录一--各图的Graphiz生成代码.html"><strong aria-hidden="true">14.2.2.</strong> 附录一  各图的Graphiz生成代码</a></li><li class="chapter-item expanded "><a href="../../6.static-analysis/静态程序分析原理/附录二--静态审计工具完整源码.html"><strong aria-hidden="true">14.2.3.</strong> 附录二  静态审计工具完整源码</a></li><li class="chapter-item expanded "><a href="../../6.static-analysis/静态程序分析原理/静态代码分析基本原理.html"><strong aria-hidden="true">14.2.4.</strong> 静态代码分析基本原理</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">15.</strong> Dynamic Analysis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理.html"><strong aria-hidden="true">15.1.</strong> 动态程序分析原理</a></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">15.2.</strong> 动态程序分析原理</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/内存监控.html"><strong aria-hidden="true">15.2.1.</strong> 内存监控</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/动态代码分析基本原理.html"><strong aria-hidden="true">15.2.2.</strong> 动态代码分析基本原理</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/必备工具.html"><strong aria-hidden="true">15.2.3.</strong> 必备工具</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/污点追踪.html"><strong aria-hidden="true">15.2.4.</strong> 污点追踪</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/程序插桩与代码覆盖率.html" class="active"><strong aria-hidden="true">15.2.5.</strong> 程序插桩与代码覆盖率</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/符号执行.html"><strong aria-hidden="true">15.2.6.</strong> 符号执行</a></li></ol></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Source and Fuzzing</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main><div class="sidetoc"><nav class="pagetoc"></nav></div>
+                        <h2 id="程序插桩与代码覆盖率"><a class="header" href="#程序插桩与代码覆盖率">程序插桩与代码覆盖率</a></h2>
+<p>讲述程序插桩这章,我们继续沿用第六章的示例代码来进行分析:</p>
+<pre><code class="language-c">
+#include &lt;memory.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+
+
+enum {
+  MessageType_Hello = 0,
+  MessageType_Execute,
+  MessageType_Data
+};
+
+void execute_command(const unsigned char* command) {
+    system(command);
+}
+
+void decrypt_data(const unsigned char* data_buffer,unsigned char data_buffer_length) {
+    unsigned char* buffer[8] = {0};
+
+    for (unsigned int data_index = 0;data_index &lt; data_buffer_length;++data_index)
+        buffer[data_index] = data_buffer[data_index] ^ 0x65;
+
+    printf(&quot;Recv:%s\n&quot;,&amp;buffer);
+}
+
+int buffer_resolver(const unsigned char* buffer) {
+    unsigned char buffer_length = buffer[0];
+
+    if (2 &lt;= buffer_length)
+        return 0;
+
+    if (MessageType_Hello == buffer[1]) {
+        printf(&quot;Hello\n&quot;);
+    } else if (MessageType_Execute == buffer[1]) {
+        unsigned char* command_buffer = (unsigned char*)malloc(buffer_length - 1);
+
+        memset(&amp;command_buffer,0,buffer_length);
+        memcpy(&amp;command_buffer,&amp;buffer[2],buffer_length - 2);
+
+        execute_command(command_buffer);
+    } else if (MessageType_Data == buffer[1]) {
+        decrypt_data(&amp;buffer[2],buffer_length - 2);
+    }
+
+    return 1;
+}
+
+</code></pre>
+<p>在此,如果我们要对这段代码进行Fuzzing ,那么Fuzzing 入口是<code>buffer_resolver()</code> ,如果要用libFuzzer 对它进行Fuzzing ,代码如下:</p>
+<pre><code class="language-c++">
+extern &quot;C&quot; int LLVMFuzzerTestOneInput(const unsigned char* data,unsigned int size) {
+	return buffer_resolver(data);
+}
+
+</code></pre>
+<p>这样对于Fuzzing buffer_resolver() 函数是一个简单粗暴的方法,那么AFL 对程序进行插桩的原理是怎么样的呢?我们先来分析一下程序执行图</p>
+<p><img src="pic6/pic13.png" alt="" /></p>
+<p>可以看到,对于buffer[1] 的检查涵盖了三个判断语句,对于buffer[0] 的检查也涵盖了一个语句.那么要对程序进行插住分析,关键的一点是在函数入口点和函数内部的判读结构进行插桩,在此记录程序的执行状态.我们先来看看AFL 的实现:</p>
+<pre><code class="language-c">
+static const u8* trampoline_fmt_32 =
+  &quot;\n&quot;
+  &quot;/* --- AFL TRAMPOLINE (32-BIT) --- */\n&quot;
+  &quot;\n&quot;
+  &quot;.align 4\n&quot;
+  &quot;\n&quot;
+  &quot;leal -16(%%esp), %%esp\n&quot;
+  &quot;movl %%edi,  0(%%esp)\n&quot;    //  movl 的意思刚好和mov 相反,是edi 赋值给(esp + 0) 而不是esp 赋值给edi
+  &quot;movl %%edx,  4(%%esp)\n&quot;
+  &quot;movl %%ecx,  8(%%esp)\n&quot;
+  &quot;movl %%eax, 12(%%esp)\n&quot;
+  &quot;movl $0x%08x, %%ecx\n&quot;      //  这里填充的数字是当前代码块的id
+  &quot;call __afl_maybe_log\n&quot;
+  &quot;movl 12(%%esp), %%eax\n&quot;
+  &quot;movl  8(%%esp), %%ecx\n&quot;
+  &quot;movl  4(%%esp), %%edx\n&quot;
+  &quot;movl  0(%%esp), %%edi\n&quot;
+  &quot;leal 16(%%esp), %%esp\n&quot;
+  &quot;\n&quot;
+  &quot;/* --- END --- */\n&quot;
+  &quot;\n&quot;;
+
+//  省略多余代码
+
+static void add_instrumentation(void) {  //  AFL instrutment code in /afl-as.c:221
+	///  ....
+
+	  if (line[1] == 'j' &amp;&amp; line[2] != 'm' &amp;&amp; R(100) &lt; inst_ratio) {  //  TIPS!
+	    //  not jmp ,is jnz jz jq jng ...
+	    printf(&quot;insert code -- line=%s inst_ratio=%d \n&quot;,line,inst_ratio);
+	    fprintf(outf, use_64bit ? trampoline_fmt_64 : trampoline_fmt_32,
+	            R(MAP_SIZE));
+
+	    ins_lines++;
+      }
+
+    ///  ....
+}
+
+</code></pre>
+<p>注释TIPS 中的判断,指的是遍历gcc 编译的.S 文件(afl 的插桩原理是通过GCC 在汇编阶段中调用as 命令来进行汇编,然后在获取到程序代码编译之后的/S 文件来进行逐行解析指令内容)中的指令是不是jz /jnz /jg 这些指令(也就是除了jmp 之外的跳转指令),然后在此下方插入插桩代码.<code>trampoline_fmt_32</code> 的代码是指,获取EDI EDX ECX EAX 的值保存到栈中,然后传递给<code>__afl_maybe_log()</code> 保存执行记录.我们把示例函数用clang 和afl-clang 编译,然后在IDA 上观察.</p>
+<p>Clang 编译的结果:</p>
+<p><img src="pic7/pic7.png" alt="" /></p>
+<p>afl-clang 的编译结果(注意,RCX 中保存的是当前块的ID ):</p>
+<p><img src="pic7/pic6.png" alt="" /></p>
+<p>可以看到,用afl-clang 编译出来的二进制程序在条件判断跳转指令的下方插入了获取寄存器信息的记录代码,我们再来看看<code>__afl_maybe_log()</code> 函数的源码:</p>
+<pre><code class="language-c">
+static const u8* main_payload_32 =
+
+  &quot;\n&quot;
+  &quot;/* --- AFL MAIN PAYLOAD (32-BIT) --- */\n&quot;
+  &quot;\n&quot;
+  &quot;.text\n&quot;
+  &quot;.att_syntax\n&quot;
+  &quot;.code32\n&quot;
+  &quot;.align 8\n&quot;
+  &quot;\n&quot;
+
+  &quot;__afl_maybe_log:\n&quot;  //  __afl_maybe_log() 函数入口点
+  &quot;\n&quot;
+  &quot;  lahf\n&quot;
+  &quot;  seto %al\n&quot;
+  &quot;\n&quot;
+  &quot;  /* Check if SHM region is already mapped. */\n&quot;
+  &quot;\n&quot;
+  &quot;  movl  __afl_area_ptr, %edx\n&quot;  //  获取__afl_area_ptr 指针
+  &quot;  testl %edx, %edx\n&quot;
+  &quot;  je    __afl_setup\n&quot;   //  判断获取__afl_area_ptr 是否为空,如果为空就调用__afl_setup 初始化
+  &quot;\n&quot;
+  &quot;__afl_store:\n&quot;      //  __afl_store() 函数入口点
+  &quot;\n&quot;
+  &quot;  /* Calculate and store hit for the code location specified in ecx. There\n&quot;
+  &quot;     is a double-XOR way of doing this without tainting another register,\n&quot;
+  &quot;     and we use it on 64-bit systems; but it's slower for 32-bit ones. */\n&quot;
+  &quot;\n&quot;
+#ifndef COVERAGE_ONLY
+  &quot;  movl __afl_prev_loc, %edi\n&quot;  //  获取__afl_prev_loc 的数据,这里保存的之前执行的代码路径记录
+  &quot;  xorl %ecx, %edi\n&quot;            //  把当前执行到的代码块位置和__afl_prev_loc 的结果进行运算
+  &quot;  shrl $1, %ecx\n&quot;              //
+  &quot;  movl %ecx, __afl_prev_loc\n&quot;  //  保存结果到__afl_prev_loc ,它的意义在于,当我们执行不同的分支路径,通过对这些代码块的id 进行位运算来识别当前程序是不是相同的执行路径
+#else
+  &quot;  movl %ecx, %edi\n&quot;
+#endif /* ^!COVERAGE_ONLY */
+  &quot;\n&quot;
+#ifdef SKIP_COUNTS
+  &quot;  orb  $1, (%edx, %edi, 1)\n&quot;
+#else
+  &quot;  incb (%edx, %edi, 1)\n&quot;
+#endif /* ^SKIP_COUNTS */
+  &quot;\n&quot;
+  &quot;__afl_return:\n&quot;
+  &quot;\n&quot;
+  &quot;  addb $127, %al\n&quot;
+  &quot;  sahf\n&quot;
+  &quot;  ret\n&quot;  //  退出__afl_maybe_log
+  &quot;\n&quot;
+  &quot;.align 8\n&quot;
+
+</code></pre>
+<p>所以,每次当代码执行到这个路径中的代码块的位置时,AFL 在程序中插桩的代码都可以检测到具体执行到的代码位置并计算执行路径.在对程序进行Fuzzing 的一个重要指标就是代码覆盖率,你的Fuzzing 策略和变异的数据可以触发更多的代码路径,那么就更能够发现隐藏的漏洞.</p>
+<p><img src="pic7/pic8.png" alt="" /></p>
+<p>从图中可以明白,如果测试样本只能覆盖Iteration1 和Iteration2 的话,那么Program 下除此之外位置的代码都是无法被执行到的,假定现在有5 个漏洞,以目前能Fuzzing 的代码覆盖率只能检测到3 个漏洞,另外2 个漏洞无法被检测出来,前面几章一直强调提高代码覆盖率的意义就在此.</p>
+<p>程序插桩除了检测代码覆盖率之外,也可以对指针越界进行检查,我们以ASAN 为例子,这是一段示例代码:</p>
+<pre><code class="language-c">
+#include &lt;memory.h&gt;
+#include &lt;stdlib.h&gt;
+
+int main(int argv,char** argc) {
+        char* buffer = (char*)malloc(10);
+
+        *(int *)&amp;buffer[4] = 0xAAAAAAAA;
+        free(buffer);
+
+        return 0;
+}
+
+</code></pre>
+<p>在不启用ASAN 的情况下编译,LLVM IR 代码如下:</p>
+<pre><code class="language-llvm">
+define i32 @main(i32, i8**) #0 {
+  %3 = alloca i32, align 4
+  %4 = alloca i32, align 4
+  %5 = alloca i8**, align 8
+  %6 = alloca i8*, align 8
+  store i32 0, i32* %3, align 4
+  store i32 %0, i32* %4, align 4
+  store i8** %1, i8*** %5, align 8
+  %7 = call i8* @malloc(i64 10) #3               #  从malloc() 中分配内存
+  store i8* %7, i8** %6, align 8
+  %8 = load i8*, i8** %6, align 8
+  %9 = getelementptr inbounds i8, i8* %8, i64 4  #  获取数组位置
+  %10 = bitcast i8* %9 to i32*                   #  转换1 字节数组成4 字节
+  store i32 -1431655766, i32* %10, align 4       #  保存数据到这里
+  %11 = load i8*, i8** %6, align 8
+  call void @free(i8* %11)
+  ret i32 0
+}
+
+</code></pre>
+<p>在启用ASAN 的情况下编译,LLVM IR 代码如下:</p>
+<pre><code class="language-llvm">
+define i32 @main(i32 %argv, i8** %argc) #0 {
+  %retval = alloca i32, align 4
+  %argv.addr = alloca i32, align 4
+  %argc.addr = alloca i8**, align 8
+  %buffer = alloca i8*, align 8
+  store i32 0, i32* %retval, align 4
+  store i32 %argv, i32* %argv.addr, align 4
+  store i8** %argc, i8*** %argc.addr, align 8
+  %1 = bitcast i8** %buffer to i8*
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* %1) #4
+  %call = call i8* @malloc(i64 10) #5                     #  从malloc() 中分配内存
+  store i8* %call, i8** %buffer, align 8
+  %2 = load i8*, i8** %buffer, align 8
+  %arrayidx = getelementptr inbounds i8, i8* %2, i64 4    #  获取数组第四个元素
+  %3 = bitcast i8* %arrayidx to i32*                      #  转换1 字节数组成4 字节
+                                                          #  /-- AddressSanitizer::instrumentAddress()
+  %4 = ptrtoint i32* %3 to i64                            #  |  获取数组地址对应内容
+                                                          #  |--/-- AddressSanitizer::memToShadow()
+  %5 = lshr i64 %4, 3                                     #  |  |
+  %6 = or i64 %5, 17592186044416                          #  |  |  计算数组在Shadow 表中的位置
+                                                          #  |--\-- AddressSanitizer::memToShadow()
+  %7 = inttoptr i64 %6 to i8*                             #  |  计算Shadow 表中的数据指针位置
+  %8 = load i8, i8* %7                                    #  |  从Shadow 表中获取数据
+  %9 = icmp ne i8 %8, 0                                   #  |  判断指针是否为空
+  br i1 %9, label %10, label %16, !prof !3                #  |  判断跳转
+                                                          #  |
+; &lt;label&gt;:10:                                     ; preds = %0
+                                                          #  |--/-- AddressSanitizer::createSlowPathCmp()
+  %11 = and i64 %4, 7                                     #  |  |  (1 &lt;&lt; kDefaultShadowScale) - 1
+  %12 = add i64 %11, 3                                    #  |  |  计算写入数据的指针位置
+  %13 = trunc i64 %12 to i8                               #  |  |
+  %14 = icmp sge i8 %13, %8                               #  |  |  判断是否越界,这个是&gt;= 判断,对比写入数据指针是否超过了Buffer 的上标界限
+                                                          #  |--\-- AddressSanitizer::createSlowPathCmp()
+  br i1 %14, label %15, label %16                         #  |
+
+; &lt;label&gt;:15:                                     ; preds = %10
+                                                          #  |--/-- AddressSanitizer::generateCrashCode(）
+  call void @__asan_report_store4(i64 %4)                 #  |  |  显示ASAN 报告详细错误
+  call void asm sideeffect &quot;&quot;, &quot;&quot;()                       #  |  |
+  unreachable                                             #  |  |
+                                                          #  |--\-- AddressSanitizer::generateCrashCode()
+                                                          #  \-- AddressSanitizer::instrumentAddress()
+
+; &lt;label&gt;:16:                                     ; preds = %10, %0
+  store i32 -1431655766, i32* %3, align 4
+  %17 = load i8*, i8** %buffer, align 8
+  call void @free(i8* %17)
+  %18 = bitcast i8** %buffer to i8*
+  call void @llvm.lifetime.end.p0i8(i64 8, i8* %18) #4
+  ret i32 0
+}
+
+</code></pre>
+<p>ASAN 的代码插桩逻辑代码如下:</p>
+<pre><code class="language-c++">
+Value *AddressSanitizer::createSlowPathCmp(IRBuilder&lt;&gt; &amp;IRB, Value *AddrLong,
+                                           Value *ShadowValue,
+                                           uint32_t TypeSize) {
+  size_t Granularity = static_cast&lt;size_t&gt;(1) &lt;&lt; Mapping.Scale;
+  // Addr &amp; (Granularity - 1)
+  Value *LastAccessedByte =
+      IRB.CreateAnd(AddrLong, ConstantInt::get(IntptrTy, Granularity - 1));
+  // (Addr &amp; (Granularity - 1)) + size - 1
+  if (TypeSize / 8 &gt; 1)
+    LastAccessedByte = IRB.CreateAdd(
+        LastAccessedByte, ConstantInt::get(IntptrTy, TypeSize / 8 - 1));
+  // (uint8_t) ((Addr &amp; (Granularity-1)) + size - 1)
+  LastAccessedByte =
+      IRB.CreateIntCast(LastAccessedByte, ShadowValue-&gt;getType(), false);
+  // ((uint8_t) ((Addr &amp; (Granularity-1)) + size - 1)) &gt;= ShadowValue
+  return IRB.CreateICmpSGE(LastAccessedByte, ShadowValue);
+}
+
+Value *AddressSanitizer::memToShadow(Value *Shadow, IRBuilder&lt;&gt; &amp;IRB) {  //  计算Shadow 表位置
+  // Shadow &gt;&gt; scale
+  Shadow = IRB.CreateLShr(Shadow, Mapping.Scale);  //  插入LShr 指令
+  if (Mapping.Offset == 0) return Shadow;
+  // (Shadow &gt;&gt; scale) | offset
+  Value *ShadowBase;                          //  计算Shadow 表的基地址
+  if (LocalDynamicShadow)
+    ShadowBase = LocalDynamicShadow;
+  else
+    ShadowBase = ConstantInt::get(IntptrTy, Mapping.Offset);  //  kDefaultShadowOffset64 = 1ULL &lt;&lt; 44;
+  if (Mapping.OrShadowOffset)
+    return IRB.CreateOr(Shadow, ShadowBase);  //  插入Or 指令
+  else
+    return IRB.CreateAdd(Shadow, ShadowBase);
+}
+
+void AddressSanitizer::instrumentAddress(Instruction *OrigIns,
+                                         Instruction *InsertBefore, Value *Addr,
+                                         uint32_t TypeSize, bool IsWrite,
+                                         Value *SizeArgument, bool UseCalls,
+                                         uint32_t Exp) {  //  插桩逻辑函数
+  IRBuilder&lt;&gt; IRB(InsertBefore);
+  Value *AddrLong = IRB.CreatePointerCast(Addr, IntptrTy);  //  获取buffer 指针位置
+  size_t AccessSizeIndex = TypeSizeToSizeIndex(TypeSize);   //  计算访问内存的大小
+
+  if (UseCalls) {  //  UseCalls 的方式是指在不插桩下直接调用ASAN 内部函数进行检测
+    if (Exp == 0)
+      IRB.CreateCall(AsanMemoryAccessCallback[IsWrite][0][AccessSizeIndex],
+                     AddrLong);
+    else
+      IRB.CreateCall(AsanMemoryAccessCallback[IsWrite][1][AccessSizeIndex],
+                     {AddrLong, ConstantInt::get(IRB.getInt32Ty(), Exp)});
+    return;
+  }
+
+  Type *ShadowTy =
+      IntegerType::get(*C, std::max(8U, TypeSize &gt;&gt; Mapping.Scale));  //  kDefaultShadowScale = 3
+  Type *ShadowPtrTy = PointerType::get(ShadowTy, 0);
+  Value *ShadowPtr = memToShadow(AddrLong, IRB);  //  计算buffer 在Shadow 表中的位置
+  Value *CmpVal = Constant::getNullValue(ShadowTy);
+  Value *ShadowValue =
+      IRB.CreateLoad(IRB.CreateIntToPtr(ShadowPtr, ShadowPtrTy));  //  从Shadow 表中加载数据
+
+  Value *Cmp = IRB.CreateICmpNE(ShadowValue, CmpVal);  //  构造判断语句
+  size_t Granularity = 1ULL &lt;&lt; Mapping.Scale;
+  Instruction *CrashTerm = nullptr;
+
+  if (ClAlwaysSlowPath || (TypeSize &lt; 8 * Granularity)) {
+    // We use branch weights for the slow path check, to indicate that the slow
+    // path is rarely taken. This seems to be the case for SPEC benchmarks.
+    Instruction *CheckTerm = SplitBlockAndInsertIfThen(
+        Cmp, InsertBefore, false, MDBuilder(*C).createBranchWeights(1, 100000));  //  为前面的cmp 判断创建分支代码块
+    assert(cast&lt;BranchInst&gt;(CheckTerm)-&gt;isUnconditional());
+    BasicBlock *NextBB = CheckTerm-&gt;getSuccessor(0);
+    IRB.SetInsertPoint(CheckTerm);
+    Value *Cmp2 = createSlowPathCmp(IRB, AddrLong, ShadowValue, TypeSize);
+    if (Recover) {
+      CrashTerm = SplitBlockAndInsertIfThen(Cmp2, CheckTerm, false);
+    } else {
+      BasicBlock *CrashBlock =
+        BasicBlock::Create(*C, &quot;&quot;, NextBB-&gt;getParent(), NextBB);
+      CrashTerm = new UnreachableInst(*C, CrashBlock);
+      BranchInst *NewTerm = BranchInst::Create(CrashBlock, NextBB, Cmp2);
+      ReplaceInstWithInst(CheckTerm, NewTerm);
+    }
+  } else {
+    CrashTerm = SplitBlockAndInsertIfThen(Cmp, InsertBefore, !Recover);
+  }
+
+  Instruction *Crash = generateCrashCode(CrashTerm, AddrLong, IsWrite,
+                                         AccessSizeIndex, SizeArgument, Exp);
+  Crash-&gt;setDebugLoc(OrigIns-&gt;getDebugLoc());
+}
+
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../7.dynamic-analysis/动态程序分析原理/污点追踪.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next" href="../../7.dynamic-analysis/动态程序分析原理/符号执行.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../7.dynamic-analysis/动态程序分析原理/污点追踪.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next" href="../../7.dynamic-analysis/动态程序分析原理/符号执行.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../elasticlunr.min.js"></script>
+        <script src="../../mark.min.js"></script>
+        <script src="../../searcher.js"></script>
+
+        <script src="../../clipboard.min.js"></script>
+        <script src="../../highlight.js"></script>
+        <script src="../../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../../theme/pagetoc.js"></script>
+
+
+    </div>
+    </body>
+</html>

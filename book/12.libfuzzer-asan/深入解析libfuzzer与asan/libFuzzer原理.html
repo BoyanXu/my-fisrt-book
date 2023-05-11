@@ -1,0 +1,435 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>libFuzzer原理 - Source and Fuzzing</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="The example book covers examples.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../../highlight.css">
+        <link rel="stylesheet" href="../../tomorrow-night.css">
+        <link rel="stylesheet" href="../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../.././theme/custom.css">
+        <link rel="stylesheet" href="../../theme/pagetoc.css">
+        <link rel="stylesheet" href="../.././theme/catppuccin.css">
+        <link rel="stylesheet" href="../.././theme/catppuccin-highlight.css">
+
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../../1.Github.html"><strong aria-hidden="true">1.</strong> Github</a></li><li class="chapter-item expanded "><a href="../../11.AI.html"><strong aria-hidden="true">2.</strong> Ai</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan.html"><strong aria-hidden="true">3.</strong> Libfuzzer Asan</a></li><li class="chapter-item expanded "><a href="../../2.Fuzzing.html"><strong aria-hidden="true">4.</strong> Fuzzing</a></li><li class="chapter-item expanded "><a href="../../3.Fuzzing.html"><strong aria-hidden="true">5.</strong> Fuzzing</a></li><li class="chapter-item expanded "><a href="../../4.source-code.html"><strong aria-hidden="true">6.</strong> Source Code</a></li><li class="chapter-item expanded "><a href="../../5.compile.html"><strong aria-hidden="true">7.</strong> Compile</a></li><li class="chapter-item expanded "><a href="../../6.static-analysis.html"><strong aria-hidden="true">8.</strong> Static Analysis</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis.html"><strong aria-hidden="true">9.</strong> Dynamic Analysis</a></li><li class="chapter-item expanded "><a href="../../8.llvm.html"><strong aria-hidden="true">10.</strong> Llvm</a></li><li class="chapter-item expanded "><a href="../../9.klee.html"><strong aria-hidden="true">11.</strong> Klee</a></li><li class="chapter-item expanded "><a href="../../chapter_1.html"><strong aria-hidden="true">12.</strong> Chapter 1</a></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">13.</strong> Libfuzzer Asan</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan.html"><strong aria-hidden="true">13.1.</strong> 深入解析libfuzzer与asan</a></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">13.2.</strong> 深入解析libfuzzer与asan</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/ASAN原理.html"><strong aria-hidden="true">13.2.1.</strong> Asan原理</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/LLVM下的插桩简述.html"><strong aria-hidden="true">13.2.2.</strong> Llvm下的插桩简述</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/libFuzzer原理.html" class="active"><strong aria-hidden="true">13.2.3.</strong> libFuzzer原理</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/参考引用.html"><strong aria-hidden="true">13.2.4.</strong> 参考引用</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/实战中ASAN会有哪些坑.html"><strong aria-hidden="true">13.2.5.</strong> 实战中asan会有哪些坑</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/深入解析libFuzzer参数与回显.html"><strong aria-hidden="true">13.2.6.</strong> 深入解析libFuzzer参数与回显</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/玩转Sanitizer-Coverage.html"><strong aria-hidden="true">13.2.7.</strong> 玩转Sanitizer Coverage</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">14.</strong> Static Analysis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../6.static-analysis/静态程序分析原理.html"><strong aria-hidden="true">14.1.</strong> 静态程序分析原理</a></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">14.2.</strong> 静态程序分析原理</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../6.static-analysis/静态程序分析原理/必备工具.html"><strong aria-hidden="true">14.2.1.</strong> 必备工具</a></li><li class="chapter-item expanded "><a href="../../6.static-analysis/静态程序分析原理/附录一--各图的Graphiz生成代码.html"><strong aria-hidden="true">14.2.2.</strong> 附录一  各图的Graphiz生成代码</a></li><li class="chapter-item expanded "><a href="../../6.static-analysis/静态程序分析原理/附录二--静态审计工具完整源码.html"><strong aria-hidden="true">14.2.3.</strong> 附录二  静态审计工具完整源码</a></li><li class="chapter-item expanded "><a href="../../6.static-analysis/静态程序分析原理/静态代码分析基本原理.html"><strong aria-hidden="true">14.2.4.</strong> 静态代码分析基本原理</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">15.</strong> Dynamic Analysis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理.html"><strong aria-hidden="true">15.1.</strong> 动态程序分析原理</a></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">15.2.</strong> 动态程序分析原理</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/内存监控.html"><strong aria-hidden="true">15.2.1.</strong> 内存监控</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/动态代码分析基本原理.html"><strong aria-hidden="true">15.2.2.</strong> 动态代码分析基本原理</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/必备工具.html"><strong aria-hidden="true">15.2.3.</strong> 必备工具</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/污点追踪.html"><strong aria-hidden="true">15.2.4.</strong> 污点追踪</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/程序插桩与代码覆盖率.html"><strong aria-hidden="true">15.2.5.</strong> 程序插桩与代码覆盖率</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/符号执行.html"><strong aria-hidden="true">15.2.6.</strong> 符号执行</a></li></ol></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Source and Fuzzing</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main><div class="sidetoc"><nav class="pagetoc"></nav></div>
+                        <h2 id="libfuzzer原理"><a class="header" href="#libfuzzer原理">libFuzzer原理</a></h2>
+<p>用过libFuzzer和AFL的读者们应该知道,这两款Fuzzer工具核心原理是:它们都会使用数据样本来生成测试数据集,然后使用新生成的测试数据调用程序执行并根据程序插桩的逻辑捕获到执行的分支信息,以此判断新的测试数据有没有发现新的执行路径,如果有发现新执行路径则记录测试数据,后续继续使用基于测试数据变异,不断以此循环.</p>
+<p>关于libFuzzer最经典的教程在这里(https://github.com/Dor1s/libfuzzer-workshop),本文着重介绍libFuzzer工具本身的原理,不再复述libFuzzer的用法.</p>
+<p>关于libFuzzer的实现代码,在LLVM的<code>\llvm-project\compiler-rt\lib\fuzzer\</code>目录下.</p>
+<h4 id="libfuzzer执行fuzzer过程"><a class="header" href="#libfuzzer执行fuzzer过程">libFuzzer执行Fuzzer过程</a></h4>
+<p>本章使用libFuzzer-workshop教程的OpenSSL心脏滴血漏洞来做讲解,相关代码在这里(https://github.com/Dor1s/libfuzzer-workshop/blob/master/lessons/05/openssl_fuzzer.cc),其中核心Fuzzing代码如下:</p>
+<pre><code class="language-c++">extern &quot;C&quot; int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size) {
+  static SSL_CTX *sctx = Init();
+  SSL *server = SSL_new(sctx);
+  BIO *sinbio = BIO_new(BIO_s_mem());
+  BIO *soutbio = BIO_new(BIO_s_mem());
+  SSL_set_bio(server, sinbio, soutbio);
+  SSL_set_accept_state(server);
+  BIO_write(sinbio, data, size);
+  SSL_do_handshake(server);
+  SSL_free(server);
+  return 0;
+}
+</code></pre>
+<p>libFuzzer以<code>LLVMFuzzerTestOneInput()</code>作为用户自定义的模糊测试入口点,用户只需要关注为libFuzzer生成的数据编写接口调用逻辑,而libFuzzer本身只需要做好数据生成即可.libFuzzer的数据生成主要由三部分构成:</p>
+<ol>
+<li>用户指定的初始数据</li>
+<li>数据变异</li>
+<li>新路径发现</li>
+</ol>
+<p>libFuzzer工作过程也可以简单地归纳为:</p>
+<ol>
+<li>初始化</li>
+<li>生成数据</li>
+<li>开始测试</li>
+<li>收集代码覆盖率信息</li>
+<li>生成数据</li>
+<li>开始测试</li>
+<li>...以此类推</li>
+</ol>
+<p>对以上的执行过程有了印象之后,那么我们就开始对libFuzzer的源码进行探索.FuzzerDriver.cpp文件的FuzzerDriver()函数是libFuzzer的入口点.</p>
+<pre><code class="language-c++">int FuzzerDriver(int *argc, char ***argv, UserCallback Callback) {
+   // 省略代码
+  if (EF-&gt;LLVMFuzzerInitialize) // 如果用户有自定义LLVMFuzzerInitialize()实现,那么就执行该函数,提供这个函数的作为用户自定义实现接口是因为要对库/程序进行初始化
+    EF-&gt;LLVMFuzzerInitialize(argc, argv);
+   // 省略程序解析外部参数代码
+
+  unsigned Seed = Flags.seed; // 如果外部有传递随机数种子的话.参数为-seed=?
+  if (Seed == 0)
+    Seed = std::chrono::system_clock::now().time_since_epoch().count() + GetPid(); // 外部没有指定随机数种子,那就使用时间戳+pid
+  if (Flags.verbosity) // 调试输出,参数为-verbosity
+    Printf(&quot;INFO: Seed: %u\n&quot;, Seed);
+
+  Random Rand(Seed); // 随机数生成器
+  auto *MD = new MutationDispatcher(Rand, Options); // 数据变异生成器
+  auto *Corpus = new InputCorpus(Options.OutputCorpus); // 数据收集器
+  auto *F = new Fuzzer(Callback, *Corpus, *MD, Options); // Fuzzer核心逻辑模块
+
+  StartRssThread(F, Flags.rss_limit_mb); // 创建内存检测线程,如果当前进程的内存占用超过阈值之后就退出Fuzzer报告异常
+
+  Options.HandleAbrt = Flags.handle_abrt;
+  Options.HandleBus = Flags.handle_bus;
+  Options.HandleFpe = Flags.handle_fpe;
+  Options.HandleIll = Flags.handle_ill;
+  Options.HandleInt = Flags.handle_int;
+  Options.HandleSegv = Flags.handle_segv;
+  Options.HandleTerm = Flags.handle_term;
+  Options.HandleXfsz = Flags.handle_xfsz;
+  SetSignalHandler(Options);  // 初始化信号捕获回调函数
+
+   // 省略代码
+  F-&gt;Loop(); // 开始Fuzzing
+
+  exit(0);
+}
+</code></pre>
+<p>通过分析libFuzzer的启动过程我们可知,它整个框架的核心由:</p>
+<ul>
+<li>
+<p>数据变异生成器</p>
+</li>
+<li>
+<p>数据收集器</p>
+</li>
+<li>
+<p>Fuzzer核心逻辑模块</p>
+<p>组成.接下来我们应该梳理清楚这三个模块之间的关系,接着前面的分析,我们继续阅读<code>Fuzzer::Loop()</code>的代码.</p>
+</li>
+</ul>
+<pre><code class="language-c++">void Fuzzer::Loop() {
+   // 省略代码
+  while (true) {
+    // 省略代码
+    if (TimedOut()) break; // 由参数-max_total_time指定的运行时间控制,超时执行就退出
+    // Perform several mutations and runs.
+    MutateAndTestOne(); // 执行一次Fuzzing
+  }
+  // 省略代码
+}
+
+void Fuzzer::MutateAndTestOne() {
+  auto &amp;II = Corpus.ChooseUnitToMutate(MD.GetRand());  // 从数据收集器中随机挑一个测试数据出来,要结合下面的核心逻辑代码才能理解它的用意
+  const auto &amp;U = II.U;
+  size_t Size = U.size();
+  memcpy(CurrentUnitData, U.data(), Size);  //  获取测试数据
+
+  // 省略代码
+
+  for (int i = 0; i &lt; Options.MutateDepth; i++) {  // 对数据变异多次.由参数-mutate_depth控制,默认值是5
+    size_t NewSize = 0;
+    NewSize = MD.Mutate(CurrentUnitData, Size, CurrentMaxMutationLen); // 使用前面随机抽取获取到的测试数据作为变异输入生成测试数据
+    Size = NewSize;
+    if (i == 0)  // 注意,第一次Fuzzing时,会启用数据追踪功能,简而言之就是hook strstr(),strcasestr(),memmem()函数,然后从参数中获取到一些有意思的字符串
+      StartTraceRecording();
+    II.NumExecutedMutations++;
+    if (size_t NumFeatures = RunOne(CurrentUnitData, Size)) {  // 开始Fuzzing,如果使用前面生成的变异数据拿去Fuzzing,发现了新的路径数量,就会保存到NumFeatures,没有发现新路径则NumFeatures=0.
+      Corpus.AddToCorpus({CurrentUnitData, CurrentUnitData + Size}, NumFeatures,
+                         /*MayDeleteFile=*/true);  // 注意,这一段代码是libFuzzer的核心逻辑之一,如果变异数据发现新路径,那就记录该数据到数据收集器.这是libFuzzer路径探测的核心原理.
+      ReportNewCoverage(&amp;II, {CurrentUnitData, CurrentUnitData + Size});
+      CheckExitOnSrcPosOrItem();
+    }
+    StopTraceRecording();
+    TryDetectingAMemoryLeak(CurrentUnitData, Size,
+                            /*DuringInitialCorpusExecution*/ false);
+  }
+}
+
+size_t Fuzzer::RunOne(const uint8_t *Data, size_t Size) {
+  ExecuteCallback(Data, Size);  // 往下就是调用到LLVMFuzzerTestOneInput()
+  TPC.UpdateCodeIntensityRecord(TPC.GetCodeIntensity());  // 获取当前执行过的代码分支总数
+
+  size_t NumUpdatesBefore = Corpus.NumFeatureUpdates();
+  TPC.CollectFeatures([&amp;](size_t Feature) {
+    Corpus.AddFeature(Feature, Size, Options.Shrink);
+  });
+  size_t NumUpdatesAfter = Corpus.NumFeatureUpdates();  // 从SanitizerCoverage插桩记录的信息中获取分支数据
+
+  // 省略代码
+
+  return NumUpdatesAfter - NumUpdatesBefore;  // 计算发现了多少新分支路径
+}
+</code></pre>
+<p>明白libFuzzer的主要Fuzzing原理后,我们现在探讨下代码覆盖率的实现细节.首先,libFuzzer TracePC(TPC)类是专门用于收集使用SanitizerCoverage插桩获取到的信息,代码实现在FuzzerTracePC.cpp文件下.</p>
+<pre><code class="language-c++">ATTRIBUTE_INTERFACE
+void __sanitizer_cov_trace_pc_guard_init(uint32_t *Start, uint32_t *Stop) {
+  fuzzer::TPC.HandleInit(Start, Stop);
+}
+
+ATTRIBUTE_INTERFACE
+ATTRIBUTE_NO_SANITIZE_ALL
+void __sanitizer_cov_trace_pc_guard(uint32_t *Guard) {
+  uintptr_t PC = reinterpret_cast&lt;uintptr_t&gt;(__builtin_return_address(0));
+  uint32_t Idx = *Guard;
+
+  getStackDepth();
+  fuzzer::codeIntensity++;
+
+  __sancov_trace_pc_pcs[Idx] = PC;
+  __sancov_trace_pc_guard_8bit_counters[Idx]++;
+}
+</code></pre>
+<p>理解这个细节后,再回来看核心逻辑<code>Fuzzer::ExecuteCallback()</code>.</p>
+<pre><code class="language-c++">void Fuzzer::ExecuteCallback(const uint8_t *Data, size_t Size) {
+  // 省略代码
+  uint8_t *DataCopy = new uint8_t[Size];
+  memcpy(DataCopy, Data, Size);  // 从变异的数据中复制一份到这个内存,后面会用到
+  // 省略代码
+  TPC.ResetMaps();  // 清空所有路径信息
+  RunningCB = true;
+  int Res = CB(DataCopy, Size);  // 执行用户自定义的LLVMFuzzerTestOneInput()
+  RunningCB = false;
+  // 省略代码
+  if (!LooseMemeq(DataCopy, Data, Size))  // 注意这个坑,如果传递给LLVMFuzzerTestOneInput()的data会被程序修改,那么libFuzzer会强制退出
+    CrashOnOverwrittenData();
+  delete[] DataCopy;
+}
+</code></pre>
+<h4 id="数据生成原理"><a class="header" href="#数据生成原理">数据生成原理</a></h4>
+<p>对整个Fuzzing过程清晰后,我们回来探索libFuzzer的数据生成原理,对应数据变异模块<code>MutationDispatcher</code>.</p>
+<pre><code class="language-c++">MutationDispatcher::MutationDispatcher(Random &amp;Rand,const FuzzingOptions &amp;Options)
+    : Rand(Rand), Options(Options) {  // Rand是随机数生成器
+  DefaultMutators.insert(
+      DefaultMutators.begin(),  // 添加数据变异算法
+      {
+          {&amp;MutationDispatcher::Mutate_EraseBytes, &quot;EraseBytes&quot;},
+          {&amp;MutationDispatcher::Mutate_InsertByte, &quot;InsertByte&quot;},
+          {&amp;MutationDispatcher::Mutate_InsertRepeatedBytes,
+           &quot;InsertRepeatedBytes&quot;},
+          {&amp;MutationDispatcher::Mutate_ChangeByte, &quot;ChangeByte&quot;},
+          {&amp;MutationDispatcher::Mutate_ChangeBit, &quot;ChangeBit&quot;},
+          {&amp;MutationDispatcher::Mutate_ShuffleBytes, &quot;ShuffleBytes&quot;},
+          {&amp;MutationDispatcher::Mutate_ChangeASCIIInteger, &quot;ChangeASCIIInt&quot;},
+          {&amp;MutationDispatcher::Mutate_ChangeBinaryInteger, &quot;ChangeBinInt&quot;},
+          {&amp;MutationDispatcher::Mutate_CopyPart, &quot;CopyPart&quot;},
+          {&amp;MutationDispatcher::Mutate_CrossOver, &quot;CrossOver&quot;},
+          {&amp;MutationDispatcher::Mutate_AddWordFromManualDictionary,
+           &quot;ManualDict&quot;},
+          {&amp;MutationDispatcher::Mutate_AddWordFromTemporaryAutoDictionary,
+           &quot;TempAutoDict&quot;},
+          {&amp;MutationDispatcher::Mutate_AddWordFromPersistentAutoDictionary,
+           &quot;PersAutoDict&quot;},
+      });
+  if(Options.UseCmp)
+    DefaultMutators.push_back(
+        {&amp;MutationDispatcher::Mutate_AddWordFromTORC, &quot;CMP&quot;});
+
+  if (EF-&gt;LLVMFuzzerCustomMutator)  // 如果存在用户自定义的数据变异方法,那就使用它
+    Mutators.push_back({&amp;MutationDispatcher::Mutate_Custom, &quot;Custom&quot;});
+  else
+    Mutators = DefaultMutators;
+
+  if (EF-&gt;LLVMFuzzerCustomCrossOver)
+    Mutators.push_back(
+        {&amp;MutationDispatcher::Mutate_CustomCrossOver, &quot;CustomCrossOver&quot;});
+}
+</code></pre>
+<p>关于数据变异的算法读者们自行阅读,这些变异方法基本上都差不多.笔者画图整理全部的逻辑,读者们就能对此一目了然.</p>
+<p><img src="./pic12/libFuzzer-Mutate.png" alt="" /></p>
+<h4 id="路径探测原理"><a class="header" href="#路径探测原理">路径探测原理</a></h4>
+<p>前面有简略地提到这点,简单总结整体流程如下:</p>
+<p><img src="./pic12/libFuzzer-PathSearch.png" alt="" /></p>
+<p>本章最后,把libFuzzer数据变异和路径探测结合在一起的完整过程如下所示.</p>
+<p><img src="./pic12/libFuzzer-Arch.png" alt="" /></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/LLVM下的插桩简述.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next" href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/参考引用.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/LLVM下的插桩简述.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next" href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/参考引用.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../elasticlunr.min.js"></script>
+        <script src="../../mark.min.js"></script>
+        <script src="../../searcher.js"></script>
+
+        <script src="../../clipboard.min.js"></script>
+        <script src="../../highlight.js"></script>
+        <script src="../../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../../theme/pagetoc.js"></script>
+
+
+    </div>
+    </body>
+</html>

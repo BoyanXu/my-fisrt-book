@@ -1,0 +1,10 @@
+.content p { line-height: 1.65em; }
+.content ol { line-height: 1.45em; }
+.content ul { line-height: 1.45em; }
+
+.content img {
+	border-radius: 7px;
+    /* display: block;
+    margin-left: auto;
+    margin-right: auto; */
+}

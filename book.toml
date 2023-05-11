@@ -27,6 +27,10 @@ command = "mdbook-fix-cjk-spacing"
 renderer = ["html"]
 
 [preprocessor.extended-markdown-table]
+<<<<<<< HEAD
+=======
+
+>>>>>>> ea9043c (fix)
 # [output.html.search]
 # # disable the default mdBook search feature implementation
 # enable = false

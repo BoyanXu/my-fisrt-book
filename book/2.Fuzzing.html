@@ -1,0 +1,1042 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Fuzzing - Source and Fuzzing</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="The example book covers examples.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="./theme/custom.css">
+        <link rel="stylesheet" href="theme/pagetoc.css">
+        <link rel="stylesheet" href="./theme/catppuccin.css">
+        <link rel="stylesheet" href="./theme/catppuccin-highlight.css">
+
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="1.Github.html"><strong aria-hidden="true">1.</strong> Github</a></li><li class="chapter-item expanded "><a href="11.AI.html"><strong aria-hidden="true">2.</strong> Ai</a></li><li class="chapter-item expanded "><a href="12.libfuzzer-asan.html"><strong aria-hidden="true">3.</strong> Libfuzzer Asan</a></li><li class="chapter-item expanded "><a href="2.Fuzzing.html" class="active"><strong aria-hidden="true">4.</strong> Fuzzing</a></li><li class="chapter-item expanded "><a href="3.Fuzzing.html"><strong aria-hidden="true">5.</strong> Fuzzing</a></li><li class="chapter-item expanded "><a href="4.source-code.html"><strong aria-hidden="true">6.</strong> Source Code</a></li><li class="chapter-item expanded "><a href="5.compile.html"><strong aria-hidden="true">7.</strong> Compile</a></li><li class="chapter-item expanded "><a href="6.static-analysis.html"><strong aria-hidden="true">8.</strong> Static Analysis</a></li><li class="chapter-item expanded "><a href="7.dynamic-analysis.html"><strong aria-hidden="true">9.</strong> Dynamic Analysis</a></li><li class="chapter-item expanded "><a href="8.llvm.html"><strong aria-hidden="true">10.</strong> Llvm</a></li><li class="chapter-item expanded "><a href="9.klee.html"><strong aria-hidden="true">11.</strong> Klee</a></li><li class="chapter-item expanded "><a href="chapter_1.html"><strong aria-hidden="true">12.</strong> Chapter 1</a></li><li class="chapter-item expanded "><a href="#.html"><strong aria-hidden="true">13.</strong> Libfuzzer Asan</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="12.libfuzzer-asan/深入解析libfuzzer与asan.html"><strong aria-hidden="true">13.1.</strong> 深入解析libfuzzer与asan</a></li><li class="chapter-item expanded "><a href="#.html"><strong aria-hidden="true">13.2.</strong> 深入解析libfuzzer与asan</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="12.libfuzzer-asan/深入解析libfuzzer与asan/ASAN原理.html"><strong aria-hidden="true">13.2.1.</strong> Asan原理</a></li><li class="chapter-item expanded "><a href="12.libfuzzer-asan/深入解析libfuzzer与asan/LLVM下的插桩简述.html"><strong aria-hidden="true">13.2.2.</strong> Llvm下的插桩简述</a></li><li class="chapter-item expanded "><a href="12.libfuzzer-asan/深入解析libfuzzer与asan/libFuzzer原理.html"><strong aria-hidden="true">13.2.3.</strong> libFuzzer原理</a></li><li class="chapter-item expanded "><a href="12.libfuzzer-asan/深入解析libfuzzer与asan/参考引用.html"><strong aria-hidden="true">13.2.4.</strong> 参考引用</a></li><li class="chapter-item expanded "><a href="12.libfuzzer-asan/深入解析libfuzzer与asan/实战中ASAN会有哪些坑.html"><strong aria-hidden="true">13.2.5.</strong> 实战中asan会有哪些坑</a></li><li class="chapter-item expanded "><a href="12.libfuzzer-asan/深入解析libfuzzer与asan/深入解析libFuzzer参数与回显.html"><strong aria-hidden="true">13.2.6.</strong> 深入解析libFuzzer参数与回显</a></li><li class="chapter-item expanded "><a href="12.libfuzzer-asan/深入解析libfuzzer与asan/玩转Sanitizer-Coverage.html"><strong aria-hidden="true">13.2.7.</strong> 玩转Sanitizer Coverage</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="#.html"><strong aria-hidden="true">14.</strong> Static Analysis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="6.static-analysis/静态程序分析原理.html"><strong aria-hidden="true">14.1.</strong> 静态程序分析原理</a></li><li class="chapter-item expanded "><a href="#.html"><strong aria-hidden="true">14.2.</strong> 静态程序分析原理</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="6.static-analysis/静态程序分析原理/必备工具.html"><strong aria-hidden="true">14.2.1.</strong> 必备工具</a></li><li class="chapter-item expanded "><a href="6.static-analysis/静态程序分析原理/附录一--各图的Graphiz生成代码.html"><strong aria-hidden="true">14.2.2.</strong> 附录一  各图的Graphiz生成代码</a></li><li class="chapter-item expanded "><a href="6.static-analysis/静态程序分析原理/附录二--静态审计工具完整源码.html"><strong aria-hidden="true">14.2.3.</strong> 附录二  静态审计工具完整源码</a></li><li class="chapter-item expanded "><a href="6.static-analysis/静态程序分析原理/静态代码分析基本原理.html"><strong aria-hidden="true">14.2.4.</strong> 静态代码分析基本原理</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="#.html"><strong aria-hidden="true">15.</strong> Dynamic Analysis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="7.dynamic-analysis/动态程序分析原理.html"><strong aria-hidden="true">15.1.</strong> 动态程序分析原理</a></li><li class="chapter-item expanded "><a href="#.html"><strong aria-hidden="true">15.2.</strong> 动态程序分析原理</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="7.dynamic-analysis/动态程序分析原理/内存监控.html"><strong aria-hidden="true">15.2.1.</strong> 内存监控</a></li><li class="chapter-item expanded "><a href="7.dynamic-analysis/动态程序分析原理/动态代码分析基本原理.html"><strong aria-hidden="true">15.2.2.</strong> 动态代码分析基本原理</a></li><li class="chapter-item expanded "><a href="7.dynamic-analysis/动态程序分析原理/必备工具.html"><strong aria-hidden="true">15.2.3.</strong> 必备工具</a></li><li class="chapter-item expanded "><a href="7.dynamic-analysis/动态程序分析原理/污点追踪.html"><strong aria-hidden="true">15.2.4.</strong> 污点追踪</a></li><li class="chapter-item expanded "><a href="7.dynamic-analysis/动态程序分析原理/程序插桩与代码覆盖率.html"><strong aria-hidden="true">15.2.5.</strong> 程序插桩与代码覆盖率</a></li><li class="chapter-item expanded "><a href="7.dynamic-analysis/动态程序分析原理/符号执行.html"><strong aria-hidden="true">15.2.6.</strong> 符号执行</a></li></ol></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Source and Fuzzing</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main><div class="sidetoc"><nav class="pagetoc"></nav></div>
+                        <h1 id="4-fuzzing-模糊测试之数据输入"><a class="header" href="#4-fuzzing-模糊测试之数据输入">4. Fuzzing 模糊测试之数据输入</a></h1>
+<ul>
+<li><a href="#%E5%BF%85%E5%A4%87%E5%B7%A5%E5%85%B7">必备工具</a></li>
+<li><a href="#fuzzing-%E4%B8%8E%E4%BB%A3%E7%A0%81%E8%A6%86%E7%9B%96%E7%8E%87">Fuzzing 与代码覆盖率</a></li>
+<li><a href="#fuzzing-%E6%94%BB%E5%87%BB%E7%82%B9">Fuzzing 攻击点</a>
+<ul>
+<li><a href="#python-%E5%BA%93">Python 库</a></li>
+<li><a href="#python-%E5%86%85%E9%83%A8%E5%AF%B9%E8%B1%A1">Python 内部对象</a></li>
+<li><a href="#python-%E8%BF%90%E8%A1%8C%E7%8E%AF%E5%A2%83">Python 运行环境</a></li>
+</ul>
+</li>
+<li><a href="#fuzzing-%E7%9A%84%E5%85%A5%E5%8F%A3%E7%82%B9">Fuzzing 的入口点</a></li>
+<li><a href="#fuzzing-%E6%95%B0%E6%8D%AE%E7%94%9F%E6%88%90">Fuzzing 数据生成</a>
+<ul>
+<li><a href="#%E9%9A%8F%E6%9C%BA%E7%94%9F%E6%88%90%E6%95%B0%E6%8D%AE">随机生成数据</a></li>
+<li><a href="#%E6%8C%89%E7%BB%93%E6%9E%84%E7%94%9F%E6%88%90%E6%95%B0%E6%8D%AE">按结构生成数据</a></li>
+</ul>
+</li>
+<li><a href="#%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E9%80%89%E6%8B%A9%E9%9A%8F%E6%9C%BA%E7%94%9F%E6%88%90%E6%95%B0%E6%8D%AE%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E9%80%89%E6%8B%A9%E6%8C%89%E7%BB%93%E6%9E%84%E7%94%9F%E6%88%90%E6%95%B0%E6%8D%AE">什么时候选择随机生成数据,什么时候选择按结构生成数据</a>
+<ul>
+<li><a href="#fuzzing-waf">Fuzzing WAF</a></li>
+<li><a href="#fuzzing-windows-%E5%86%85%E6%A0%B8">Fuzzing Windows 内核</a></li>
+<li><a href="#fuzzing-imagemagick">Fuzzing ImageMagick</a></li>
+<li><a href="#fuzzing-%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE">Fuzzing 网络协议</a></li>
+</ul>
+</li>
+<li><a href="#%E7%BB%93%E5%B0%BE">结尾</a></li>
+<li><a href="#afl-%E5%92%8Clibfuzzer-%E7%9A%84%E6%BC%94%E7%A4%BA">AFL 和libFuzzer 的演示</a></li>
+</ul>
+<h2 id="必备工具"><a class="header" href="#必备工具">必备工具</a></h2>
+<p>Python ,Source Insight</p>
+<h2 id="fuzzing-与代码覆盖率"><a class="header" href="#fuzzing-与代码覆盖率">Fuzzing 与代码覆盖率</a></h2>
+<p>前面一章说到在Github 上快速阅读代码,这样有助于我们去了解关于我们要挖掘漏洞的目标的一些理解,对于程序有了一些理解之后,接下来就可以尝试写些Fuzzing 来跑跑漏洞了.</p>
+<p>Fuzzing 是模糊测试的意思,我们可以按照给定的格式来生成数据或者随机生成,观察程序有没有处理异常或者程序崩溃.读者要注意的一点是:<strong>二进制Fuzzing 的思路和WEB Fuzzing 的思路是完全不同的</strong>,后面会通过许多的例子来告诉大家二进制和WEB Fuzzing 到底差异在哪里.<strong>Fuzzing 和源码挖洞是相互辅助的!不要把能不能挖到漏洞的锅都丢给Fuzzing ,Fuzzing 不出来就是没有漏洞;也不要把全部的精力都花在阅读源码上,有很多时候会迷失在代码里,忘记上下文到底在做些什么,越看越迷茫.这是成本与收益的博弈,对于代码量较大的程序来说,偏向Fuzzing 的投入产出比较高;对于代码量较小的程序来说,偏向阅读源码的投入产出比较高</strong>.</p>
+<p>代码覆盖率是说,这次自动化测试触发了的代码占整体代码的比率是多少.要想对一个程序的所有代码都要测试到,这样的代码覆盖率就是100% ,这是不可能的,因为会有很多的功能和代码是需要联合起来触发的,有的代码触发条件逻辑非常复杂,这些都是Fuzzing 的短板,Fuzzing 在对某一个攻击点测试上效果是很好的,一个程序会有很多的攻击点,所以要针对各个不同的攻击点都要写不同的Fuzzer ,提高Fuzzing 代码覆盖率.</p>
+<h2 id="fuzzing-攻击点"><a class="header" href="#fuzzing-攻击点">Fuzzing 攻击点</a></h2>
+<p>以Python 为例子,Python 的攻击点有三处:库,内部对象,运行环境</p>
+<h3 id="python-库"><a class="header" href="#python-库">Python 库</a></h3>
+<p>关于Python 的库代码,我们可以从Python 安装路径下的<code>Lib</code> 目录中找到</p>
+<p><img src="pic2/python_lib.png" alt="" /></p>
+<p>每个库都能够去找个针对性的Fuzzer 跑一跑,不过有些Python 库是做系统操作的,<strong>重点挑一些外部数据可以流进来,然后又可以进行处理的</strong>,比如:json,urllib,requests 这些库.本地库找到漏洞有时候利用会比较鸡肋,除非你的渗透对象是云服务(比如SAE 这种只提供一个执行容器的云,那么我们就需要找到一个可以绕过Python 解析器能够直接执行二进制代码的方式来绕过沙盒,如果读者不是很理解这个操作,同样的原理请参考pwn2own 从浏览器到系统system/root 提权),否则能够用利用的地方比较少.这个是我在挖requests 的时候挖到的一个洞,可以在Cookie <code>max-age</code> 中设置字符串值触发Cookielib 处理异常,丢弃掉这个Set-cookie 字段,让爬虫无法获取Cookie .传送门:https://github.com/lcatro/Python_CookieLib_0day</p>
+<p>上面提到的库都是Python 的代码相互调用,但是有一些库是能触发二进制代码的,比如:http://www.freebuf.com/articles/network/27817.html</p>
+<h3 id="python-内部对象"><a class="header" href="#python-内部对象">Python 内部对象</a></h3>
+<p>说到Python 内部对象,对没有了解过解析器是如何做到远程代码执行的同学推荐阅读:https://github.com/lcatro/vuln_javascript</p>
+<p>对内部对象做一些的操作,最后可以达到RCE (远程代码执行)的结果.我们先看看PoC 是怎么样的(以JavaScript 为例子,Python 版没有找到,原理都差不多的),Link :https://github.com/tunz/js-vuln-db</p>
+<pre><code>
+    PoC 1 :
+
+        function opt() {
+            let obj = '2.3023e-320';
+            for (let i = 0; i &lt; 1; i++) {
+                obj.x = 1;
+                obj = +obj;
+                obj.x = 1;
+            }
+        }
+
+        function main() {
+            for (let i = 0; i &lt; 100; i++) {
+                opt();
+            }
+        }
+
+        main();
+
+
+    PoC 2 :
+
+        function opt() {
+            let arr = [];
+            return arr['x'];
+        }
+
+        function main() {
+            let arr = [1.1, 2.2, 3.3];
+            for (let i = 0; i &lt; 0x10000; i++) {
+                opt();
+            }
+
+            Array.prototype.__defineGetter__('x', Object.prototype.valueOf);
+
+            print(opt());
+        }
+
+        main();
+
+
+    PoC 3 :
+
+        var f = function()
+        {
+          var o = { a: {}, b: { ba: { baa: 0, bab: [] }, bb: {}, bc: { bca: {bcaa: 0, bcab: 0, bcac: this} } } };
+          o.b.bc.bca.bcab = 0;
+          o.b.bb.bba = Array.prototype.slice.apply(o.b.ba.bab);
+        };
+        while(true) f(f);
+
+</code></pre>
+<p>细心的你应该能从这些PoC 里面发现了很多Fuzzing 的痕迹,对于这种涉及到解析器运行时产生的问题,是需要构造代码来Fuzzing 的.要展开来讲还需要用很多篇幅,后面还会介绍到一个东西叫AST (抽象语法树),读者们可以结合AST 和js-vuln-db 的PoC 这两个东西一起细细琢磨,很有意思的.</p>
+<h3 id="python-运行环境"><a class="header" href="#python-运行环境">Python 运行环境</a></h3>
+<p>Python 运行环境有两部分:编译和执行.Python 的编译请参考<code>compile()</code> 函数,我们关注Python 运行环境的执行部分,对应的源码在<code>Python/Ceval.c PyEval_EvalFrameEx()</code>.Python 的OpCode 的格式如下:</p>
+<pre><code>
+    | OpCode |                      没有操作数的OpCode
+    | OpCode | OpNum1 |             一个操作数的OpCode
+    | OpCode | OpNum1 | OpNum2 |    两个操作数的OpCode
+
+</code></pre>
+<p>关于操作码的具体信息在<code>Include/Opcode.h</code> 里.那么我们生成的Python 字节码要怎么样才能传递到<code>PyEval_EvalFrameEx()</code> 里执行呢?</p>
+<h2 id="fuzzing-的入口点"><a class="header" href="#fuzzing-的入口点">Fuzzing 的入口点</a></h2>
+<p>找到攻击点之后,还需要给Fuzzing 构建一个入口点,让我们的Fuzzing 生成的数据流能够进入到这些地方去.以AFL 为例子(本篇文章没有介绍AFL 的使用,读者们可以从这里了解更多关于AFL 的使用:https://github.com/lcatro/Fuzzing-ImageMagick ;关于libFuzzer 推荐阅读:https://github.com/Dor1s/libfuzzer-workshop (入门教程);https://github.com/google/fuzzer-test-suite (真实的测试用例)),我们给AFL Fuzzing 的入口点就是命令行,通过使用不同的命令参数组合来触发更多的代码覆盖率,举个例子</p>
+<pre><code class="language-bash">
+    afl-fuzz -i samples -o output ./magick convert @@ /dev/null
+    afl-fuzz -i samples -o output ./magick composite @@ /dev/null
+    afl-fuzz -i samples -o output ./magick compare @@ /dev/null
+    afl-fuzz -i samples -o output ./magick montage @@ /dev/null
+
+</code></pre>
+<p>AFL 就会把变异的样本传递进去测试,有些库是完全没有像ImageMagick 这种入口的,比如:libGif ,libxml 这些,就得要手工构造入口点,再提供给AFL 来Fuzzing</p>
+<p>对于Python 来说,我们还有pyc 文件,pyc 文件里面保存的是Python OpCode ,使用Python 执行pyc 之后,最后会将OpCode 传递到<code>PyEval_EvalFrameEx()</code> 执行,关于pyc 的文件结构读者们可以自行搜素,下面放一段打包字节码成pyc 结构的代码</p>
+<pre><code class="language-python">
+    import marshal
+
+    class code_object(object):
+
+        def __init__(self) :
+            self.co_argcount=0
+            self.co_nlocals=0
+            self.co_stacksize=1
+            self.co_flags=0x40
+            self.co_code=b''
+            self.co_consts=()
+            self.co_names=()
+            self.co_varnames=()
+            self.co_filename=''
+            self.co_name='&lt;module&gt;'
+            self.co_firstlineno=1
+            self.co_lnotab=b'\x00\x01'
+            self.co_freevars=()
+            self.co_cellvars=()
+
+    def serialize_code_object(code_object) :
+        code_buffer=b'\x63'
+        code_buffer+=marshal.dumps(code_object.co_argcount)[1:]
+        code_buffer+=marshal.dumps(code_object.co_nlocals)[1:]
+        code_buffer+=marshal.dumps(code_object.co_stacksize)[1:]
+        code_buffer+=marshal.dumps(code_object.co_flags)[1:]
+        code_buffer+=marshal.dumps(code_object.co_code)
+        code_buffer+=marshal.dumps(code_object.co_consts)
+        code_buffer+=marshal.dumps(code_object.co_names)
+        code_buffer+=marshal.dumps(code_object.co_varnames)
+        code_buffer+=marshal.dumps(code_object.co_freevars)
+        code_buffer+=marshal.dumps(code_object.co_cellvars)
+        code_buffer+=marshal.dumps(code_object.co_filename)
+        code_buffer+=marshal.dumps(code_object.co_name)
+        code_buffer+=struct.pack('L',code_object.co_firstlineno)
+        code_buffer+=marshal.dumps(code_object.co_lnotab)
+
+        return code_buffer
+
+    def save_to_pyc(file_path,code_object) :
+        file=open(file_path, 'wb')
+
+        if file :
+            file.write(imp.get_magic())
+            file.write(struct.pack('L',time.time()))
+            file.write(serialize_code_object(code_object))
+            file.close()
+
+    def make_code_object(opcode_data) :
+        compile_code_object = python_opcode_build.code_object()
+
+        compile_code_object.co_argcount = 0
+        compile_code_object.co_code = packet_code_object_in_try_block(opcode_data)
+        compile_code_object.co_consts = tuple(make_random_string_list(3,8),)
+        compile_code_object.co_names = tuple(make_random_string_list(3,8))
+        compile_code_object.co_varnames = tuple(make_random_string_list(3,8))
+
+        return compile_code_object
+
+
+</code></pre>
+<h2 id="fuzzing-数据生成"><a class="header" href="#fuzzing-数据生成">Fuzzing 数据生成</a></h2>
+<p>找到了一个攻击点并且构造好Fuzzing 入口点之后,这个时候就需要传递一些数据进去测试了,一般有两种方式进行Fuzzing</p>
+<h3 id="随机生成数据"><a class="header" href="#随机生成数据">随机生成数据</a></h3>
+<p>随机生成数据是真的随机,我们来看看Fuzzer 的代码</p>
+<pre><code class="language-python">
+
+    import imp
+    import marshal
+    import os
+    import random
+    import struct
+    import time
+
+
+    class code_object_class(object):
+
+        def __init__(self) :
+            self.co_argcount=0
+            self.co_nlocals=0
+            self.co_stacksize=1
+            self.co_flags=0x40
+            self.co_code=b''
+            self.co_consts=()
+            self.co_names=()
+            self.co_varnames=()
+            self.co_filename=''
+            self.co_name='&lt;module&gt;'
+            self.co_firstlineno=1
+            self.co_lnotab=b'\x00\x01'
+            self.co_freevars=()
+            self.co_cellvars=()
+
+    def serialize_code_object(code_object) :
+        code_buffer=b'\x63'
+        code_buffer+=marshal.dumps(code_object.co_argcount)[1:]
+        code_buffer+=marshal.dumps(code_object.co_nlocals)[1:]
+        code_buffer+=marshal.dumps(code_object.co_stacksize)[1:]
+        code_buffer+=marshal.dumps(code_object.co_flags)[1:]
+        code_buffer+=marshal.dumps(code_object.co_code)
+        code_buffer+=marshal.dumps(code_object.co_consts)
+        code_buffer+=marshal.dumps(code_object.co_names)
+        code_buffer+=marshal.dumps(code_object.co_varnames)
+        code_buffer+=marshal.dumps(code_object.co_freevars)
+        code_buffer+=marshal.dumps(code_object.co_cellvars)
+        code_buffer+=marshal.dumps(code_object.co_filename)
+        code_buffer+=marshal.dumps(code_object.co_name)
+        code_buffer+=struct.pack('L',code_object.co_firstlineno)
+        code_buffer+=marshal.dumps(code_object.co_lnotab)
+
+        return code_buffer
+
+    def save_to_pyc(file_path,code_object) :
+        file=open(file_path, 'wb')
+
+        if file :
+            file.write(imp.get_magic())
+            file.write(struct.pack('L',time.time()))
+            file.write(serialize_code_object(code_object))
+            file.close()
+
+    def make_random_string(length) :
+        data = ''
+
+        for index in range(length) :
+            data += chr(random.randint(0,255))
+
+        return data
+
+    def make_random_string_list(list_count,string_length) :
+        return_list = []
+
+        for list_index in range(list_count) :
+            for string_index in range(list_count) :
+                return_list.append(make_random_string(string_length))
+
+        return return_list
+
+    def packet_code_object_in_try_block(code) :
+        code_length_low = (len(code) % 0x100) &amp; 0xFF
+        code_length_height = (len(code) &gt;&gt; 8) &amp; 0xFF
+
+        try_block = b'\x79'
+        try_block += chr(code_length_height)
+        try_block += chr(code_length_low)
+        try_block += code
+        try_block += b'\x6e\x07\x00\x01\x01\x01\x6e\x01\x00\x58\x64\x01\x00\x53'
+
+        return try_block
+
+    def make_code_object(opcode_data) :
+        compile_code_object = code_object_class()
+
+        compile_code_object.co_argcount = 0
+        compile_code_object.co_code = packet_code_object_in_try_block(opcode_data)
+        compile_code_object.co_consts = tuple(make_random_string_list(3,8),)
+        compile_code_object.co_names = tuple(make_random_string_list(3,8))
+        compile_code_object.co_varnames = tuple(make_random_string_list(3,8))
+
+        return compile_code_object
+
+
+    if __name__ == '__main__' :
+        while True :
+            code_object = make_code_object(make_random_string(64))
+
+            save_to_pyc('python_fuzzing.tmp.pyc',code_object)
+
+            os.system('python python_fuzzing.tmp.pyc')
+
+</code></pre>
+<p>运行效果</p>
+<p><img src="pic2/fuzzing_state.png" alt="" /></p>
+<h3 id="按结构生成数据"><a class="header" href="#按结构生成数据">按结构生成数据</a></h3>
+<p>上面的Fuzzing 已经出现了崩溃的结果,现在我们可以开开心心地拿样本来分析漏洞崩溃原因了,不过这里是在讨论如何Fuzzing ,所以就不多做漏洞分析了,细心的你应该观察到了这一点</p>
+<p><img src="pic2/error_fuzzing.png" alt="" /></p>
+<p>这些OpCode 无法被运行环境所识别,所以提示了异常.重复来跑这种没有意义的Fuzzing 其实是很低效的,我们回去阅读<code>PyEval_EvalFrameEx()</code> 找到解决问题的答案.</p>
+<p>在<code>Python/Ceval.c:1199</code> 行代码里,这里是OpCode 的解析执行部分,我们看这个switch 的default 部分(<code>Python/Ceval.c:3134</code>)</p>
+<pre><code class="language-c">
+    default:
+        fprintf(stderr,
+            &quot;XXX lineno: %d, opcode: %d\n&quot;,
+            PyFrame_GetLineNumber(f),
+            opcode);
+        PyErr_SetString(PyExc_SystemError, &quot;unknown opcode&quot;);
+        why = WHY_EXCEPTION;
+        break;
+
+</code></pre>
+<p>原来是OpCode 没有被case 语句判断成功,那么再去看看<code>include\Opcode.h</code> 的OpCode 都有哪些取值</p>
+<pre><code class="language-c">
+    #ifndef Py_OPCODE_H
+    #define Py_OPCODE_H
+    #ifdef __cplusplus
+    extern &quot;C&quot; {
+    #endif
+
+
+    /* Instruction opcodes for compiled code */
+
+    #define STOP_CODE	0
+    #define POP_TOP		1
+    #define ROT_TWO		2
+    #define ROT_THREE	3
+
+    // .....
+
+    #define SETUP_WITH 143
+
+    /* Support for opargs more than 16 bits long */
+    #define EXTENDED_ARG  145
+
+    #define SET_ADD         146
+    #define MAP_ADD         147
+
+
+    enum cmp_op {PyCmp_LT=Py_LT, PyCmp_LE=Py_LE, PyCmp_EQ=Py_EQ, PyCmp_NE=Py_NE, PyCmp_GT=Py_GT, PyCmp_GE=Py_GE,
+             PyCmp_IN, PyCmp_NOT_IN, PyCmp_IS, PyCmp_IS_NOT, PyCmp_EXC_MATCH, PyCmp_BAD};
+
+    #define HAS_ARG(op) ((op) &gt;= HAVE_ARGUMENT)
+
+    #ifdef __cplusplus
+    }
+    #endif
+    #endif /* !Py_OPCODE_H */
+
+</code></pre>
+<p>这些OpCode 都是连续的,从0 到147 这个范围里取值,那么就可以确定<code>OpCode = range(0,104)</code> ,接下来再看第94 行和第166 行代码</p>
+<pre><code class="language-c">
+    #define HAVE_ARGUMENT	90	/* Opcodes from here have an argument: */  //  OpCode.h:90
+
+    #define STORE_NAME	90	/* Index in name list */
+    #define DELETE_NAME	91	/* &quot;&quot; */
+    #define UNPACK_SEQUENCE	92	/* Number of sequence items */
+    #define FOR_ITER	93
+    #define LIST_APPEND	94
+
+    // ...
+
+    #define HAS_ARG(op) ((op) &gt;= HAVE_ARGUMENT)  //  OpCode.h:166
+
+</code></pre>
+<p>现在我们知道OpCode 的数值大于90 就是需要带参数的OpCode ,现在就需要找到OpNumber 的格式到底是怎么样的,来看看<code>Ceval.c:1167</code> 行代码</p>
+<pre><code class="language-c">
+    opcode = NEXTOP();
+    oparg = 0;   /* allows oparg to be stored in a register because
+        it doesn't have to be remembered across a full loop */
+    if (HAS_ARG(opcode))
+        oparg = NEXTARG();
+
+    #define NEXTOP()        (*next_instr++)
+    #define NEXTARG()       (next_instr += 2, (next_instr[-1]&lt;&lt;8) + next_instr[-2])
+
+</code></pre>
+<p>现在可以知道,OpCode 格式如下:</p>
+<pre><code>
+    不带参数:  OpCode (1 Byte)
+    带参数:    OpCode (1 Byte) | OpNumber (2 Byte)
+
+</code></pre>
+<p>根据上面得到的信息,可以写一个按照结构生成数据的模块.</p>
+<pre><code class="language-python">
+    def opcode_no_opnumber() :  #  针对无操作数的指令进行数据生成
+        opcode = random.randint(0,89)
+
+        return chr(opcode)
+
+    def opcode_has_opnumber() :  #  针对有操作数的指令进行数据生成
+        opcode = random.randint(90,104)
+        opnumber1 = random.randrange(0xFF)
+        opnumber2 = random.randrange(0xFF)
+
+        return chr(opcode) + chr(opnumber1) + chr(opnumber2)
+
+    def make_opcode_stream(opcode_length = 6) :
+        opcode_stream = ''
+
+        for index in range(opcode_length) :
+            if random.randint(0,1) :  #  50% 的选择概率
+                opcode_stream += opcode_no_opnumber()
+            else :
+                opcode_stream += opcode_has_opnumber()
+
+        return opcode_stream
+
+</code></pre>
+<p>写好了这两个模块之后,还需要修改这些代码</p>
+<pre><code class="language-python">
+    def make_code_object(opcode_data) :
+        compile_code_object = code_object_class()
+
+        compile_code_object.co_argcount = 0
+        compile_code_object.co_code = opcode_data
+        compile_code_object.co_consts = tuple(make_random_string_list(3,8),)
+        compile_code_object.co_names = tuple(make_random_string_list(3,8))
+        compile_code_object.co_varnames = tuple(make_random_string_list(3,8))
+
+        return compile_code_object
+
+
+    if __name__ == '__main__' :
+        while True :
+            code_object = make_code_object(make_opcode_stream())
+
+            save_to_pyc('python_fuzzing.tmp.pyc',code_object)
+
+            os.system('python python_fuzzing.tmp.pyc')
+
+</code></pre>
+<p>然后就可以继续跑Fuzzing 了,效果如下</p>
+<p><img src="pic2/fuzzing_update_state.png" alt="" /></p>
+<p><img src="pic2/fuzzing_update_state_1.png" alt="" /></p>
+<p>往下继续运行,我们还是可以看到Python 运行环境抛出了OpCode 识别失败,我们再回去读读<code>Opcode.h</code> 的代码</p>
+<pre><code class="language-c">
+    #define SLICE		30
+    /* Also uses 31-33 */
+    #define SLICE_1		31
+    #define SLICE_2		32
+    #define SLICE_3		33
+
+    #define STORE_SLICE	40
+    /* Also uses 41-43 */
+    #define STORE_SLICE_1	41
+    #define STORE_SLICE_2	42
+    #define STORE_SLICE_3	43
+
+    #define DELETE_SLICE	50
+    /* Also uses 51-53 */
+    #define DELETE_SLICE_1	51
+    #define DELETE_SLICE_2	52
+    #define DELETE_SLICE_3	53
+
+</code></pre>
+<p>原来OpCode 的取值并不是连续的,这就解开了困扰我们的问题,读者们可以拿上面的代码去继续完善</p>
+<h2 id="什么时候选择随机生成数据什么时候选择按结构生成数据"><a class="header" href="#什么时候选择随机生成数据什么时候选择按结构生成数据">什么时候选择随机生成数据,什么时候选择按结构生成数据</a></h2>
+<p><strong>如果输入是有限制的,那就按结构生成数据,如果输入是无限制的,那就随机生成数据</strong></p>
+<p>输入限制是什么意思呢?不妨来看几个例子</p>
+<h3 id="fuzzing-waf"><a class="header" href="#fuzzing-waf">Fuzzing WAF</a></h3>
+<p>对WAF Fuzzing .攻击点有:SQL Payload 拦截,XSS Payload 拦截,WebShell 拦截,文件目录拦截,系统命令拦截等部分.现在拿出SQL Payload Fuzzing 来说,SQL Payload 是有限的,比如:' ,&quot; ,select ,union ,where 等关键字,还有SQL Bypass Payload ,可以参考SQLMAP 的Bypass 套路:https://github.com/sqlmapproject/sqlmap/tree/master/tamper</p>
+<p>对于输入是有限的Fuzzing ,<strong>一定要尽可能搜集多的关键字,提高Fuzzing 代码覆盖率</strong></p>
+<pre><code class="language-python">
+    sql_tiny_dict = ['select','from','*','where','order by','desc','asc','insert','top','limit',             #  SQL 基础语句
+                     'update','delete','set','as','in','create','table','db'
+                     '\'','&quot;','%','_',                                                                   #  特殊符号
+                     '(',')','=','&lt;','&gt;','&lt;&gt;','&lt;=','=&gt;','between','like','+','-','and','or','not','|',     #  运算符
+                     'NULL'
+                    ]
+
+    sql_function = [  #  函数
+                    'avg','count','first','last','max','min','sum','ucase','lcase','mid','len','round','now','format',
+                    'ascii','char','nchar','lower','upper','str','ltrim','rtrim','left','right','substring','charindex','patindex',
+                    'quotename','replicate','reverse','replace','space','stuff','cast','convert','day','month','year','dateadd',
+                    'datediff','datename','datepart','getdate','suser_name','user_name','user','show_role','db_name','object_name',
+                    'col_name','col_length','valid_name','charindex','rank','column_name'
+                   ]
+
+    bypass_string = [  #  Bypass 关键字
+                     '\'','&quot;',
+                     '/*','*','*/','/**/',' ',b'\0','%00','()','//','\\','--','#','--+','-- -',';','#',
+                     '%27','%u0027','%u02b9','%u02bc','%u02c8','%u2032','%uff07','%c0%27','%c0%a7','%e0%80%a7',  # '
+                     '%20','%u0020','%uff00','%c0%20','%c0%a0','%e0%80%a0',                                      # space
+                     '%28','%u0028','%uff08','%c0%28','%c0%a8','%e0%80%a8',                                      # (
+                     '%29','%u0029','%uff09','%c0%29','%c0%a9','%e0%80%a9',                                      # )
+                     '\r','%0D','\n','%0A','%0B','\r\n'
+                    ]
+
+
+    def make_payload(using_payload_count,using_bypass_count) :
+        output_payload = ''
+
+        if not random.randint(0,9) :  #  10%
+            output_payload += random.choice(['\'','&quot;','%27','%28'])
+
+            if not random.randint(0,1) :  #  5%
+                output_payload += make_space()
+
+        if not random.randint(0,3) :  #  25%
+            output_payload += random.choice(bypass_string)
+
+            if not random.randint(0,1) :  #  12.5%
+                output_payload += make_space()
+
+        for using_payload_count_index in range(using_payload_count) :
+            if random.randint(0,1) :
+                sql_tiny_element = random.choice(sql_tiny_dict)  #fuzzing_entry.random_encode_string( )
+                bypass_payload = ''
+
+                for using_bypass_count_index in range(using_bypass_count) :
+                    bypass_payload += random.choice(bypass_string)
+
+                sql_tiny_element += bypass_payload + make_space()
+            else :
+                sql_tiny_element = random.choice(sql_function)
+
+                if random.randint(0,1) : #  25%
+                    for using_bypass_count_index in range(using_bypass_count) :
+                        sql_tiny_element += random.choice(bypass_string)
+
+                sql_tiny_element += '(' + make_argument() + ')'
+
+            output_payload += sql_tiny_element + make_space()
+
+        return output_payload
+
+    def fuzzing() :
+        sql_url = 'https://cloud.tencent.com/?test='
+
+        while True :
+            sql_payload = make_payload(random.randint(1,6),random.randint(0,3))
+
+            print 'SQL payload :',
+
+            fuzzing_output.green_output(sql_payload)
+
+            print 'is pass:' ,
+
+            responed = requests.get(sql_url + sql_payload)
+
+            if 200 == responed.status_code :
+                fuzzing_output.red_output(str(responed.status_code))# + '  ' + responed.text)
+            else :
+                fuzzing_output.bule_output(str(responed.status_code))
+
+            time.sleep(0.5)
+
+</code></pre>
+<p>运行结果如下,利用这个简单的Fuzzer 还找到了个腾讯云SQL Bypass 的洞.</p>
+<p><img src="pic2/fuzzing_waf.png" alt="" /></p>
+<h3 id="fuzzing-windows-内核"><a class="header" href="#fuzzing-windows-内核">Fuzzing Windows 内核</a></h3>
+<p>Windows 内核的攻击点有很多,在这里我们只讨论内核函数syscall 的Fuzzing .参考链接:https://github.com/mwrlabs/KernelFuzzer ,https://github.com/tinysec/windows-syscall-table</p>
+<p>syscall 是有固定格式的:内核函数SSDT 索引号,参数1,参数2 等等.我们来看看KernelFuzzer 里面是怎么样做Fuzzing 输入点的,代码在<code>bughunt_syscall.asm</code> 和<code>bughunt_syscall_x64.asm</code> 中</p>
+<pre><code class="language-asm">
+    mov ecx, [ebp + 18h] ; main (argv[5]) = dw0x04
+    push ecx
+    mov ecx, [ebp + 14h] ; main (argv[4]) = dw0x03
+    push ecx
+    mov ecx, [ebp + 10h] ; main (argv[3]) = dw0x02
+    push ecx
+    mov ecx, [ebp + 0Ch] ; main (argv[2]) = dw0x01
+    push ecx             ; push argument in stack ..
+
+    mov eax, [ebp + 08h] ; main (argv[1]) = syscall_uid
+
+    mov edx, 7FFE0300h
+    call dword ptr [edx] ;  call syscall ..
+
+</code></pre>
+<p>我们再来看看SSDT 内核函数的信息</p>
+<div class="table-wrapper"><table><thead><tr><th>name</th><th>id32</th><th>id64</th><th>argc32</th><th>argc64</th><th>argcFrom</th></tr></thead><tbody>
+<tr><td>NtAcceptConnectPort</td><td>2</td><td>2</td><td>6</td><td>6</td><td>wow64</td></tr>
+<tr><td>NtAccessCheck</td><td>0</td><td>0</td><td>8</td><td>8</td><td>wow64</td></tr>
+<tr><td>NtAccessCheckAndAuditAlarm</td><td>439</td><td>41</td><td>11</td><td>11</td><td>wow64</td></tr>
+<tr><td>NtAccessCheckByType</td><td>438</td><td>99</td><td>11</td><td>11</td><td>wow64</td></tr>
+<tr><td>NtAccessCheckByTypeAndAuditAlarm</td><td>437</td><td>89</td><td>16</td><td>16</td><td>wow64</td></tr>
+<tr><td>NtAccessCheckByTypeResultList</td><td>436</td><td>100</td><td>11</td><td>11</td><td>wow64</td></tr>
+<tr><td>NtAccessCheckByTypeResultListAndAuditAlarm</td><td>435</td><td>101</td><td>16</td><td>16</td><td>wow64</td></tr>
+<tr><td>NtAccessCheckByTypeResultListAndAuditAlarmByHandle</td><td>434</td><td>102</td><td>17</td><td>17</td><td>wow64</td></tr>
+</tbody></table>
+</div>
+<p>id32 ,id64 指的是32 和64 位平台下的内核函数序号.argc32 和argc64 是指32 和64 位平台下的内核函数参数个数.所以我们可以知道Fuzzing 数据的构造方式了</p>
+<pre><code>
+    syscall 2 a,b,c,d,e,f
+    syscall 0 a,b,c,d,e,f,g,h
+    syscall 439 a,b,c,d,e,f,g,h,i,j,k
+    ...
+
+</code></pre>
+<p>再精细一点来设计这个Fuzzing ,就还需要考虑到句柄,内核缓冲区等各种信息,更多细节在此就不多细说了,感兴趣的读者可以阅读:https://github.com/mwrlabs/KernelFuzzer/blob/master/bughunt_thread.h</p>
+<h3 id="fuzzing-imagemagick"><a class="header" href="#fuzzing-imagemagick">Fuzzing ImageMagick</a></h3>
+<p>如果读者已经读过了我之前写过的那篇Fuzzing Imagemagick 的文章,可能你会对这段代码有疑惑,Link:https://github.com/lcatro/Fuzzing-ImageMagick/blob/master/%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8Fuzzing%E6%8C%96%E6%8E%98ImageMagick%E7%9A%84%E6%BC%8F%E6%B4%9E.md#5-如何使用libfuzzer-fuzzing-imagemagick ,摘录部分代码</p>
+<pre><code class="language-c">
+    static const struct {
+    char
+      *name;
+
+    unsigned char
+      *magic;
+
+    unsigned int
+      length,
+      offset;
+    } StaticMagic[] = {
+        #define MAGIC(name,offset,magic) {name,(unsigned char *)magic,sizeof(magic)-1,offset}
+
+        MAGIC(&quot;WEBP&quot;, 8, &quot;WEBP&quot;),
+        MAGIC(&quot;AVI&quot;, 0, &quot;RIFF&quot;),
+        MAGIC(&quot;8BIMWTEXT&quot;, 0, &quot;8\000B\000I\000M\000#&quot;),
+        MAGIC(&quot;8BIMTEXT&quot;, 0, &quot;8BIM#&quot;),
+        MAGIC(&quot;8BIM&quot;, 0, &quot;8BIM&quot;),
+        MAGIC(&quot;BMP&quot;, 0, &quot;BA&quot;),
+        MAGIC(&quot;BMP&quot;, 0, &quot;BM&quot;),
+        MAGIC(&quot;BMP&quot;, 0, &quot;CI&quot;),
+        MAGIC(&quot;BMP&quot;, 0, &quot;CP&quot;),
+        MAGIC(&quot;BMP&quot;, 0, &quot;IC&quot;),
+        MAGIC(&quot;BMP&quot;, 0, &quot;PI&quot;),
+        MAGIC(&quot;CALS&quot;, 21, &quot;version: MIL-STD-1840&quot;),
+        MAGIC(&quot;CALS&quot;, 0, &quot;srcdocid:&quot;),
+        MAGIC(&quot;CALS&quot;, 9, &quot;srcdocid:&quot;),
+        MAGIC(&quot;CALS&quot;, 8, &quot;rorient:&quot;),
+        MAGIC(&quot;CGM&quot;, 0, &quot;BEGMF&quot;),
+
+        //...
+    };
+
+    extern &quot;C&quot; int LLVMFuzzerTestOneInput(const unsigned char* data,unsigned int size) {
+        int random_image_flag_index = random(data,size);
+        unsigned int random_image_flag_offset = StaticMagic[random_image_flag_index].offset;
+        unsigned int random_image_flag_length = StaticMagic[random_image_flag_index].length;
+        unsigned int image_buffer_length = random_image_flag_offset + random_image_flag_length + size;
+        unsigned char* image_buffer = (unsigned char*)malloc(image_buffer_length);
+
+        memset(image_buffer,0,image_buffer_length);
+        memcpy(image_buffer,StaticMagic[random_image_flag_index].name,StaticMagic[random_image_flag_index].length);
+
+        FILE* file = fopen(GENARATE_FILE_NAME,&quot;w&quot;);
+
+        if (NULL != file) {
+            fwrite(image_buffer,1,image_buffer_length,file);
+            fclose(file);
+
+            printf(&quot;buffer=%s(0x%X), size=%d,input format=%s\n&quot;,image_buffer,image_buffer,image_buffer_length,StaticMagic[random_image_flag_index].name);
+
+            ExceptionInfo exception;
+            ImageInfo* read_image_info;
+            ImageInfo* write_image_info;
+            Image*     image;
+
+            GetExceptionInfo(&amp;exception);
+
+            read_image_info = CloneImageInfo((ImageInfo*)NULL);
+            write_image_info = CloneImageInfo((ImageInfo*)NULL);
+
+            strlcpy(read_image_info-&gt;filename,GENARATE_FILE_NAME,MaxTextExtent);
+            strlcpy(write_image_info-&gt;filename,&quot;/dev/null&quot;,MaxTextExtent);
+            SetImageInfo(read_image_info,SETMAGICK_READ,&amp;exception);
+            SetImageInfo(write_image_info,SETMAGICK_WRITE,&amp;exception);
+
+            image = ReadImage(read_image_info,&amp;exception);
+
+            if (NULL != image)
+                  WriteImage(write_image_info,image);
+
+            DestroyImageInfo(read_image_info);
+            DestroyImageInfo(write_image_info);
+            DestroyExceptionInfo(&amp;exception);
+        }
+
+        free(image_buffer);
+
+        return 0;
+    }
+
+</code></pre>
+<p>这段代码的意思是,随机从<code>StaticMagic</code> 中选择一个图像头部特征,然后和libFuzzer 生成的数据拼接到一起.格式如下</p>
+<pre><code>
+    图像格式特征码 | libFuzzer 生成的数据
+
+</code></pre>
+<p>为什么要这么做呢?我们需要来阅读一下ImageMagick 的代码.图像格式特征码可以到<code>MagickCore/magic.c:90</code> 行找到声明.</p>
+<pre><code class="language-c">
+    static const MagicMapInfo
+      MagicMap[] =
+      {
+        { &quot;8BIMWTEXT&quot;, 0, MagicPattern(&quot;8\000B\000I\000M\000#&quot;) },
+        { &quot;8BIMTEXT&quot;, 0, MagicPattern(&quot;8BIM#&quot;) },
+        { &quot;8BIM&quot;, 0, MagicPattern(&quot;8BIM&quot;) },
+        { &quot;BMP&quot;, 0, MagicPattern(&quot;BA&quot;) },
+        { &quot;BMP&quot;, 0, MagicPattern(&quot;BM&quot;) },
+        { &quot;BMP&quot;, 0, MagicPattern(&quot;CI&quot;) },
+
+        //...
+
+        { &quot;XEF&quot;, 0, MagicPattern(&quot;FOVb&quot;) },
+        { &quot;XPM&quot;, 1, MagicPattern(&quot;* XPM *&quot;) }
+     };
+
+</code></pre>
+<p>ImageMagick 识别图片格式在<code>MagickCore/magic.c:368</code> 行找到函数.</p>
+<pre><code class="language-c">
+    MagickExport const MagicInfo *GetMagicInfo(const unsigned char *magic,
+      const size_t length,ExceptionInfo *exception)
+    {
+      register const MagicInfo
+        *p;
+
+      assert(exception != (ExceptionInfo *) NULL);
+      if (IsMagicCacheInstantiated(exception) == MagickFalse)
+        return((const MagicInfo *) NULL);
+      /*
+        Search for magic tag.
+      */
+      LockSemaphoreInfo(magic_semaphore);
+      ResetLinkedListIterator(magic_cache);
+      p=(const MagicInfo *) GetNextValueInLinkedList(magic_cache);
+      if (magic == (const unsigned char *) NULL)
+        {
+          UnlockSemaphoreInfo(magic_semaphore);
+          return(p);
+        }
+      while (p != (const MagicInfo *) NULL)
+      {
+        assert(p-&gt;offset &gt;= 0);
+        if (((size_t) (p-&gt;offset+p-&gt;length) &lt;= length) &amp;&amp;
+            (memcmp(magic+p-&gt;offset,p-&gt;magic,p-&gt;length) == 0))  //  注意这里,判断图片特征码
+          break;
+        p=(const MagicInfo *) GetNextValueInLinkedList(magic_cache);
+      }
+      if (p != (const MagicInfo *) NULL)
+        (void) InsertValueInLinkedList(magic_cache,0,
+          RemoveElementByValueFromLinkedList(magic_cache,p));
+      UnlockSemaphoreInfo(magic_semaphore);
+      return(p);
+    }
+
+</code></pre>
+<p>我们来读一下ImageMagick 的读取图片部分的代码,位置在<code>MagickCore/constitute.c:410</code></p>
+<pre><code class="language-c">
+    magick_info=GetMagickInfo(read_info-&gt;magick,sans_exception);
+    sans_exception=DestroyExceptionInfo(sans_exception);
+    if (magick_info != (const MagickInfo *) NULL) {  //  读取图像信息
+
+      // ...
+
+      if ((magick_info != (const MagickInfo *) NULL) &amp;&amp;
+          (GetImageDecoder(magick_info) != (DecodeImageHandler *) NULL))
+        {
+          if (GetMagickDecoderThreadSupport(magick_info) == MagickFalse)
+            LockSemaphoreInfo(magick_info-&gt;semaphore);
+          image=GetImageDecoder(magick_info)(read_info,exception);
+
+        // ...
+
+</code></pre>
+<p>由此可知,只有能被ImageMagick 识别到的图像格式才可以被传递到对应的图像解析decoder 里面去解析数据.但是我们并不关心decoder 是怎么样去解析的,所以这部分我们使用随机生成数据.为什么不全部都用随机生成数据呢,这样会导致生成的图像特征码都是随机的,碰撞到正确的图像特征码的概率很低,浪费很多时间和资源在这些没有意义的地方.所以我们需要给定一个区间来让Fuzzer 生成数据,这样才能让ImageMagick 选择到decoder 来解析,如果我们要对所有的图像格式都要做对应的针对适配,<strong>没有统一的格式</strong>,按照特定的格式来生成数据,这样的人力成本太大了,不如让Fuzzer 随机生成数据.</p>
+<h3 id="fuzzing-网络协议"><a class="header" href="#fuzzing-网络协议">Fuzzing 网络协议</a></h3>
+<p>网络协议都是已经固定好的数据格式,然后由一方发出到另一方来解析执行.我们来回顾一下C 语言的struct 结构</p>
+<pre><code class="language-c">
+    typedef struct {
+        int  packet_type;
+        int  packet_data_length;
+        char packet_data;
+    } packet ;
+
+</code></pre>
+<p>这个结构对应的内存布局</p>
+<pre><code>
+    packet_type(4 Byte) | packet_data_length(4 Byte) | packet_data(packet_data_length Byte)
+
+</code></pre>
+<p>根据这个内存布局,我们来举几个例子,(为了方便阅读数据顺序是大端字节)</p>
+<pre><code>
+    0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x02 0x65 0x65 =&gt; 0 | 2 | AA
+    0x00 0x00 0xFF 0x00 0x00 0x00 0x00 0x04 0x01 0x02 0x03 0x04 =&gt; 0xFF00 | 4 | 0x01 0x02 0x03 0x04
+    0x1d 0xb2 0xaa 0x42 0x00 0x21 0xd2 0x23 0x65 =&gt; 0x1db2aa42 | 0x21d223 | A
+    ...
+
+</code></pre>
+<p>前面两个例子是按照格式构造的,最后那个例子是瞎写的.用前面提到的两种方式(随机生成数据和按结构生成数据)来生成Fuzzing 数据,例子如下</p>
+<pre><code>
+    按结构生成数据:random.randint() | random.randint() | random.randstring(4)
+    随机生成数据:random.randstring(12)
+
+</code></pre>
+<p>不知道读者们有没有注意到非常重要的一点,这两条例子是等价的.也就是说<code>random.randint() | random.randint() | random.randstring(4)</code> 等价于<code>random.randstring(12)</code> .所以这个时候按结构生成数据的意义就没有了,我们来看一下ImageMagick 的图片解析部分代码<code>coders/icon.c:295</code></p>
+<pre><code class="language-c">
+    icon_file.reserved=(short) ReadBlobLSBShort(image);
+    icon_file.resource_type=(short) ReadBlobLSBShort(image);
+    icon_file.count=(short) ReadBlobLSBShort(image);
+    if ((icon_file.reserved != 0) ||
+      ((icon_file.resource_type != 1) &amp;&amp; (icon_file.resource_type != 2)) ||
+      (icon_file.count &gt; MaxIcons))
+        ThrowReaderException(CorruptImageError,&quot;ImproperImageHeader&quot;);
+    extent=0;
+    for (i=0; i &lt; icon_file.count; i++)
+    {
+        icon_file.directory[i].width=(unsigned char) ReadBlobByte(image);
+        icon_file.directory[i].height=(unsigned char) ReadBlobByte(image);
+        icon_file.directory[i].colors=(unsigned char) ReadBlobByte(image);
+        icon_file.directory[i].reserved=(unsigned char) ReadBlobByte(image);
+        icon_file.directory[i].planes=(unsigned short) ReadBlobLSBShort(image);
+        icon_file.directory[i].bits_per_pixel=(unsigned short)
+          ReadBlobLSBShort(image);
+        icon_file.directory[i].size=ReadBlobLSBLong(image);
+        icon_file.directory[i].offset=ReadBlobLSBLong(image);
+        if (EOFBlob(image) != MagickFalse)
+          break;
+        extent=MagickMax(extent,icon_file.directory[i].size);
+    }
+
+</code></pre>
+<p>这部分的代码相当于按照这个格式来读取数据</p>
+<pre><code>
+    short | short | short | [ Byte | Byte | Byte | Byte | long | long ] | [ Byte | Byte | Byte | Byte | long | long ] | ...
+
+</code></pre>
+<p>所以,直接使用random.randstring() 直接生成随机数据传递到这里Fuzzing 即可,无需再按结构生成数据.</p>
+<p>回到这个小节提出的问题:那么什么时候选择随机生成数据,什么时候选择按结构生成数据呢?<strong>如果输入是有限制的,那就按结构生成数据,如果输入是无限制的,那就随机生成数据;如果按结构生成数据可以触发更多的代码执行,那就按结构生成数据,否则就使用随机生成数据</strong>.</p>
+<h2 id="结尾"><a class="header" href="#结尾">结尾</a></h2>
+<p>阅读源码是一个非常有用的技能,<strong>绝大多数的疑惑,都能在源码里面找到</strong>,这是以前在腾讯的一位T3 的同事给我的教诲,受益至今.前面用了很多的篇幅,介绍了Fuzzing 和阅读源码之间的关系是有多么重要.希望这些经验能够帮助在学习挖掘漏洞的读者们.本章是偏向于二进制的Fuzzing 的,关于二进制还有一些其他的Fuzzing 经验和大家分享.</p>
+<p><img src="pic2/tips.png" alt="" /></p>
+<h2 id="afl-和libfuzzer-的演示"><a class="header" href="#afl-和libfuzzer-的演示">AFL 和libFuzzer 的演示</a></h2>
+<p>多开AFL Fuzzing 库</p>
+<p><img src="pic2/afl.png" alt="" /></p>
+<p>跑到内存异常的libFuzzer</p>
+<p><img src="pic2/libfuzzer.png" alt="" /></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="12.libfuzzer-asan.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next" href="3.Fuzzing.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="12.libfuzzer-asan.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next" href="3.Fuzzing.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="theme/pagetoc.js"></script>
+
+
+    </div>
+    </body>
+</html>

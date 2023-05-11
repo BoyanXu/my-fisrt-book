@@ -1,0 +1,3444 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Dynamic Analysis - Source and Fuzzing</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="The example book covers examples.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="./theme/custom.css">
+        <link rel="stylesheet" href="theme/pagetoc.css">
+        <link rel="stylesheet" href="./theme/catppuccin.css">
+        <link rel="stylesheet" href="./theme/catppuccin-highlight.css">
+
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="1.Github.html"><strong aria-hidden="true">1.</strong> Github</a></li><li class="chapter-item expanded "><a href="11.AI.html"><strong aria-hidden="true">2.</strong> Ai</a></li><li class="chapter-item expanded "><a href="12.libfuzzer-asan.html"><strong aria-hidden="true">3.</strong> Libfuzzer Asan</a></li><li class="chapter-item expanded "><a href="2.Fuzzing.html"><strong aria-hidden="true">4.</strong> Fuzzing</a></li><li class="chapter-item expanded "><a href="3.Fuzzing.html"><strong aria-hidden="true">5.</strong> Fuzzing</a></li><li class="chapter-item expanded "><a href="4.source-code.html"><strong aria-hidden="true">6.</strong> Source Code</a></li><li class="chapter-item expanded "><a href="5.compile.html"><strong aria-hidden="true">7.</strong> Compile</a></li><li class="chapter-item expanded "><a href="6.static-analysis.html"><strong aria-hidden="true">8.</strong> Static Analysis</a></li><li class="chapter-item expanded "><a href="7.dynamic-analysis.html" class="active"><strong aria-hidden="true">9.</strong> Dynamic Analysis</a></li><li class="chapter-item expanded "><a href="8.llvm.html"><strong aria-hidden="true">10.</strong> Llvm</a></li><li class="chapter-item expanded "><a href="9.klee.html"><strong aria-hidden="true">11.</strong> Klee</a></li><li class="chapter-item expanded "><a href="chapter_1.html"><strong aria-hidden="true">12.</strong> Chapter 1</a></li><li class="chapter-item expanded "><a href="#.html"><strong aria-hidden="true">13.</strong> Libfuzzer Asan</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="12.libfuzzer-asan/深入解析libfuzzer与asan.html"><strong aria-hidden="true">13.1.</strong> 深入解析libfuzzer与asan</a></li><li class="chapter-item expanded "><a href="#.html"><strong aria-hidden="true">13.2.</strong> 深入解析libfuzzer与asan</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="12.libfuzzer-asan/深入解析libfuzzer与asan/ASAN原理.html"><strong aria-hidden="true">13.2.1.</strong> Asan原理</a></li><li class="chapter-item expanded "><a href="12.libfuzzer-asan/深入解析libfuzzer与asan/LLVM下的插桩简述.html"><strong aria-hidden="true">13.2.2.</strong> Llvm下的插桩简述</a></li><li class="chapter-item expanded "><a href="12.libfuzzer-asan/深入解析libfuzzer与asan/libFuzzer原理.html"><strong aria-hidden="true">13.2.3.</strong> libFuzzer原理</a></li><li class="chapter-item expanded "><a href="12.libfuzzer-asan/深入解析libfuzzer与asan/参考引用.html"><strong aria-hidden="true">13.2.4.</strong> 参考引用</a></li><li class="chapter-item expanded "><a href="12.libfuzzer-asan/深入解析libfuzzer与asan/实战中ASAN会有哪些坑.html"><strong aria-hidden="true">13.2.5.</strong> 实战中asan会有哪些坑</a></li><li class="chapter-item expanded "><a href="12.libfuzzer-asan/深入解析libfuzzer与asan/深入解析libFuzzer参数与回显.html"><strong aria-hidden="true">13.2.6.</strong> 深入解析libFuzzer参数与回显</a></li><li class="chapter-item expanded "><a href="12.libfuzzer-asan/深入解析libfuzzer与asan/玩转Sanitizer-Coverage.html"><strong aria-hidden="true">13.2.7.</strong> 玩转Sanitizer Coverage</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="#.html"><strong aria-hidden="true">14.</strong> Static Analysis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="6.static-analysis/静态程序分析原理.html"><strong aria-hidden="true">14.1.</strong> 静态程序分析原理</a></li><li class="chapter-item expanded "><a href="#.html"><strong aria-hidden="true">14.2.</strong> 静态程序分析原理</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="6.static-analysis/静态程序分析原理/必备工具.html"><strong aria-hidden="true">14.2.1.</strong> 必备工具</a></li><li class="chapter-item expanded "><a href="6.static-analysis/静态程序分析原理/附录一--各图的Graphiz生成代码.html"><strong aria-hidden="true">14.2.2.</strong> 附录一  各图的Graphiz生成代码</a></li><li class="chapter-item expanded "><a href="6.static-analysis/静态程序分析原理/附录二--静态审计工具完整源码.html"><strong aria-hidden="true">14.2.3.</strong> 附录二  静态审计工具完整源码</a></li><li class="chapter-item expanded "><a href="6.static-analysis/静态程序分析原理/静态代码分析基本原理.html"><strong aria-hidden="true">14.2.4.</strong> 静态代码分析基本原理</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="#.html"><strong aria-hidden="true">15.</strong> Dynamic Analysis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="7.dynamic-analysis/动态程序分析原理.html"><strong aria-hidden="true">15.1.</strong> 动态程序分析原理</a></li><li class="chapter-item expanded "><a href="#.html"><strong aria-hidden="true">15.2.</strong> 动态程序分析原理</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="7.dynamic-analysis/动态程序分析原理/内存监控.html"><strong aria-hidden="true">15.2.1.</strong> 内存监控</a></li><li class="chapter-item expanded "><a href="7.dynamic-analysis/动态程序分析原理/动态代码分析基本原理.html"><strong aria-hidden="true">15.2.2.</strong> 动态代码分析基本原理</a></li><li class="chapter-item expanded "><a href="7.dynamic-analysis/动态程序分析原理/必备工具.html"><strong aria-hidden="true">15.2.3.</strong> 必备工具</a></li><li class="chapter-item expanded "><a href="7.dynamic-analysis/动态程序分析原理/污点追踪.html"><strong aria-hidden="true">15.2.4.</strong> 污点追踪</a></li><li class="chapter-item expanded "><a href="7.dynamic-analysis/动态程序分析原理/程序插桩与代码覆盖率.html"><strong aria-hidden="true">15.2.5.</strong> 程序插桩与代码覆盖率</a></li><li class="chapter-item expanded "><a href="7.dynamic-analysis/动态程序分析原理/符号执行.html"><strong aria-hidden="true">15.2.6.</strong> 符号执行</a></li></ol></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Source and Fuzzing</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main><div class="sidetoc"><nav class="pagetoc"></nav></div>
+                        <h1 id="9-动态程序分析原理"><a class="header" href="#9-动态程序分析原理">9. 动态程序分析原理</a></h1>
+<ul>
+<li><a href="#%E5%BF%85%E5%A4%87%E5%B7%A5%E5%85%B7">必备工具</a></li>
+<li><a href="#%E5%8A%A8%E6%80%81%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86">动态代码分析基本原理</a></li>
+<li><a href="#%E5%86%85%E5%AD%98%E7%9B%91%E6%8E%A7">内存监控</a>
+<ul>
+<li><a href="#%E8%BD%AF%E4%BB%B6%E7%9B%91%E6%8E%A7">软件监控</a></li>
+<li><a href="#%E7%A1%AC%E4%BB%B6%E7%9B%91%E6%8E%A7">硬件监控</a></li>
+</ul>
+</li>
+<li><a href="#%E6%B1%A1%E7%82%B9%E8%BF%BD%E8%B8%AA">污点追踪</a></li>
+<li><a href="#%E7%AC%A6%E5%8F%B7%E6%89%A7%E8%A1%8C">符号执行</a></li>
+<li><a href="#%E7%A8%8B%E5%BA%8F%E6%8F%92%E6%A1%A9%E4%B8%8E%E4%BB%A3%E7%A0%81%E8%A6%86%E7%9B%96%E7%8E%87">程序插桩与代码覆盖率</a></li>
+</ul>
+<h2 id="必备工具"><a class="header" href="#必备工具">必备工具</a></h2>
+<p>Python ,Triton (https://github.com/JonathanSalwan/Triton)</p>
+<h2 id="动态代码分析基本原理"><a class="header" href="#动态代码分析基本原理">动态代码分析基本原理</a></h2>
+<p>动态代码执行主要是使用调试模式或者模拟执行的模式跟踪执行程序.动态分析主要分为四部分:内存监控,污点追踪,符号执行,程序插桩.</p>
+<h2 id="内存监控"><a class="header" href="#内存监控">内存监控</a></h2>
+<p>在动态调试代码的过程中,我们往往会需要对某一块特定的内存,字符串或对代码执行过程进行跟踪分析.内存监控分为软件监控和硬件监控,下面将一一描述.</p>
+<h3 id="软件监控"><a class="header" href="#软件监控">软件监控</a></h3>
+<p>软件监控的方式分为两种,一种是在代码段中插入<code>Int 3</code>指令,代码执行到这段指令后就会触发调试中断;另一种是对内存区域进行读写权限限制,对于某个在堆(HeapAlloc())的权限是不可读写的,但是通过malloc() 申请的内存是可以被读写的,那么一旦这块内存产生越界读写就可以触发程序异常.</p>
+<p>我们以UPX 加壳举个例子,Link : https://github.com/lcatro/my-blog/blob/master/2015/%E5%88%A9%E7%94%A8Debug%20API%20%E5%AE%9E%E7%8E%B0%E5%86%85%E5%AD%98%E6%B3%A8%E5%86%8C%E6%9C%BA.md .假定已经通过逆向知道0x4307CC 是UPX 解压缩之后的程序入口点,那么我们在编写调试器的时候可以在0x4307CC 处设置调试断点.</p>
+<pre><code class="language-c">
+#include &lt;malloc.h&gt;
+#include &lt;memory.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;windows.h&gt;
+#include &lt;winnt.h&gt;
+
+#define BREAK_ADDRESS_SHELL_JMP 0x4307CC
+#define BREAK_ADDRESS_JE        0x401188
+#define BREAK_FLAG 0xCC
+
+const char* set_break(HANDLE process,LPVOID set_address,unsigned int set_length=1) {  //  设置断点
+    if (!set_length) return NULL;
+
+    char* break_flag_buffer=(char*)malloc(set_length);
+    memset(break_flag_buffer,BREAK_FLAG,set_length);
+    DWORD write_length=0;
+
+    char* old_code_buffer=(char*)malloc(set_length);
+    DWORD read_length=0;
+    ReadProcessMemory(process,set_address,(LPVOID)old_code_buffer,set_length,&amp;read_length);  //  原理是通过写0xCC 来实现软中断
+
+    WriteProcessMemory(process,set_address,(LPVOID)break_flag_buffer,set_length,&amp;write_length);
+    free(break_flag_buffer);
+
+    return old_code_buffer;
+}
+
+bool remove_break(HANDLE process,LPVOID remove_address,const char* rewrite_code_buffer,unsigned int remove_length) {  //  删除断点
+    DWORD write_length=0;
+
+    return (bool)WriteProcessMemory(process,remove_address,(LPVOID)rewrite_code_buffer,remove_length,&amp;write_length);
+}
+
+HANDLE open_process(DWORD processid) {
+    return OpenProcess(PROCESS_ALL_ACCESS,FALSE,processid);
+}
+
+int main(int argc,char** argv) {
+    STARTUPINFO process_startupinfo={0};
+    PROCESS_INFORMATION process_info={0};
+    CreateProcess(NULL,&quot;crackme_shell.exe&quot;,NULL,NULL,FALSE,DEBUG_ONLY_THIS_PROCESS | CREATE_NEW_CONSOLE,NULL,NULL,&amp;process_startupinfo,&amp;process_info);  //  启动调试程序
+    printf(&quot;CreateProcessId=%X\n&quot;,process_info.dwProcessId);
+
+    HANDLE process=open_process(process_info.dwProcessId);
+
+    set_break(process,(void*)BREAK_ADDRESS_SHELL_JMP,1);  //  在UPX 解压结束的长跳转中设置中断
+
+    DEBUG_EVENT debug_event={0};
+    debug_event.dwProcessId=process_info.dwProcessId;
+
+    while (WaitForDebugEvent(&amp;debug_event,INFINITE)) {  //  等待系统发来中断事件
+        switch (debug_event.dwDebugEventCode) {
+            case EXCEPTION_DEBUG_EVENT: {
+                switch (debug_event.u.Exception.ExceptionRecord.ExceptionCode) {
+                    case EXCEPTION_BREAKPOINT: {
+                        CONTEXT regesit={0};
+                        regesit.ContextFlags=CONTEXT_FULL;
+                        GetThreadContext(process_info.hThread,&amp;regesit);  //  主要是读取EIP
+                        printf(&quot;EIP=%X\n&quot;,regesit.Eip);
+
+                        switch (--regesit.Eip) {
+                            case BREAK_ADDRESS_SHELL_JMP: {
+                                SetThreadContext(process_info.hThread,&amp;regesit);
+                                char jmp_code[1]={0xE9};
+                                remove_break(process,(void*)BREAK_ADDRESS_SHELL_JMP,jmp_code,sizeof(jmp_code));  //  消除断点替换0xE9 (JMP 的指令码)
+
+                                char nop_code[2]={0x90,0x90};
+                                remove_break(process,(void*)BREAK_ADDRESS_JE,nop_code,sizeof(nop_code));  //  往JE 写两个NOP
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (EXIT_PROCESS_DEBUG_EVENT==debug_event.dwDebugEventCode)  //  程序退出
+            break;
+        ContinueDebugEvent(process_info.dwProcessId,process_info.dwThreadId,DBG_CONTINUE);
+
+    }
+    printf(&quot;OK!\n&quot;);
+
+    return 0;
+}
+
+</code></pre>
+<p>调试程序运行到0x4307CC 执行<code>INT 3</code>指令中断,然后把原来的中断二进制数据0xCC (INT 3 指令的Opcode)换回0xE9 (JMP 指令的Opcode),然后让被调试的程序执行至结束.执行结果如下:</p>
+<p><img src="pic7/pic1.png" alt="" /></p>
+<p>那么对内存区域进行读写权限限制具体是有哪些表现的.先用JAVA 举个例子(在https://tool.lu/coderunner/ 上执行):</p>
+<pre><code class="language-java">
+class Untitled {
+	public static void main(String[] args) {
+		String data = new String(&quot;Hello&quot;);
+
+		data.charAt(0);
+		data.charAt(6);
+
+		System.out.println(data);
+	}
+}
+
+</code></pre>
+<p>程序输出如下:</p>
+<pre><code class="language-txt">
+Exception in thread &quot;main&quot; java.lang.StringIndexOutOfBoundsException: String index out of range: 6
+	at java.base/java.lang.StringLatin1.charAt(StringLatin1.java:47)
+	at java.base/java.lang.String.charAt(String.java:693)
+	at Untitled.main(Untitled.java:6)
+
+</code></pre>
+<p>JAVA 在执行阶段,会根据对字符串的操作索引位置和字符串长度来检测是否存在上下标越界的问题,但是C/C++ 底层的汇编却不会对buffer 的操作索引进行检查.对于这个问题的解决方案,我们就使用<code>VirtualProtect()</code> 函数进行内存权限设置,一旦越界触发读写内存异常,下面是一段示例代码:</p>
+<pre><code class="language-c">
+#include &lt;malloc.h&gt;
+#include &lt;memory.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+
+
+#define TEST_FLAG &quot;AAAAAAAAAAAAAAAAAAAAAA&quot;
+
+
+int main(int argc,char** argv) {
+    char* buffer = (char*)malloc(0x10);
+
+    printf(&quot;heap_address = 0x%X\n&quot;,buffer);
+
+    memcpy(buffer,TEST_FLAG,strlen(TEST_FLAG));
+
+    printf(&quot;Buffer Address = 0x%X\n&quot;,buffer);
+    printf(&quot;Buffer = %s\n&quot;,buffer);
+
+    return 0;
+}
+
+</code></pre>
+<p>这段代码会触发越界写问题,但是程序没有因为越界写的问题导致程序崩溃.</p>
+<p><img src="pic7/pic20.png" alt="" /></p>
+<p>然后我们构造两个buffer ,一个是外层是不允许访问的,然后在这个buffer 内部再分配一个可以读写的buffer .布局如下:</p>
+<pre><code class="language-txt">
+ outside-buffer               outside-buffer
+ _______^___________________________^______
+|  No-Access  |  Read-Write  |  No-Access  |
+               -------v------
+                inside-buffer
+
+</code></pre>
+<p>测试代码如下:</p>
+<pre><code class="language-c++">
+
+#include &lt;memory.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+
+#include &lt;windows.h&gt;
+
+
+#define TEST_FLAG &quot;AAAAAAAAAAAAAAAAAAAAAA&quot;
+
+
+int main(int argc,char** argv) {
+    LPVOID heap_region = VirtualAlloc(NULL,0x1000,MEM_COMMIT,PAGE_NOACCESS);
+
+    printf(&quot;heap_region = 0x%X\n&quot;,heap_region);
+
+    LPVOID address = (LPVOID)((DWORD)heap_region + 0x100);
+
+    printf(&quot;heap_address = 0x%X\n&quot;,address);
+
+    VirtualProtect((LPVOID)address,10,PAGE_READWRITE,0);
+
+    char* buffer = (char*)address;
+
+    memcpy(buffer,TEST_FLAG,strlen(TEST_FLAG));
+
+    printf(&quot;Buffer Address = 0x%X\n&quot;,buffer);
+    printf(&quot;Buffer = %s\n&quot;,buffer);
+
+    return 0;
+}
+
+</code></pre>
+<p>检测效果如下:</p>
+<p><img src="pic7/pic21.png" alt="" /></p>
+<h3 id="硬件监控"><a class="header" href="#硬件监控">硬件监控</a></h3>
+<p>前面提到,用INT 3 指令可以触发调试中断,但这是软中断.在硬件层上还有个更底层的调试中断寄存器:DR 寄存器.我们以OD 为例子来介绍,启动OD 并调试程序,点击菜单&quot;调试&quot;-&gt;&quot;硬件断点&quot;.</p>
+<p><img src="pic7/pic9.png" alt="" /></p>
+<p>OD 会弹出硬件断点窗口.</p>
+<p><img src="pic7/pic10.png" alt="" /></p>
+<p>我们回到OD 的汇编窗口,任意点击一条汇编指令,点击右键&quot;断点&quot;-&gt;&quot;硬件执行&quot;.</p>
+<p><img src="pic7/pic11.png" alt="" /></p>
+<p>然后再回来到硬件断点窗口,就可以看到前面设置的记录了.</p>
+<p><img src="pic7/pic12.png" alt="" /></p>
+<p>来到寄存器窗口右键点击空白区域,可以看到查看调试寄存器.</p>
+<p><img src="pic7/pic13.png" alt="" /></p>
+<p>就能看到调试寄存器的内容输出.</p>
+<p><img src="pic7/pic14.png" alt="" /></p>
+<p>DR 调试器包含DR0-DR3 ,DR6-DR7 .其中DR0-DR3 保存的是中断地址;DR6 是命中中断时记录地址是DR0-DR3 中的哪个编号;DR7 是调试控制位.在DR6 中保存的数据,如果命中了DR0 寄存器,那么DR6 寄存器的第15 位将会设置为1 .</p>
+<p><img src="pic7/pic15.png" alt="" /></p>
+<p><img src="pic7/pic16.png" alt="" /></p>
+<p>然后F9 执行,命中中断,DR6 寄存器数值产生了改变.</p>
+<p><img src="pic7/pic17.png" alt="" /></p>
+<p><img src="pic7/pic18.png" alt="" /></p>
+<p>DR7 寄存器各位的字段如下:</p>
+<p><img src="pic7/pic19.png" alt="" /></p>
+<p>关于DR7 寄存器详细字段请自行查阅手册,使用DR 寄存器的方法和设置调试方法差别不大(一般应用DB 寄存器比较多的是在反反调试和反病毒中,此时一些常见软件调试手段会失效,比如代码自检函数头Hook 点,自动清除INT 3 指令,大量抛出异常干扰调试(这需要根据调试代码来识别,软件调试一般触发的事件有EXCEPTION_BREAKPOINT ,EXCEPTION_FLT_DIVIDE_BY_ZERO 等.但DB 寄存器会抛出STATUS_SINGLE_STEP ,这是硬件异常警告),这就需要依靠硬件寄存器来帮助调试),此处不再细说.</p>
+<h2 id="污点追踪"><a class="header" href="#污点追踪">污点追踪</a></h2>
+<p>污点追踪的主要原理是,在输入处构造一些带有标签的数据,然后在敏感函数和位置设置Hook ,观察带有标签的输入数据是否能够流到这个位置来判断漏洞是否存在.我们以prvd (https://github.com/fate0/prvd ,PHP 污点追踪工具)为例子介绍污点追踪.prvd 包含了生成污点数据,追踪数据流,复现漏洞.该项目的作者还写了一个PHP Hook 框架xmark (https://github.com/fate0/xmark ),这两者一起结合使用.整体结构如下:</p>
+<p><img src="pic7/pic22.png" alt="" /></p>
+<p>先提示一下,xmark 框架分两点:1.重定向Opcode 的执行回调函数,达到Hook Opcode 的执行;2.重命名原函数名,然后再自定义同名函数达到Hook .先来看看prvd 的PHP.ini 文件,配置数据如下:</p>
+<pre><code class="language-txt">
+auto_prepend_file = &quot;/data/prvd/src/Entry.php&quot;   #  导入prvd 的Entry.php ,这是为了给输入打污染标签.
+
+[xmark]  #  导入XMARK hook 框架
+xmark.enable = 1
+xmark.rename_enable = 0
+xmark.rename_classes = &quot;  #  重命名类名称
+    SQLite3:prvd_SQLite3,
+    mysqli:prvd_mysqli,
+    PDO:prvd_PDO,
+&quot;
+xmark.rename_functions = &quot;  #  重命名函数列表
+    base64_decode:prvd_base64_decode,
+    basename:prvd_basename,
+    dirname:prvd_dirname,
+    explode:prvd_explode,
+    gzuncompress:prvd_gzuncompress,
+    hex2bin:prvd_hex2bin,
+    html_entity_decode:prvd_html_entity_decode,
+    htmlspecialchars_decode:prvd_htmlspecialchars_decode,
+    implode:prvd_implode,
+    join:prvd_join,
+    json_decode:prvd_json_decode,
+    ltrim:prvd_ltrim,
+    pathinfo:prvd_pathinfo,
+    rawurldecode:prvd_rawurldecode,
+    rawurlencode:prvd_rawurlencode,
+    rtrim:prvd_rtrim,
+    sprintf:prvd_sprintf,
+    str_ireplace:prvd_str_ireplace,
+    str_pad:prvd_str_pad,
+    str_replace:prvd_str_replace,
+    strstr:prvd_strstr,
+    strtolower:prvd_strtolower,
+    strtoupper:prvd_strtoupper,
+    substr:prvd_substr,
+    trim:prvd_trim,
+    urldecode:prvd_urldecode,
+    urlencode:prvd_urlencode,
+    vsprintf:prvd_vsprintf,
+    exec:prvd_exec,
+    passthru:prvd_passthru,
+    popen:prvd_popen,
+    proc_open:prvd_proc_open,
+    shell_exec:prvd_shell_exec,
+    system:prvd_system,
+    unserialize:prvd_unserialize,
+    copy:prvd_copy,
+    dir:prvd_dir,
+    file:prvd_file,
+    file_get_contents:prvd_file_get_contents,
+    file_put_contents:prvd_file_put_contents,
+    fopen:prvd_fopen,
+    glob:prvd_glob,
+    highlight_file:prvd_highlight_file,
+    link:prvd_link,
+    move_uploaded_file:prvd_move_uploaded_file,
+    opendir:prvd_opendir,
+    readfile:prvd_readfile,
+    rename:prvd_rename,
+    rmdir:prvd_rmdir,
+    scandir:prvd_scandir,
+    show_source:prvd_show_source,
+    unlink:prvd_unlink,
+    mysqli_init:prvd_mysqli_init,
+    mysqli_multi_query:prvd_mysqli_multi_query,
+    mysqli_query:prvd_mysqli_query,
+    mysqli_prepare:prvd_mysqli_prepare,
+    mysqli_real_query:prvd_mysqli_real_query,
+    pg_prepare:prvd_pg_prepare,
+    pg_query:prvd_pg_query,
+    pg_query_params:prvd_pg_query_params,
+    pg_send_prepare:prvd_pg_send_prepare,
+    pg_send_query:prvd_pg_send_query,
+    pg_send_query_params:prvd_pg_send_query_params,
+    curl_exec:prvd_curl_exec,
+    fsockopen:prvd_fsockopen,
+    get_headers:prvd_get_headers,
+    print_r:prvd_print_r,
+    printf:prvd_printf,
+    vprintf:prvd_vprintf
+&quot;
+
+</code></pre>
+<p>xmark 的初始化函数主要是读取配置文件内的数据并初始化内部变量.</p>
+<pre><code class="language-c">
+PHP_INI_BEGIN()
+  STD_PHP_INI_BOOLEAN(&quot;xmark.enable&quot;, &quot;0&quot;, PHP_INI_SYSTEM, OnUpdateBool, enable, zend_xmark_globals, xmark_globals)
+  STD_PHP_INI_BOOLEAN(&quot;xmark.enable_rename&quot;, &quot;0&quot;, PHP_INI_SYSTEM, OnUpdateBool, enable_rename, zend_xmark_globals, xmark_globals)
+  STD_PHP_INI_ENTRY(&quot;xmark.rename_functions&quot;, &quot;&quot;, PHP_INI_SYSTEM, OnUpdateString, rename_functions, zend_xmark_globals, xmark_globals)  //  从配置文件中的rename_functions 字段读取数据到rename_functions 变量
+  STD_PHP_INI_ENTRY(&quot;xmark.rename_classes&quot;, &quot;&quot;, PHP_INI_SYSTEM, OnUpdateString, rename_classes, zend_xmark_globals, xmark_globals)
+PHP_INI_END()
+
+// 省略无关代码
+
+PHP_MINIT_FUNCTION(xmark)
+{
+    // ...
+
+    REGISTER_LONG_CONSTANT(&quot;XMARK_ECHO&quot;, ZEND_ECHO, CONST_CS|CONST_PERSISTENT);  //  设置常量值..
+    REGISTER_LONG_CONSTANT(&quot;XMARK_EXIT&quot;, ZEND_EXIT, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT(&quot;XMARK_INIT_METHOD_CALL&quot;, ZEND_INIT_METHOD_CALL, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT(&quot;XMARK_INIT_USER_CALL&quot;, ZEND_INIT_USER_CALL, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT(&quot;XMARK_INIT_DYNAMIC_CALL&quot;, ZEND_INIT_DYNAMIC_CALL, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT(&quot;XMARK_INCLUDE_OR_EVAL&quot;, ZEND_INCLUDE_OR_EVAL, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT(&quot;XMARK_CONCAT&quot;, ZEND_CONCAT, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT(&quot;XMARK_FAST_CONCAT&quot;, ZEND_FAST_CONCAT, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT(&quot;XMARK_ASSIGN_CONCAT&quot;, ZEND_ASSIGN_CONCAT, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT(&quot;XMARK_ROPE_END&quot;, ZEND_ROPE_END, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT(&quot;XMARK_DO_FCALL&quot;, ZEND_DO_FCALL, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT(&quot;XMARK_DO_ICALL&quot;, ZEND_DO_ICALL, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT(&quot;XMARK_DO_UCALL&quot;, ZEND_DO_UCALL, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT(&quot;XMARK_DO_FCALL_BY_NAME&quot;, ZEND_DO_FCALL_BY_NAME, CONST_CS|CONST_PERSISTENT);
+
+    php_xmark_register_opcode_handlers();  //  设置Hook Opcode 回调函数
+    rename_from_ini_value(CG(function_table), XMARK_G(rename_functions), XMARK_IS_FUNCTION);  //  function_table 和class_table 是PHP 内核的表,rename_from_ini_value 就是根据ini 文件的规则来重命名它们.
+    rename_from_ini_value(CG(class_table), XMARK_G(rename_classes), XMARK_IS_CLASS);
+
+    return SUCCESS;
+}
+
+static void php_xmark_register_opcode_handlers()
+{
+    zend_set_user_opcode_handler(ZEND_ECHO, php_xmark_op1_handler);  //  设置Opcode 回调函数..
+    zend_set_user_opcode_handler(ZEND_EXIT, php_xmark_op1_handler);
+    zend_set_user_opcode_handler(ZEND_INIT_METHOD_CALL, php_xmark_op2_handler);
+    zend_set_user_opcode_handler(ZEND_INIT_USER_CALL, php_xmark_op2_handler);
+    zend_set_user_opcode_handler(ZEND_INIT_DYNAMIC_CALL, php_xmark_op2_handler);
+    zend_set_user_opcode_handler(ZEND_INCLUDE_OR_EVAL, php_xmark_op1_handler);
+    zend_set_user_opcode_handler(ZEND_CONCAT, php_xmark_concat_handler);
+    zend_set_user_opcode_handler(ZEND_FAST_CONCAT, php_xmark_concat_handler);
+    zend_set_user_opcode_handler(ZEND_ASSIGN_CONCAT, php_xmark_assign_concat_handler);
+    zend_set_user_opcode_handler(ZEND_ROPE_END, php_xmark_rope_end_handler);
+    zend_set_user_opcode_handler(ZEND_DO_FCALL, php_xmark_fcall_handler);
+    zend_set_user_opcode_handler(ZEND_DO_ICALL, php_xmark_fcall_handler);
+    zend_set_user_opcode_handler(ZEND_DO_UCALL, php_xmark_fcall_handler);
+    zend_set_user_opcode_handler(ZEND_DO_FCALL_BY_NAME, php_xmark_fcall_handler);
+
+    if (XMARK_G(enable_rename))
+        zend_set_user_opcode_handler(ZEND_INIT_FCALL, php_xmark_init_fcall);
+}
+
+//  这个函数由PHP 内核声明的.https://github.com/php/php-src/blob/852485d8ecd784153e41e565a0a87abf99cf4e0d/Zend/zend_execute.c#L4294
+
+ZEND_API int zend_set_user_opcode_handler(zend_uchar opcode, user_opcode_handler_t handler)  //  设置Opcode 回调函数
+{
+  if (opcode != ZEND_USER_OPCODE) {
+    if (handler == NULL) {
+      /* restore the original handler */
+      zend_user_opcodes[opcode] = opcode;
+    } else {
+      zend_user_opcodes[opcode] = ZEND_USER_OPCODE;
+    }
+    zend_user_opcode_handlers[opcode] = handler;
+    return SUCCESS;
+  }
+  return FAILURE;
+}
+
+</code></pre>
+<p>定位到<code>php_xmark_op1_handler()</code> 的代码,这个函数是处理对Opcode 的第一个操作参数进行处理的回调函数.实现细节如下:</p>
+<pre><code class="language-c">
+static int php_xmark_op1_handler(zend_execute_data *execute_data) {
+    //  zend_execute_data 结构表示当前执行上下文环境,保存了代码执行位置和局部变量等数据.
+    const zend_op *opline = execute_data-&gt;opline;  //  获取当前执行的Opcode
+    zend_free_op free_op1;
+    zval *op1;
+    zval *z_fname;
+    zval call_func_ret;
+
+    if (XMARK_G(in_callback)) {  //  Opcode 调用过程中可能会触发多次回调函数被调用,这个标志就是识别是否多次重复被调用了.
+        return ZEND_USER_OPCODE_DISPATCH;
+    }
+
+    z_fname = zend_hash_index_find(&amp;XMARK_G(callbacks), opline-&gt;opcode);  //  用户自定义Hook Opcode 回调
+    if (!z_fname) {
+        return ZEND_USER_OPCODE_DISPATCH;
+    }
+
+    XMARK_G(in_callback) = 1;  //  设置重复调用标记
+
+    op1 = php_xmark_get_zval_ptr(execute_data, opline-&gt;op1_type, opline-&gt;op1, &amp;free_op1, BP_VAR_R, 0);  //  获取第一个Opcode 操作数
+
+    if (op1) {
+        if (SUCCESS != call_user_function(EG(function_table), NULL, z_fname, &amp;call_func_ret, 1, op1)) {
+            zend_error(E_WARNING, &quot;call function error&quot;);
+        }
+
+        zval_ptr_dtor_nogc(&amp;call_func_ret);
+    }
+
+    XMARK_G(in_callback) = 0;
+    return ZEND_USER_OPCODE_DISPATCH;
+}
+
+</code></pre>
+<p>关于xmark 就介绍到此,然后我们再跟踪prvd 的Entry.php 文件,</p>
+<pre><code class="language-php">
+&lt;?php
+
+if (!extension_loaded('xmark')) {
+    trigger_error(&quot;xmark not installed&quot;, E_USER_WARNING);
+    return;
+}
+
+// 省略代码
+
+require(PRVD_ABSPATH.&quot;Config.php&quot;);  // 引入Config.php
+require(PRVD_ABSPATH.&quot;Utils.php&quot;);   // 引入Utils.php
+
+// mark 输入变量
+prvd_xmark($_GET, true);  // 给输入点打标签
+prvd_xmark($_POST, true);
+prvd_xmark($_COOKIE, true);
+prvd_xmark($_FILES, true);
+prvd_xmark($_REQUEST, true);
+
+foreach ($_SERVER as $key =&gt; &amp;$value) {
+    if (stripos($key, 'HTTP_') === 0) {
+        prvd_xmark($value);
+    }
+}
+
+// 1. 加载 sink
+prvd_load_file(PRVD_ABSPATH.&quot;sink/*/*.php&quot;);  // 这些目录下的都是规则命名文件.
+// 2. 加载 filter
+prvd_load_file(PRVD_ABSPATH.&quot;filter/*.php&quot;);
+// 3. 加载 opcode
+prvd_load_opcode(PRVD_ABSPATH.&quot;opcode/*.php&quot;);
+
+</code></pre>
+<p><code>prvd_xmark()</code> 函数则是调用xmark 拓展里面的函数给变量打标记.</p>
+<pre><code class="language-php">
+function prvd_xmark(&amp;$var, $recursive=true) {
+    if (!PRVD_TAINT_ENABLE) return;
+    if (is_string($var)) {
+        xmark($var);
+    } elseif (is_array($var) &amp;&amp; $recursive) {
+        foreach ($var as $key =&gt; &amp;$value) {
+            prvd_xmark($value, $recursive);
+        }
+    }
+}
+
+</code></pre>
+<p>回到xmark.c 找到xmark() 函数声明,可以发现是通过给PHP 变量数据结构类型中的<code>type_info</code> 字段中做了标签记录(IS_XMARK_FLAG),这只适用于string 类型的PHP 变量.</p>
+<pre><code class="language-c">
+//  https://github.com/fate0/xmark/blob/34dd79d3e38dfb7f22c67eaedaa540a4cd88aee6/xmark.c#L1291
+
+PHP_FUNCTION(xmark)  //  xmark.dll 导出函数
+{
+    zval *z_str;
+
+    if (!XMARK_G(enable)) {
+        RETURN_FALSE;
+    }
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), &quot;z&quot;, &amp;z_str) == FAILURE) {
+        return;
+    }
+
+    ZVAL_DEREF(z_str);
+    if (IS_STRING != Z_TYPE_P(z_str) || Z_STRLEN_P(z_str) == 0) {  //  只给String 类型的变量打标记
+        RETURN_FALSE;
+    }
+
+    if (xmark_zstr(z_str) == FAILURE) {
+        RETURN_FALSE;
+    }
+
+    RETURN_TRUE;
+}
+
+//  https://github.com/fate0/xmark/blob/34dd79d3e38dfb7f22c67eaedaa540a4cd88aee6/xmark.c#L1124
+
+static zend_always_inline int xmark_zstr(zval *z_str)  //  给变量打标记
+{
+    if (!XCHECK_FLAG(Z_STR_P(z_str))) {
+        zend_string *str = zend_string_init(Z_STRVAL_P(z_str), Z_STRLEN_P(z_str), 0);  //  创建新字符串对象
+        ZSTR_LEN(str) = Z_STRLEN_P(z_str);
+        zend_string_release(Z_STR_P(z_str));
+        XMARK_FLAG(str);
+        ZVAL_STR(z_str, str);
+    }
+
+    return SUCCESS;
+}
+
+//  https://github.com/fate0/xmark/blob/34dd79d3e38dfb7f22c67eaedaa540a4cd88aee6/php_xmark.h#L41
+
+#if PHP_VERSION_ID &lt; 70300
+#   define IS_XMARK_FLAG            (1&lt;&lt;6)
+#   define XMARK_FLAG(str)          (GC_FLAGS((str)) |= IS_XMARK_FLAG)
+#   define XCLEAR_FLAG(str)         (GC_FLAGS((str)) &amp;= ~IS_XMARK_FLAG)
+#   define XCHECK_FLAG(str)         (GC_FLAGS((str)) &amp; IS_XMARK_FLAG)
+#else
+#   define EX_CONSTANT(op)          RT_CONSTANT(EX(opline), op)
+#   define IS_XMARK_FLAG            (1&lt;&lt;5)
+#   define XMARK_FLAG(str)          GC_ADD_FLAGS(str, IS_XMARK_FLAG)
+#   define XCLEAR_FLAG(str)         GC_DEL_FLAGS(str, IS_XMARK_FLAG)
+#   define XCHECK_FLAG(str)         (GC_FLAGS((str)) &amp; IS_XMARK_FLAG)
+#endif
+
+//  https://github.com/php/php-src/blob/c4e4ef0498f691788e30e4cdfae3c3aa9dd3b1f1/Zend/zend_types.h#L516
+
+static zend_always_inline uint32_t zval_gc_flags(uint32_t gc_type_info) {
+  return (gc_type_info &gt;&gt; GC_FLAGS_SHIFT) &amp; (GC_FLAGS_MASK &gt;&gt; GC_FLAGS_SHIFT);
+}
+
+#define GC_TYPE_INFO(p)     (p)-&gt;gc.u.type_info
+#define GC_FLAGS(p)         zval_gc_flags(GC_TYPE_INFO(p))
+
+</code></pre>
+<p>Entry.php 最后一部分就是引入检测规则,因为前面已经使用xmark 重命名了这些变量,那么接下来就需要以这些被重命名的函数进行重新声明,达到hook 的目的.</p>
+<pre><code class="language-php">
+// 1. 加载 sink
+prvd_load_file(PRVD_ABSPATH.&quot;sink/*/*.php&quot;);  //  敏感函数
+// 2. 加载 filter
+prvd_load_file(PRVD_ABSPATH.&quot;filter/*.php&quot;);  //  过滤函数
+// 3. 加载 opcode
+prvd_load_opcode(PRVD_ABSPATH.&quot;opcode/*.php&quot;);  //  敏感Opcode
+
+</code></pre>
+<p><code>prvd_load_file()</code> 函数接下来不断把目录里面的规则文件require 进来.</p>
+<pre><code class="language-php">
+function prvd_load_file($pattern) {  //  加载策略文件函数
+    $glob = prvd_get_function(&quot;glob&quot;);
+    $ksort = prvd_get_function(&quot;ksort&quot;);
+    $basename = prvd_get_function(&quot;basename&quot;);
+    $file_list = $glob($pattern);
+    $result_list = array();
+    foreach ($file_list as $absfilename) {
+        if (in_array($basename($absfilename), $result_list)) {
+            prvd_log(&quot;error: function &quot;.$basename($absfilename).&quot; already exists in &quot;.$file_list[$basename($absfilename)]);
+            continue;
+        }
+        $result_list[$basename($absfilename)] = $absfilename;
+    }
+    $ksort($result_list);
+    foreach ($result_list as $filename =&gt; $absfilename) {
+        $funcname = preg_replace(&quot;/\d{3}\-/&quot;, &quot;&quot;, $filename);
+        $funcname = preg_replace(&quot;/.php$/&quot;, &quot;&quot;, $funcname);
+        if (!function_exists(PRVD_RENAME_PREFIX.$funcname) &amp;&amp; !class_exists(PRVD_RENAME_PREFIX.$funcname)) {
+            prvd_log(&quot;error: function/class &quot;.PRVD_RENAME_PREFIX.$funcname.&quot; not exists&quot;);
+            continue;
+        }
+        if (function_exists($funcname) || class_exists($funcname)) {
+            prvd_log(&quot;error: function/class &quot;.$funcname.&quot; already exists&quot;);
+            continue;
+        }
+        require($absfilename);
+    }
+}
+
+</code></pre>
+<p>我们以<code>src/sink/rce/001-system.php</code> 举个例子,最后在重命名的<code>system()</code> 函数里面插入对函数参数的数据检测代码.</p>
+<pre><code class="language-php">
+&lt;?php
+function system($command, &amp;$return_var = null) {
+    prvd_check_rce($command, prvd_translate(&quot;Remote Command Execute&quot;));
+    return call_user_func_array(PRVD_RENAME_PREFIX.&quot;system&quot;, array($command, &amp;$return_var));
+}
+
+</code></pre>
+<p>漏洞检测方法如下:</p>
+<pre><code class="language-php">
+/**
+ * 检测是否存在命令注入
+ * @param $command
+ * @param $message
+ */
+function prvd_check_rce(&amp;$command, $message) {
+    global $prvd_sentry_client;
+    if (!$prvd_sentry_client) return;
+    if (prvd_detect_cmd_injection($command)) {
+        $prvd_sentry_client-&gt;captureVuln($message);
+    } else if (PRVD_TAINT_ENABLE &amp;&amp; prvd_xcheck($command)) {
+        $prvd_sentry_client-&gt;captureVuln($message, &quot;debug&quot;);
+    }
+}
+
+/**
+ * 检测 CMD 语句是否异常
+ * @param $cmd_string
+ * @return bool
+ */
+function prvd_detect_cmd_injection($cmd_string) {
+    // TODO: 目前只考虑了逃脱引号的情况，在双引号内的情况暂未支持
+    $strlen = prvd_get_function('strlen');
+    $stripos = prvd_get_function('stripos');
+    $substr = prvd_get_function('substr');
+    $in_array = prvd_get_function('in_array');
+    $cur_pos = 0;
+    $cmd_string_len = $strlen($cmd_string);
+    while ($cur_pos &lt; $cmd_string_len) {
+        while ($stripos(PRVD_WHITESPACE, $substr($cmd_string, $cur_pos, 1)) !== FALSE) $cur_pos++;
+        if ($stripos('\'&quot;', $substr($cmd_string, $cur_pos, 1)) !== FALSE) {
+            // handle literal
+            $quote = $substr($cmd_string, $cur_pos, 1);
+            $cur_pos ++;
+            while ($cur_pos &lt; $cmd_string_len) {
+                if ($quote === $substr($cmd_string, $cur_pos, 1))
+                    break;
+                elseif ($in_array($substr($cmd_string, $cur_pos, 2), array('\\\\', '\\\'', '\\&quot;')))
+                    $cur_pos += 1;
+                $cur_pos ++;
+            }
+            // broken cmd statement
+            if ($cur_pos == $cmd_string_len) return TRUE;
+            $cur_pos ++;
+        } elseif ($stripos(PRVD_KEYWORD_ALLOW_CHARS, $substr($cmd_string, $cur_pos, 1)) === FALSE) {
+            // handle op
+            $cur_pos ++;
+        } else {
+            // handle keyword
+            $keyword_start = $cur_pos;
+            while ($cur_pos &lt; $cmd_string_len) {
+                if ($stripos(PRVD_KEYWORD_ALLOW_CHARS, $substr($cmd_string, $cur_pos, 1)) === FALSE) break;
+                $cur_pos ++;
+            }
+            if ($stripos($substr($cmd_string, $keyword_start, $cur_pos-$keyword_start),  PRVD_TANZI) !== FALSE)
+                return TRUE;
+        }
+    }
+    return FALSE;
+}
+
+</code></pre>
+<p>关于Prvd 的污点追踪原理就介绍到此了,如有兴趣可以更深入去了解(Link : http://blog.fatezero.org/2018/11/11/prvd/ ).在部署好Prvd 之后,启用payload 模式,此时Prvd 会在$_GET $_POST 等中的数据插入一些攻击Payload ,然后由规则来匹配是否存在漏洞.对于这个步骤,测试者是不需要对HTTP 数据包(URL 中的输入位置,HTTP body ,HTTP Cookie )进行Payload 插入测试,测试者只需要根据页面进行常见的功能测试方法,然后Prvd 就会自行插入数据并且检测,这个也就是IAST (交互式安全测试)的原理.</p>
+<h2 id="符号执行"><a class="header" href="#符号执行">符号执行</a></h2>
+<p>符号执行是指把程序的语义抽象变成逻辑公式或代码路径公式,通过对这条公式进行求解并得出符合的条件.第六章的综合分析中提到,当我们在检测可控的输入是否能够通过某些特定的判断语句达到触发点,需要满足哪些条件并进行求解,这是静态符号执行.动态符号执行的原理是跟踪程序的执行,在某些特定的判断和数据运算的过程中可以知道具体的内容值(在静态符号执行中有时候不容易获取某一行代码或者汇编的值,所以需要跟踪到此获得该值,而且静态符号执行在对非常多的条件进行求解的时候会产生路径爆炸的问题,又需要考虑条件优化)然后构建逻辑公式进行路径/数据求解.我们先研究这段代码:</p>
+<pre><code class="language-assembly">
+mov eax, 1
+add eax, 2
+mov ebx, eax
+
+</code></pre>
+<p>对应到寄存器布局如下:</p>
+<pre><code class="language-txt">
+EAX : -1
+EBX : -1
+ECX : -1
+
+</code></pre>
+<p>然后我们模拟执行这段汇编代码并填写寄存器布局,过程如下:</p>
+<pre><code class="language-txt">
+(Round 1)
+
+Code :
+
+mov eax, 1     &lt;- Point
+add eax, 2
+mov ebx, eax
+
+Symbolic Expression :
+
+p0 = 1
+
+Register Reference Table :
+
+EAX : p0
+EBX : -1
+ECX : -1
+
+----
+
+(Round 2)
+
+Code :
+
+mov eax, 1
+add eax, 2     &lt;- Point
+mov ebx, eax
+
+Symbolic Expression :
+
+p0 = 1
+p1 = add(p0,2)
+
+Register Reference Table :
+
+EAX : p1
+EBX : -1
+ECX : -1
+
+----
+
+(Round 3)
+
+Code :
+
+mov eax, 1
+add eax, 2
+mov ebx, eax   &lt;- Point
+
+Symbolic Expression :
+
+p0 = 1
+p1 = add(p0,2)
+p2 = p1
+
+Register Reference Table :
+
+EAX : p1
+EBX : p2
+ECX : -1
+
+</code></pre>
+<p>然后我们要求解EBX 寄存器的值,只需要把公式组装即可:</p>
+<pre><code class="language-txt">
+EBX = p2 , p2 = p1 = add(p0,2) = add(1,2) = 3
+
+</code></pre>
+<p>我们举一个对内存数据进行运算的例子</p>
+<pre><code class="language-c">
+char *serial = &quot;\x31\x3e\x3d\x26\x31&quot;;
+
+int check_password(char *ptr)
+{
+  int i = 0;
+  while (i &lt; 5){
+    if (((ptr[i] - 1) ^ 0x55) != serial[i])
+      return 1; /* bad password */
+    i++;
+  }
+  return 0; /* good password */
+}
+
+</code></pre>
+<p>对应的汇编如下:</p>
+<pre><code class="language-assembly">
+__text:0000000100000F20                 public _check_password
+__text:0000000100000F20 _check_password proc near
+__text:0000000100000F20
+__text:0000000100000F20 var_14          = dword ptr -14h
+__text:0000000100000F20 var_10          = qword ptr -10h
+__text:0000000100000F20 var_4           = dword ptr -4
+__text:0000000100000F20
+__text:0000000100000F20                 push    rbp
+__text:0000000100000F21                 mov     rbp, rsp
+__text:0000000100000F24                 mov     [rbp+var_10], rdi
+__text:0000000100000F28                 mov     [rbp+var_14], 0
+__text:0000000100000F2F
+__text:0000000100000F2F loc_100000F2F:                          ; CODE XREF: _check_password+57↓j
+__text:0000000100000F2F                 cmp     [rbp+var_14], 5
+__text:0000000100000F33                 jge     loc_100000F7C
+__text:0000000100000F39                 mov     rax, [rbp+var_10]
+__text:0000000100000F3D                 movsxd  rcx, [rbp+var_14]
+__text:0000000100000F41                 movsx   edx, byte ptr [rax+rcx]
+__text:0000000100000F45                 sub     edx, 1
+__text:0000000100000F48                 xor     edx, 55h
+__text:0000000100000F4B                 mov     rax, cs:_serial
+__text:0000000100000F52                 movsxd  rcx, [rbp+var_14]
+__text:0000000100000F56                 movsx   esi, byte ptr [rax+rcx]
+__text:0000000100000F5A                 cmp     edx, esi
+__text:0000000100000F5C                 jz      loc_100000F6E
+__text:0000000100000F62                 mov     [rbp+var_4], 1
+__text:0000000100000F69                 jmp     loc_100000F83
+__text:0000000100000F6E ; ---------------------------------------------------------------------------
+__text:0000000100000F6E
+__text:0000000100000F6E loc_100000F6E:                          ; CODE XREF: _check_password+3C↑j
+__text:0000000100000F6E                 mov     eax, [rbp+var_14]
+__text:0000000100000F71                 add     eax, 1
+__text:0000000100000F74                 mov     [rbp+var_14], eax
+__text:0000000100000F77                 jmp     loc_100000F2F
+__text:0000000100000F7C ; ---------------------------------------------------------------------------
+__text:0000000100000F7C
+__text:0000000100000F7C loc_100000F7C:                          ; CODE XREF: _check_password+13↑j
+__text:0000000100000F7C                 mov     [rbp+var_4], 0
+__text:0000000100000F83
+__text:0000000100000F83 loc_100000F83:                          ; CODE XREF: _check_password+49↑j
+__text:0000000100000F83                 mov     eax, [rbp+var_4]
+__text:0000000100000F86                 pop     rbp
+__text:0000000100000F87                 retn
+
+</code></pre>
+<p>我们知道,<code>_check_password()</code> 的字符串地址参数保存在rdi 寄存器中,然后<code>mov rax, [rbp+var_10]</code>和<code>movsx edx, byte ptr [rax+rcx]</code> 两句汇编从字符串缓冲区中读取字符出来,在<code>xor edx, 55h</code> 进行异或运算,最后使用<code>cmp edx, esi</code> 和程序中内置的字符串进行字符值判断,<code>jz loc_100000F6E</code> 的意思是如果两值不相等那就跳转到地址0x100000F83 ,不相等就执行到0x100000F6E 的jmp 指令跳转到0x100000F2F 处(这是for 循环结构).<code>_check_password()</code> 在校验异或过后的字符失败就会返回1 ,成功则返回0 .</p>
+<p>理解这段汇编代码之后,我们就对代码进行一步一步的符号执行分析.我们先抽出最核心的运算代码:</p>
+<pre><code class="language-assembly">
+__text:0000000100000F39                 mov     rax, [rbp+var_10]
+__text:0000000100000F3D                 movsxd  rcx, [rbp+var_14]
+__text:0000000100000F41                 movsx   edx, byte ptr [rax+rcx]
+__text:0000000100000F45                 sub     edx, 1
+__text:0000000100000F48                 xor     edx, 55h
+__text:0000000100000F4B                 mov     rax, cs:_serial
+__text:0000000100000F52                 movsxd  rcx, [rbp+var_14]
+__text:0000000100000F56                 movsx   esi, byte ptr [rax+rcx]
+__text:0000000100000F5A                 cmp     edx, esi
+
+</code></pre>
+<p>然后对这段代码进行寄存器布局.</p>
+<pre><code class="language-txt">
+(Round 1)
+
+Code :
+
+mov     rax, [rbp+var_10]         &lt;- Point
+movsxd  rcx, [rbp+var_14]
+movsx   edx, byte ptr [rax+rcx]
+sub     edx, 1
+xor     edx, 55h
+mov     rax, cs:_serial
+movsxd  rcx, [rbp+var_14]
+movsx   esi, byte ptr [rax+rcx]
+cmp     edx, esi
+
+Symbolic Expression :
+
+p0 = var_10
+
+Register Reference Table :
+
+RAX : p0
+RBX : -1
+RCX : -1
+RDX : -1
+RSI : -1
+RDI : -1
+
+----
+
+(Round 2)
+
+Code :
+
+mov     rax, [rbp+var_10]
+movsxd  rcx, [rbp+var_14]         &lt;- Point
+movsx   edx, byte ptr [rax+rcx]
+sub     edx, 1
+xor     edx, 55h
+mov     rax, cs:_serial
+movsxd  rcx, [rbp+var_14]
+movsx   esi, byte ptr [rax+rcx]
+cmp     edx, esi
+
+Symbolic Expression :
+
+p0 = var_10
+p1 = var_14
+
+Register Reference Table :
+
+RAX : p0
+RBX : -1
+RCX : p1
+RDX : -1
+RSI : -1
+RDI : -1
+
+----
+
+(Round 3)
+
+Code :
+
+mov     rax, [rbp+var_10]
+movsxd  rcx, [rbp+var_14]
+movsx   edx, byte ptr [rax+rcx]   &lt;- Point
+sub     edx, 1
+xor     edx, 55h
+mov     rax, cs:_serial
+movsxd  rcx, [rbp+var_14]
+movsx   esi, byte ptr [rax+rcx]
+cmp     edx, esi
+
+Symbolic Expression :
+
+p0 = var_10
+p1 = var_14
+p2 = *(add(p0,p1)) (control)
+
+Register Reference Table :
+
+RAX : p0
+RBX : -1
+RCX : p1
+RDX : p2
+RSI : -1
+RDI : -1
+
+----
+
+(Round 4)
+
+Code :
+
+mov     rax, [rbp+var_10]
+movsxd  rcx, [rbp+var_14]
+movsx   edx, byte ptr [rax+rcx]
+sub     edx, 1                    &lt;- Point
+xor     edx, 55h
+mov     rax, cs:_serial
+movsxd  rcx, [rbp+var_14]
+movsx   esi, byte ptr [rax+rcx]
+cmp     edx, esi
+
+Symbolic Expression :
+
+p0 = var_10
+p1 = var_14
+p2 = *(add(p0,p1)) (control)
+p3 = sub(p2,1)
+
+Register Reference Table :
+
+RAX : p0
+RBX : -1
+RCX : p1
+RDX : p3
+RSI : -1
+RDI : -1
+
+----
+
+(Round 5)
+
+Code :
+
+mov     rax, [rbp+var_10]
+movsxd  rcx, [rbp+var_14]
+movsx   edx, byte ptr [rax+rcx]
+sub     edx, 1
+xor     edx, 55h                  &lt;- Point
+mov     rax, cs:_serial
+movsxd  rcx, [rbp+var_14]
+movsx   esi, byte ptr [rax+rcx]
+cmp     edx, esi
+
+Symbolic Expression :
+
+p0 = var_10
+p1 = var_14
+p2 = *(add(p0,p1)) (control)
+p3 = sub(p2,1)
+p4 = xor(p3,0x55)
+
+Register Reference Table :
+
+RAX : p0
+RBX : -1
+RCX : p1
+RDX : p4
+RSI : -1
+RDI : -1
+
+----
+
+(Round 6)
+
+Code :
+
+mov     rax, [rbp+var_10]
+movsxd  rcx, [rbp+var_14]
+movsx   edx, byte ptr [rax+rcx]
+sub     edx, 1
+xor     edx, 55h
+mov     rax, cs:_serial           &lt;- Point
+movsxd  rcx, [rbp+var_14]
+movsx   esi, byte ptr [rax+rcx]
+cmp     edx, esi
+
+Symbolic Expression :
+
+p0 = var_10
+p1 = var_14
+p2 = *(add(p0,p1)) (control)
+p3 = sub(p2,1)
+p4 = xor(p3,0x55)
+p5 = _serial
+
+Register Reference Table :
+
+RAX : p5
+RBX : -1
+RCX : p1
+RDX : p4
+RSI : -1
+RDI : -1
+
+----
+
+(Round 7)
+
+Code :
+
+mov     rax, [rbp+var_10]
+movsxd  rcx, [rbp+var_14]
+movsx   edx, byte ptr [rax+rcx]
+sub     edx, 1
+xor     edx, 55h
+mov     rax, cs:_serial
+movsxd  rcx, [rbp+var_14]         &lt;- Point
+movsx   esi, byte ptr [rax+rcx]
+cmp     edx, esi
+
+Symbolic Expression :
+
+p0 = var_10
+p1 = var_14
+p2 = *(add(p0,p1)) (control)
+p3 = sub(p2,1)
+p4 = xor(p3,0x55)
+p5 = _serial
+p6 = var_14
+
+Register Reference Table :
+
+RAX : p5
+RBX : -1
+RCX : p6
+RDX : p4
+RSI : -1
+RDI : -1
+
+----
+
+(Round 8)
+
+Code :
+
+mov     rax, [rbp+var_10]
+movsxd  rcx, [rbp+var_14]
+movsx   edx, byte ptr [rax+rcx]
+sub     edx, 1
+xor     edx, 55h
+mov     rax, cs:_serial
+movsxd  rcx, [rbp+var_14]
+movsx   esi, byte ptr [rax+rcx]   &lt;- Point
+cmp     edx, esi
+
+Symbolic Expression :
+
+p0 = var_10
+p1 = var_14
+p2 = *(add(p0,p1)) (control)
+p3 = sub(p2,1)
+p4 = xor(p3,0x55)
+p5 = _serial
+p6 = var_14
+p7 = *(add(p5,p6))
+
+Register Reference Table :
+
+RAX : p5
+RBX : -1
+RCX : p6
+RDX : p4
+RSI : p7
+RDI : -1
+
+----
+
+(Round 9)
+
+Code :
+
+mov     rax, [rbp+var_10]
+movsxd  rcx, [rbp+var_14]
+movsx   edx, byte ptr [rax+rcx]
+sub     edx, 1
+xor     edx, 55h
+mov     rax, cs:_serial
+movsxd  rcx, [rbp+var_14]
+movsx   esi, byte ptr [rax+rcx]
+cmp     edx, esi                  &lt;- Point
+
+Symbolic Expression :
+
+p0 = var_10
+p1 = var_14
+p2 = *(add(p0,p1)) (control)
+p3 = sub(p2,1)
+p4 = xor(p3,0x55)
+p5 = _serial
+p6 = var_14
+p7 = *(add(p5,p6))
+
+Register Reference Table :
+
+RAX : p5
+RBX : -1
+RCX : p6
+RDX : p4
+RSI : p7
+RDI : -1
+
+</code></pre>
+<p>在执行到第九步时,指令<code>cmp edx, esi</code> 会把edx 和esi 的值进行对比,于是我们根据寄存器布局来构造求解公式:</p>
+<pre><code class="language-txt">
+RDX = p4 = xor(p3,0x55) = xor(sub(p2,1),0x55) = xor(sub(*(add(p0,p1),1),0x55)) = xor(sub(*(add(var_10,var_14),1),0x55))
+RSI = p7 = *(add(p5,p6)) = *(add(_serial,var_14))
+
+(RDX == RSI) =&gt; (xor(sub(*(add(var_10,var_14),1),0x55)) == *(add(_serial,var_14)))
+
+</code></pre>
+<p>在此先忽略<code>*(add(var_10,var_14)</code> 和<code>*(add(_serial,var_14)))</code> ,因为这是获取内存,后面再讨论.我们先假定一个未知值X (可控输入)和已知值(_serial 中的字符值)进行公式重组,约束如下.</p>
+<pre><code class="language-txt">
+(RDX == RSI) =&gt; (xor(sub(X,1),0x55) == 0x31)
+
+</code></pre>
+<p>用z3 求解方式的代码:</p>
+<pre><code class="language-python">
+from z3 import *
+
+
+x = BitVec('x',8)
+solver = Solver()
+
+solver.add((x - 1) ^ 0x55 == 0x31)
+solver.check()
+
+print solver.model()
+
+</code></pre>
+<p>执行结果如下:</p>
+<p><img src="pic7/pic3.png" alt="" /></p>
+<p>在对寄存器求解的过程中,我们发现var_10,var_14,_serial 都是从内存中获取到的数据,但是具体数据是什么我们不得而知,所以还需要对进行内存布局,再进行求解</p>
+<pre><code class="language-txt">
+Code :
+
+mov     rax, [rbp+var_10]
+movsxd  rcx, [rbp+var_14]
+movsx   edx, byte ptr [rax+rcx]
+sub     edx, 1
+xor     edx, 55h
+mov     rax, cs:_serial
+movsxd  rcx, [rbp+var_14]
+movsx   esi, byte ptr [rax+rcx]
+cmp     edx, esi                  &lt;- Point
+
+Symbolic Expression :
+
+p0 = var_10
+p1 = var_14
+p2 = *(add(p0,p1)) (control)
+p3 = sub(p2,1)
+p4 = xor(p3,0x55)
+p5 = _serial
+p6 = var_14
+p7 = *(add(p5,p6))
+
+Register Reference Table :
+
+RAX : p5
+RBX : -1
+RCX : p6
+RDX : p4
+RSI : p7
+RDI : -1
+
+Memory Reference Table :
+
+var_14         : 0  #  假定为0
+var_10_buffer  : [ -1 , -1 , -1 , -1 , -1 , -1 , -1 , -1 ]  #  未初始化为-1
+_serial_buffer : [ 0x31 , 0x3E ,0x3D ,0x26 ,0x31 ]
+
+</code></pre>
+<p>对于var_10 的第一个结果,我们的求解思路如下:</p>
+<pre><code class="language-txt">
+(RDX == RSI) =&gt; (xor(sub(*(add(var_10,var_14),1),0x55)) == *(add(_serial,var_14))) =&gt; (xor(sub(var_10_buffer_0,1),0x55)) == _serial_buffer_0)) =&gt; (xor(sub(x0,1),0x55)) == 0x31
+
+</code></pre>
+<p>继续分析程序,汇编代码如下:</p>
+<pre><code class="language-assembly">
+mov     [rbp+var_10], rdi
+mov     [rbp+var_14], 0
+cmp     [rbp+var_14], 5
+jge     loc_100000F7C
+mov     rax, [rbp+var_10]
+movsxd  rcx, [rbp+var_14]
+movsx   edx, byte ptr [rax+rcx]
+sub     edx, 1
+xor     edx, 55h
+mov     rax, cs:_serial
+movsxd  rcx, [rbp+var_14]
+movsx   esi, byte ptr [rax+rcx]
+cmp     edx, esi
+jz      loc_100000F6E
+mov     [rbp+var_4], 1
+jmp     loc_100000F83
+mov     eax, [rbp+var_14]
+add     eax, 1
+mov     [rbp+var_14], eax
+jmp     loc_100000F2F
+
+</code></pre>
+<p>我们可以看到,rdi 是可控的输入,var_14 是0 ,然后继续进行分析:</p>
+<pre><code class="language-txt">
+(Round1)
+
+Code :
+
+mov     [rbp+var_10], rdi         &lt;- Point
+mov     [rbp+var_14], 0
+cmp     [rbp+var_14], 5
+jge     loc_100000F7C
+mov     rax, [rbp+var_10]
+movsxd  rcx, [rbp+var_14]
+movsx   edx, byte ptr [rax+rcx]
+sub     edx, 1
+xor     edx, 55h
+mov     rax, cs:_serial
+movsxd  rcx, [rbp+var_14]
+movsx   esi, byte ptr [rax+rcx]
+cmp     edx, esi
+jz      loc_100000F6E
+mov     [rbp+var_4], 1
+jmp     loc_100000F83
+mov     eax, [rbp+var_14]
+add     eax, 1
+mov     [rbp+var_14], eax
+jmp     loc_100000F2F
+
+Symbolic Expression :
+
+p0 = rdi
+
+Register Reference Table :
+
+RAX : -1
+RBX : -1
+RCX : -1
+RDX : -1
+RSI : -1
+RDI : (control)
+
+Memory Reference Table :
+
+var_14         : -1
+var_10         : p0
+input_buffer   : [ -1 , -1 , -1 , -1 , -1 , -1 , -1 , -1 ]
+_serial_buffer : [ 0x31 , 0x3E ,0x3D ,0x26 ,0x31 ]
+
+----
+
+(Round2)
+
+Code :
+
+mov     [rbp+var_10], rdi
+mov     [rbp+var_14], 0           &lt;- Point
+cmp     [rbp+var_14], 5
+jge     loc_100000F7C
+mov     rax, [rbp+var_10]
+movsxd  rcx, [rbp+var_14]
+movsx   edx, byte ptr [rax+rcx]
+sub     edx, 1
+xor     edx, 55h
+mov     rax, cs:_serial
+movsxd  rcx, [rbp+var_14]
+movsx   esi, byte ptr [rax+rcx]
+cmp     edx, esi
+jz      loc_100000F6E
+mov     [rbp+var_4], 1
+jmp     loc_100000F83
+mov     eax, [rbp+var_14]
+add     eax, 1
+mov     [rbp+var_14], eax
+jmp     loc_100000F2F
+
+Symbolic Expression :
+
+p0 = rdi
+p1 = 0
+
+Register Reference Table :
+
+RAX : -1
+RBX : -1
+RCX : -1
+RDX : -1
+RSI : -1
+RDI : (control)
+
+Memory Reference Table :
+
+var_14         : p1
+var_10         : p0
+input_buffer   : [ -1 , -1 , -1 , -1 , -1 , -1 , -1 , -1 ]
+_serial_buffer : [ 0x31 , 0x3E ,0x3D ,0x26 ,0x31 ]
+
+----
+
+(Round3)
+
+Code :
+
+mov     [rbp+var_10], rdi
+mov     [rbp+var_14], 0
+cmp     [rbp+var_14], 5
+jge     loc_100000F7C
+mov     rax, [rbp+var_10]         &lt;- Point
+movsxd  rcx, [rbp+var_14]
+movsx   edx, byte ptr [rax+rcx]
+sub     edx, 1
+xor     edx, 55h
+mov     rax, cs:_serial
+movsxd  rcx, [rbp+var_14]
+movsx   esi, byte ptr [rax+rcx]
+cmp     edx, esi
+jz      loc_100000F6E
+mov     [rbp+var_4], 1
+jmp     loc_100000F83
+mov     eax, [rbp+var_14]
+add     eax, 1
+mov     [rbp+var_14], eax
+jmp     loc_100000F2F
+
+Symbolic Expression :
+
+p0 = rdi
+p1 = 0
+p2 = p0
+
+Register Reference Table :
+
+RAX : p2
+RBX : -1
+RCX : -1
+RDX : -1
+RSI : -1
+RDI : (control)
+
+Memory Reference Table :
+
+var_14         : p1
+var_10         : p0
+input_buffer   : [ -1 , -1 , -1 , -1 , -1 , -1 , -1 , -1 ]
+_serial_buffer : [ 0x31 , 0x3E ,0x3D ,0x26 ,0x31 ]
+
+----
+
+(Round4)
+
+Code :
+
+mov     [rbp+var_10], rdi
+mov     [rbp+var_14], 0
+cmp     [rbp+var_14], 5
+jge     loc_100000F7C
+mov     rax, [rbp+var_10]
+movsxd  rcx, [rbp+var_14]         &lt;- Point
+movsx   edx, byte ptr [rax+rcx]
+sub     edx, 1
+xor     edx, 55h
+mov     rax, cs:_serial
+movsxd  rcx, [rbp+var_14]
+movsx   esi, byte ptr [rax+rcx]
+cmp     edx, esi
+jz      loc_100000F6E
+mov     [rbp+var_4], 1
+jmp     loc_100000F83
+mov     eax, [rbp+var_14]
+add     eax, 1
+mov     [rbp+var_14], eax
+jmp     loc_100000F2F
+
+Symbolic Expression :
+
+p0 = rdi
+p1 = 0
+p2 = p0
+p3 = p1
+
+Register Reference Table :
+
+RAX : p2
+RBX : -1
+RCX : p3
+RDX : -1
+RSI : -1
+RDI : (control)
+
+Memory Reference Table :
+
+var_14         : p1
+var_10         : p0
+input_buffer   : [ -1 , -1 , -1 , -1 , -1 , -1 , -1 , -1 ]
+_serial_buffer : [ 0x31 , 0x3E ,0x3D ,0x26 ,0x31 ]
+
+----
+
+(Round5)
+
+Code :
+
+mov     [rbp+var_10], rdi
+mov     [rbp+var_14], 0
+cmp     [rbp+var_14], 5
+jge     loc_100000F7C
+mov     rax, [rbp+var_10]
+movsxd  rcx, [rbp+var_14]
+movsx   edx, byte ptr [rax+rcx]   &lt;- Point
+sub     edx, 1
+xor     edx, 55h
+mov     rax, cs:_serial
+movsxd  rcx, [rbp+var_14]
+movsx   esi, byte ptr [rax+rcx]
+cmp     edx, esi
+jz      loc_100000F6E
+mov     [rbp+var_4], 1
+jmp     loc_100000F83
+mov     eax, [rbp+var_14]
+add     eax, 1
+mov     [rbp+var_14], eax
+jmp     loc_100000F2F
+
+Symbolic Expression :
+
+p0 = rdi
+p1 = 0
+p2 = p0
+p3 = p1
+p4 = *(add(p2,p3))
+
+Register Reference Table :
+
+RAX : p2
+RBX : -1
+RCX : p3
+RDX : p4
+RSI : -1
+RDI : (control)
+
+Memory Reference Table :
+
+var_14         : p1
+var_10         : p0
+input_buffer   : [ -1 , -1 , -1 , -1 , -1 , -1 , -1 , -1 ]
+_serial_buffer : [ 0x31 , 0x3E ,0x3D ,0x26 ,0x31 ]
+
+----
+
+(Round6)
+
+Code :
+
+mov     [rbp+var_10], rdi
+mov     [rbp+var_14], 0
+cmp     [rbp+var_14], 5
+jge     loc_100000F7C
+mov     rax, [rbp+var_10]
+movsxd  rcx, [rbp+var_14]
+movsx   edx, byte ptr [rax+rcx]
+sub     edx, 1                    &lt;- Point
+xor     edx, 55h
+mov     rax, cs:_serial
+movsxd  rcx, [rbp+var_14]
+movsx   esi, byte ptr [rax+rcx]
+cmp     edx, esi
+jz      loc_100000F6E
+mov     [rbp+var_4], 1
+jmp     loc_100000F83
+mov     eax, [rbp+var_14]
+add     eax, 1
+mov     [rbp+var_14], eax
+jmp     loc_100000F2F
+
+Symbolic Expression :
+
+p0 = rdi
+p1 = 0
+p2 = p0
+p3 = p1
+p4 = *(add(p2,p3))
+p5 = sub(p4,1)
+
+Register Reference Table :
+
+RAX : p2
+RBX : -1
+RCX : p3
+RDX : p5
+RSI : -1
+RDI : (control)
+
+Memory Reference Table :
+
+var_14         : p1
+var_10         : p0
+input_buffer   : [ -1 , -1 , -1 , -1 , -1 , -1 , -1 , -1 ]
+_serial_buffer : [ 0x31 , 0x3E ,0x3D ,0x26 ,0x31 ]
+
+----
+
+(Round7)
+
+Code :
+
+mov     [rbp+var_10], rdi
+mov     [rbp+var_14], 0
+cmp     [rbp+var_14], 5
+jge     loc_100000F7C
+mov     rax, [rbp+var_10]
+movsxd  rcx, [rbp+var_14]
+movsx   edx, byte ptr [rax+rcx]
+sub     edx, 1
+xor     edx, 55h                  &lt;- Point
+mov     rax, cs:_serial
+movsxd  rcx, [rbp+var_14]
+movsx   esi, byte ptr [rax+rcx]
+cmp     edx, esi
+jz      loc_100000F6E
+mov     [rbp+var_4], 1
+jmp     loc_100000F83
+mov     eax, [rbp+var_14]
+add     eax, 1
+mov     [rbp+var_14], eax
+jmp     loc_100000F2F
+
+Symbolic Expression :
+
+p0 = rdi
+p1 = 0
+p2 = p0
+p3 = p1
+p4 = *(add(p2,p3))
+p5 = sub(p4,1)
+p6 = xor(p5,0x55)
+
+Register Reference Table :
+
+RAX : p2
+RBX : -1
+RCX : p3
+RDX : p6
+RSI : -1
+RDI : (control)
+
+Memory Reference Table :
+
+var_14         : p1
+var_10         : p0
+input_buffer   : [ -1 , -1 , -1 , -1 , -1 , -1 , -1 , -1 ]
+_serial_buffer : [ 0x31 , 0x3E ,0x3D ,0x26 ,0x31 ]
+
+----
+
+(Round8)
+
+Code :
+
+mov     [rbp+var_10], rdi
+mov     [rbp+var_14], 0
+cmp     [rbp+var_14], 5
+jge     loc_100000F7C
+mov     rax, [rbp+var_10]
+movsxd  rcx, [rbp+var_14]
+movsx   edx, byte ptr [rax+rcx]
+sub     edx, 1
+xor     edx, 55h
+mov     rax, cs:_serial           &lt;- Point
+movsxd  rcx, [rbp+var_14]
+movsx   esi, byte ptr [rax+rcx]
+cmp     edx, esi
+jz      loc_100000F6E
+mov     [rbp+var_4], 1
+jmp     loc_100000F83
+mov     eax, [rbp+var_14]
+add     eax, 1
+mov     [rbp+var_14], eax
+jmp     loc_100000F2F
+
+Symbolic Expression :
+
+p0 = rdi
+p1 = 0
+p2 = p0
+p3 = p1
+p4 = *(add(p2,p3))
+p5 = sub(p4,1)
+p6 = xor(p5,0x55)
+p7 = _serial
+
+Register Reference Table :
+
+RAX : p7
+RBX : -1
+RCX : p3
+RDX : p6
+RSI : -1
+RDI : (control)
+
+Memory Reference Table :
+
+var_14         : p1
+var_10         : p0
+input_buffer   : [ -1 , -1 , -1 , -1 , -1 , -1 , -1 , -1 ]
+_serial_buffer : [ 0x31 , 0x3E ,0x3D ,0x26 ,0x31 ]
+
+----
+
+(Round9)
+
+Code :
+
+mov     [rbp+var_10], rdi
+mov     [rbp+var_14], 0
+cmp     [rbp+var_14], 5
+jge     loc_100000F7C
+mov     rax, [rbp+var_10]
+movsxd  rcx, [rbp+var_14]
+movsx   edx, byte ptr [rax+rcx]
+sub     edx, 1
+xor     edx, 55h
+mov     rax, cs:_serial
+movsxd  rcx, [rbp+var_14]         &lt;- Point
+movsx   esi, byte ptr [rax+rcx]
+cmp     edx, esi
+jz      loc_100000F6E
+mov     [rbp+var_4], 1
+jmp     loc_100000F83
+mov     eax, [rbp+var_14]
+add     eax, 1
+mov     [rbp+var_14], eax
+jmp     loc_100000F2F
+
+Symbolic Expression :
+
+p0 = rdi
+p1 = 0
+p2 = p0
+p3 = p1
+p4 = *(add(p2,p3))
+p5 = sub(p4,1)
+p6 = xor(p5,0x55)
+p7 = _serial
+p8 = p1
+
+Register Reference Table :
+
+RAX : p7
+RBX : -1
+RCX : p8
+RDX : p6
+RSI : -1
+RDI : (control)
+
+Memory Reference Table :
+
+var_14         : p1
+var_10         : p0
+input_buffer   : [ -1 , -1 , -1 , -1 , -1 , -1 , -1 , -1 ]
+_serial_buffer : [ 0x31 , 0x3E ,0x3D ,0x26 ,0x31 ]
+
+----
+
+(Round10)
+
+Code :
+
+mov     [rbp+var_10], rdi
+mov     [rbp+var_14], 0
+cmp     [rbp+var_14], 5
+jge     loc_100000F7C
+mov     rax, [rbp+var_10]
+movsxd  rcx, [rbp+var_14]
+movsx   edx, byte ptr [rax+rcx]
+sub     edx, 1
+xor     edx, 55h
+mov     rax, cs:_serial
+movsxd  rcx, [rbp+var_14]
+movsx   esi, byte ptr [rax+rcx]   &lt;- Point
+cmp     edx, esi
+jz      loc_100000F6E
+mov     [rbp+var_4], 1
+jmp     loc_100000F83
+mov     eax, [rbp+var_14]
+add     eax, 1
+mov     [rbp+var_14], eax
+jmp     loc_100000F2F
+
+Symbolic Expression :
+
+p0 = rdi
+p1 = 0
+p2 = p0
+p3 = p1
+p4 = *(add(p2,p3))
+p5 = sub(p4,1)
+p6 = xor(p5,0x55)
+p7 = _serial
+p8 = p1
+p9 = *(add(p7,p8))
+
+Register Reference Table :
+
+RAX : p7
+RBX : -1
+RCX : p8
+RDX : p6
+RSI : p9
+RDI : (control)
+
+Memory Reference Table :
+
+var_14         : p1
+var_10         : p0
+input_buffer   : [ -1 , -1 , -1 , -1 , -1 , -1 , -1 , -1 ]
+_serial_buffer : [ 0x31 , 0x3E ,0x3D ,0x26 ,0x31 ]
+
+----
+
+(Round11)
+
+Code :
+
+mov     [rbp+var_10], rdi
+mov     [rbp+var_14], 0
+cmp     [rbp+var_14], 5
+jge     loc_100000F7C
+mov     rax, [rbp+var_10]
+movsxd  rcx, [rbp+var_14]
+movsx   edx, byte ptr [rax+rcx]
+sub     edx, 1
+xor     edx, 55h
+mov     rax, cs:_serial
+movsxd  rcx, [rbp+var_14]
+movsx   esi, byte ptr [rax+rcx]
+cmp     edx, esi                  &lt;- Point ,Check EDX and ESI ..
+jz      loc_100000F6E
+mov     [rbp+var_4], 1
+jmp     loc_100000F83
+mov     eax, [rbp+var_14]
+add     eax, 1
+mov     [rbp+var_14], eax
+jmp     loc_100000F2F
+
+Symbolic Expression :
+
+p0 = rdi
+p1 = 0
+p2 = p0
+p3 = p1
+p4 = *(add(p2,p3))
+p5 = sub(p4,1)
+p6 = xor(p5,0x55)
+p7 = _serial
+p8 = p1
+p9 = *(add(p7,p8))
+
+Register Reference Table :
+
+RAX : p7
+RBX : -1
+RCX : p8
+RDX : p6
+RSI : p9
+RDI : (control)
+
+Memory Reference Table :
+
+var_14         : p1
+var_10         : p0
+input_buffer   : [ -1 , -1 , -1 , -1 , -1 , -1 , -1 , -1 ]
+_serial_buffer : [ 0x31 , 0x3E ,0x3D ,0x26 ,0x31 ]
+
+</code></pre>
+<p>我们对<code>cmp edx, esi</code> 进行组合,结果如下:</p>
+<pre><code class="language-txt">
+(RDX == RSI) =&gt; (p6 == p9) =&gt; (xor(sub(*(add(p0,p1)),1),0x55) == (*(add(_serial,p1)))) =&gt; (xor(sub(*(add(rdi,0)),1),0x55) == (*(add(_serial,0)))) =&gt; (xor(sub(*(add(rdi,0)),1),0x55) == (0x31)) =&gt; (xor(sub(X1,1),0x55) == (0x31))
+
+</code></pre>
+<p>接下来我们继续往下执行.</p>
+<pre><code class="language-txt">
+(Round12)
+
+Code :
+
+mov     [rbp+var_10], rdi
+mov     [rbp+var_14], 0
+cmp     [rbp+var_14], 5
+jge     loc_100000F7C
+mov     rax, [rbp+var_10]
+movsxd  rcx, [rbp+var_14]
+movsx   edx, byte ptr [rax+rcx]
+sub     edx, 1
+xor     edx, 55h
+mov     rax, cs:_serial
+movsxd  rcx, [rbp+var_14]
+movsx   esi, byte ptr [rax+rcx]
+cmp     edx, esi
+jz      loc_100000F6E
+mov     [rbp+var_4], 1            &lt;- Point
+jmp     loc_100000F83
+mov     eax, [rbp+var_14]
+add     eax, 1
+mov     [rbp+var_14], eax
+jmp     loc_100000F2F
+
+Symbolic Expression :
+
+p0 = rdi
+p1 = 0
+p2 = p0
+p3 = p1
+p4 = *(add(p2,p3))
+p5 = sub(p4,1)
+p6 = xor(p5,0x55)
+p7 = _serial
+p8 = p1
+p9 = *(add(p7,p8))
+p10 = 1
+
+Register Reference Table :
+
+RAX : p7
+RBX : -1
+RCX : p8
+RDX : p6
+RSI : p9
+RDI : (control)
+
+Memory Reference Table :
+
+var_4          : p10
+var_14         : p1
+var_10         : p0
+input_buffer   : [ -1 , -1 , -1 , -1 , -1 , -1 , -1 , -1 ]
+_serial_buffer : [ 0x31 , 0x3E ,0x3D ,0x26 ,0x31 ]
+
+----
+
+(Round13)
+
+Code :
+
+mov     [rbp+var_10], rdi
+mov     [rbp+var_14], 0
+cmp     [rbp+var_14], 5
+jge     loc_100000F7C
+mov     rax, [rbp+var_10]
+movsxd  rcx, [rbp+var_14]
+movsx   edx, byte ptr [rax+rcx]
+sub     edx, 1
+xor     edx, 55h
+mov     rax, cs:_serial
+movsxd  rcx, [rbp+var_14]
+movsx   esi, byte ptr [rax+rcx]
+cmp     edx, esi
+jz      loc_100000F6E
+mov     [rbp+var_4], 1
+jmp     loc_100000F83
+mov     eax, [rbp+var_14]         &lt;- Point
+add     eax, 1
+mov     [rbp+var_14], eax
+jmp     loc_100000F2F
+
+Symbolic Expression :
+
+p0 = rdi
+p1 = 0
+p2 = p0
+p3 = p1
+p4 = *(add(p2,p3))
+p5 = sub(p4,1)
+p6 = xor(p5,0x55)
+p7 = _serial
+p8 = p1
+p9 = *(add(p7,p8))
+p10 = 1
+p11 = p1
+
+Register Reference Table :
+
+RAX : p11
+RBX : -1
+RCX : p8
+RDX : p6
+RSI : p9
+RDI : (control)
+
+Memory Reference Table :
+
+var_4          : p10
+var_14         : p1
+var_10         : p0
+input_buffer   : [ -1 , -1 , -1 , -1 , -1 , -1 , -1 , -1 ]
+_serial_buffer : [ 0x31 , 0x3E ,0x3D ,0x26 ,0x31 ]
+
+----
+
+(Round14)
+
+Code :
+
+mov     [rbp+var_10], rdi
+mov     [rbp+var_14], 0
+cmp     [rbp+var_14], 5
+jge     loc_100000F7C
+mov     rax, [rbp+var_10]
+movsxd  rcx, [rbp+var_14]
+movsx   edx, byte ptr [rax+rcx]
+sub     edx, 1
+xor     edx, 55h
+mov     rax, cs:_serial
+movsxd  rcx, [rbp+var_14]
+movsx   esi, byte ptr [rax+rcx]
+cmp     edx, esi
+jz      loc_100000F6E
+mov     [rbp+var_4], 1
+jmp     loc_100000F83
+mov     eax, [rbp+var_14]
+add     eax, 1                    &lt;- Point
+mov     [rbp+var_14], eax
+jmp     loc_100000F2F
+
+Symbolic Expression :
+
+p0 = rdi
+p1 = 0
+p2 = p0
+p3 = p1
+p4 = *(add(p2,p3))
+p5 = sub(p4,1)
+p6 = xor(p5,0x55)
+p7 = _serial
+p8 = p1
+p9 = *(add(p7,p8))
+p10 = 1
+p11 = p1
+p12 = add(p11,1)
+
+Register Reference Table :
+
+RAX : p12
+RBX : -1
+RCX : p8
+RDX : p6
+RSI : p9
+RDI : (control)
+
+Memory Reference Table :
+
+var_4          : p10
+var_14         : p1
+var_10         : p0
+input_buffer   : [ -1 , -1 , -1 , -1 , -1 , -1 , -1 , -1 ]
+_serial_buffer : [ 0x31 , 0x3E ,0x3D ,0x26 ,0x31 ]
+
+----
+
+(Round15)
+
+Code :
+
+mov     [rbp+var_10], rdi
+mov     [rbp+var_14], 0
+cmp     [rbp+var_14], 5
+jge     loc_100000F7C
+mov     rax, [rbp+var_10]
+movsxd  rcx, [rbp+var_14]
+movsx   edx, byte ptr [rax+rcx]
+sub     edx, 1
+xor     edx, 55h
+mov     rax, cs:_serial
+movsxd  rcx, [rbp+var_14]
+movsx   esi, byte ptr [rax+rcx]
+cmp     edx, esi
+jz      loc_100000F6E
+mov     [rbp+var_4], 1
+jmp     loc_100000F83
+mov     eax, [rbp+var_14]
+add     eax, 1
+mov     [rbp+var_14], eax         &lt;- Point
+jmp     loc_100000F2F
+
+Symbolic Expression :
+
+p0 = rdi
+p1 = 0
+p2 = p0
+p3 = p1
+p4 = *(add(p2,p3))
+p5 = sub(p4,1)
+p6 = xor(p5,0x55)
+p7 = _serial
+p8 = p1
+p9 = *(add(p7,p8))
+p10 = 1
+p11 = p1
+p12 = add(p11,1)
+p13 = p12
+
+Register Reference Table :
+
+RAX : p12
+RBX : -1
+RCX : p8
+RDX : p6
+RSI : p9
+RDI : (control)
+
+Memory Reference Table :
+
+var_4          : p10
+var_14         : p13
+var_10         : p0
+input_buffer   : [ -1 , -1 , -1 , -1 , -1 , -1 , -1 , -1 ]
+_serial_buffer : [ 0x31 , 0x3E ,0x3D ,0x26 ,0x31 ]
+
+----
+
+(Round16)
+
+Code :
+
+mov     [rbp+var_10], rdi
+mov     [rbp+var_14], 0
+cmp     [rbp+var_14], 5
+jge     loc_100000F7C
+mov     rax, [rbp+var_10]         &lt;- Point
+movsxd  rcx, [rbp+var_14]
+movsx   edx, byte ptr [rax+rcx]
+sub     edx, 1
+xor     edx, 55h
+mov     rax, cs:_serial
+movsxd  rcx, [rbp+var_14]
+movsx   esi, byte ptr [rax+rcx]
+cmp     edx, esi
+jz      loc_100000F6E
+mov     [rbp+var_4], 1
+jmp     loc_100000F83
+mov     eax, [rbp+var_14]
+add     eax, 1
+mov     [rbp+var_14], eax
+jmp     loc_100000F2F
+
+Symbolic Expression :
+
+p0 = rdi
+p1 = 0
+p2 = p0
+p3 = p1
+p4 = *(add(p2,p3))
+p5 = sub(p4,1)
+p6 = xor(p5,0x55)
+p7 = _serial
+p8 = p1
+p9 = *(add(p7,p8))
+p10 = 1
+p11 = p1
+p12 = add(p11,1)
+p13 = p12
+p14 = p0
+
+Register Reference Table :
+
+RAX : p14
+RBX : -1
+RCX : p8
+RDX : p6
+RSI : p9
+RDI : (control)
+
+Memory Reference Table :
+
+var_4          : p10
+var_14         : p13
+var_10         : p0
+input_buffer   : [ -1 , -1 , -1 , -1 , -1 , -1 , -1 , -1 ]
+_serial_buffer : [ 0x31 , 0x3E ,0x3D ,0x26 ,0x31 ]
+
+----
+
+(Round17)
+
+Code :
+
+mov     [rbp+var_10], rdi
+mov     [rbp+var_14], 0
+cmp     [rbp+var_14], 5
+jge     loc_100000F7C
+mov     rax, [rbp+var_10]
+movsxd  rcx, [rbp+var_14]         &lt;- Point
+movsx   edx, byte ptr [rax+rcx]
+sub     edx, 1
+xor     edx, 55h
+mov     rax, cs:_serial
+movsxd  rcx, [rbp+var_14]
+movsx   esi, byte ptr [rax+rcx]
+cmp     edx, esi
+jz      loc_100000F6E
+mov     [rbp+var_4], 1
+jmp     loc_100000F83
+mov     eax, [rbp+var_14]
+add     eax, 1
+mov     [rbp+var_14], eax
+jmp     loc_100000F2F
+
+Symbolic Expression :
+
+p0 = rdi
+p1 = 0
+p2 = p0
+p3 = p1
+p4 = *(add(p2,p3))
+p5 = sub(p4,1)
+p6 = xor(p5,0x55)
+p7 = _serial
+p8 = p1
+p9 = *(add(p7,p8))
+p10 = 1
+p11 = p1
+p12 = add(p11,1)
+p13 = p12
+p14 = p0
+p15 = p13
+
+Register Reference Table :
+
+RAX : p14
+RBX : -1
+RCX : p15
+RDX : p6
+RSI : p9
+RDI : (control)
+
+Memory Reference Table :
+
+var_4          : p10
+var_14         : p13
+var_10         : p0
+input_buffer   : [ -1 , -1 , -1 , -1 , -1 , -1 , -1 , -1 ]
+_serial_buffer : [ 0x31 , 0x3E ,0x3D ,0x26 ,0x31 ]
+
+----
+
+(Round18)
+
+Code :
+
+mov     [rbp+var_10], rdi
+mov     [rbp+var_14], 0
+cmp     [rbp+var_14], 5
+jge     loc_100000F7C
+mov     rax, [rbp+var_10]
+movsxd  rcx, [rbp+var_14]
+movsx   edx, byte ptr [rax+rcx]   &lt;- Point
+sub     edx, 1
+xor     edx, 55h
+mov     rax, cs:_serial
+movsxd  rcx, [rbp+var_14]
+movsx   esi, byte ptr [rax+rcx]
+cmp     edx, esi
+jz      loc_100000F6E
+mov     [rbp+var_4], 1
+jmp     loc_100000F83
+mov     eax, [rbp+var_14]
+add     eax, 1
+mov     [rbp+var_14], eax
+jmp     loc_100000F2F
+
+Symbolic Expression :
+
+p0 = rdi
+p1 = 0
+p2 = p0
+p3 = p1
+p4 = *(add(p2,p3))
+p5 = sub(p4,1)
+p6 = xor(p5,0x55)
+p7 = _serial
+p8 = p1
+p9 = *(add(p7,p8))
+p10 = 1
+p11 = p1
+p12 = add(p11,1)
+p13 = p12
+p14 = p0
+p15 = p13
+p16 = *(add(p14,p15))
+
+Register Reference Table :
+
+RAX : p14
+RBX : -1
+RCX : p15
+RDX : p16
+RSI : p9
+RDI : (control)
+
+Memory Reference Table :
+
+var_4          : p10
+var_14         : p13
+var_10         : p0
+input_buffer   : [ -1 , -1 , -1 , -1 , -1 , -1 , -1 , -1 ]
+_serial_buffer : [ 0x31 , 0x3E ,0x3D ,0x26 ,0x31 ]
+
+----
+
+(Round19)
+
+Code :
+
+mov     [rbp+var_10], rdi
+mov     [rbp+var_14], 0
+cmp     [rbp+var_14], 5
+jge     loc_100000F7C
+mov     rax, [rbp+var_10]
+movsxd  rcx, [rbp+var_14]
+movsx   edx, byte ptr [rax+rcx]
+sub     edx, 1                    &lt;- Point
+xor     edx, 55h
+mov     rax, cs:_serial
+movsxd  rcx, [rbp+var_14]
+movsx   esi, byte ptr [rax+rcx]
+cmp     edx, esi
+jz      loc_100000F6E
+mov     [rbp+var_4], 1
+jmp     loc_100000F83
+mov     eax, [rbp+var_14]
+add     eax, 1
+mov     [rbp+var_14], eax
+jmp     loc_100000F2F
+
+Symbolic Expression :
+
+p0 = rdi
+p1 = 0
+p2 = p0
+p3 = p1
+p4 = *(add(p2,p3))
+p5 = sub(p4,1)
+p6 = xor(p5,0x55)
+p7 = _serial
+p8 = p1
+p9 = *(add(p7,p8))
+p10 = 1
+p11 = p1
+p12 = add(p11,1)
+p13 = p12
+p14 = p0
+p15 = p13
+p16 = *(add(p14,p15))
+p17 = sub(p16,1)
+
+Register Reference Table :
+
+RAX : p14
+RBX : -1
+RCX : p15
+RDX : p17
+RSI : p9
+RDI : (control)
+
+Memory Reference Table :
+
+var_4          : p10
+var_14         : p13
+var_10         : p0
+input_buffer   : [ -1 , -1 , -1 , -1 , -1 , -1 , -1 , -1 ]
+_serial_buffer : [ 0x31 , 0x3E ,0x3D ,0x26 ,0x31 ]
+
+----
+
+(Round20)
+
+Code :
+
+mov     [rbp+var_10], rdi
+mov     [rbp+var_14], 0
+cmp     [rbp+var_14], 5
+jge     loc_100000F7C
+mov     rax, [rbp+var_10]
+movsxd  rcx, [rbp+var_14]
+movsx   edx, byte ptr [rax+rcx]
+sub     edx, 1
+xor     edx, 55h                  &lt;- Point
+mov     rax, cs:_serial
+movsxd  rcx, [rbp+var_14]
+movsx   esi, byte ptr [rax+rcx]
+cmp     edx, esi
+jz      loc_100000F6E
+mov     [rbp+var_4], 1
+jmp     loc_100000F83
+mov     eax, [rbp+var_14]
+add     eax, 1
+mov     [rbp+var_14], eax
+jmp     loc_100000F2F
+
+Symbolic Expression :
+
+p0 = rdi
+p1 = 0
+p2 = p0
+p3 = p1
+p4 = *(add(p2,p3))
+p5 = sub(p4,1)
+p6 = xor(p5,0x55)
+p7 = _serial
+p8 = p1
+p9 = *(add(p7,p8))
+p10 = 1
+p11 = p1
+p12 = add(p11,1)
+p13 = p12
+p14 = p0
+p15 = p13
+p16 = *(add(p14,p15))
+p17 = sub(p16,1)
+p18 = xor(p17,0x55)
+
+Register Reference Table :
+
+RAX : p14
+RBX : -1
+RCX : p15
+RDX : p18
+RSI : p9
+RDI : (control)
+
+Memory Reference Table :
+
+var_4          : p10
+var_14         : p13
+var_10         : p0
+input_buffer   : [ -1 , -1 , -1 , -1 , -1 , -1 , -1 , -1 ]
+_serial_buffer : [ 0x31 , 0x3E ,0x3D ,0x26 ,0x31 ]
+
+----
+
+(Round21)
+
+Code :
+
+mov     [rbp+var_10], rdi
+mov     [rbp+var_14], 0
+cmp     [rbp+var_14], 5
+jge     loc_100000F7C
+mov     rax, [rbp+var_10]
+movsxd  rcx, [rbp+var_14]
+movsx   edx, byte ptr [rax+rcx]
+sub     edx, 1
+xor     edx, 55h
+mov     rax, cs:_serial           &lt;- Point
+movsxd  rcx, [rbp+var_14]
+movsx   esi, byte ptr [rax+rcx]
+cmp     edx, esi
+jz      loc_100000F6E
+mov     [rbp+var_4], 1
+jmp     loc_100000F83
+mov     eax, [rbp+var_14]
+add     eax, 1
+mov     [rbp+var_14], eax
+jmp     loc_100000F2F
+
+Symbolic Expression :
+
+p0 = rdi
+p1 = 0
+p2 = p0
+p3 = p1
+p4 = *(add(p2,p3))
+p5 = sub(p4,1)
+p6 = xor(p5,0x55)
+p7 = _serial
+p8 = p1
+p9 = *(add(p7,p8))
+p10 = 1
+p11 = p1
+p12 = add(p11,1)
+p13 = p12
+p14 = p0
+p15 = p13
+p16 = *(add(p14,p15))
+p17 = sub(p16,1)
+p18 = xor(p17,0x55)
+p19 = _serial
+
+Register Reference Table :
+
+RAX : p19
+RBX : -1
+RCX : p15
+RDX : p18
+RSI : p9
+RDI : (control)
+
+Memory Reference Table :
+
+var_4          : p10
+var_14         : p13
+var_10         : p0
+input_buffer   : [ -1 , -1 , -1 , -1 , -1 , -1 , -1 , -1 ]
+_serial_buffer : [ 0x31 , 0x3E ,0x3D ,0x26 ,0x31 ]
+
+----
+
+(Round22)
+
+Code :
+
+mov     [rbp+var_10], rdi
+mov     [rbp+var_14], 0
+cmp     [rbp+var_14], 5
+jge     loc_100000F7C
+mov     rax, [rbp+var_10]
+movsxd  rcx, [rbp+var_14]
+movsx   edx, byte ptr [rax+rcx]
+sub     edx, 1
+xor     edx, 55h
+mov     rax, cs:_serial
+movsxd  rcx, [rbp+var_14]         &lt;- Point
+movsx   esi, byte ptr [rax+rcx]
+cmp     edx, esi
+jz      loc_100000F6E
+mov     [rbp+var_4], 1
+jmp     loc_100000F83
+mov     eax, [rbp+var_14]
+add     eax, 1
+mov     [rbp+var_14], eax
+jmp     loc_100000F2F
+
+Symbolic Expression :
+
+p0 = rdi
+p1 = 0
+p2 = p0
+p3 = p1
+p4 = *(add(p2,p3))
+p5 = sub(p4,1)
+p6 = xor(p5,0x55)
+p7 = _serial
+p8 = p1
+p9 = *(add(p7,p8))
+p10 = 1
+p11 = p1
+p12 = add(p11,1)
+p13 = p12
+p14 = p0
+p15 = p13
+p16 = *(add(p14,p15))
+p17 = sub(p16,1)
+p18 = xor(p17,0x55)
+p19 = _serial
+p20 = p13
+
+Register Reference Table :
+
+RAX : p19
+RBX : -1
+RCX : p20
+RDX : p18
+RSI : p9
+RDI : (control)
+
+Memory Reference Table :
+
+var_4          : p10
+var_14         : p13
+var_10         : p0
+input_buffer   : [ -1 , -1 , -1 , -1 , -1 , -1 , -1 , -1 ]
+_serial_buffer : [ 0x31 , 0x3E ,0x3D ,0x26 ,0x31 ]
+
+----
+
+(Round23)
+
+Code :
+
+mov     [rbp+var_10], rdi
+mov     [rbp+var_14], 0
+cmp     [rbp+var_14], 5
+jge     loc_100000F7C
+mov     rax, [rbp+var_10]
+movsxd  rcx, [rbp+var_14]
+movsx   edx, byte ptr [rax+rcx]
+sub     edx, 1
+xor     edx, 55h
+mov     rax, cs:_serial
+movsxd  rcx, [rbp+var_14]
+movsx   esi, byte ptr [rax+rcx]   &lt;- Point
+cmp     edx, esi
+jz      loc_100000F6E
+mov     [rbp+var_4], 1
+jmp     loc_100000F83
+mov     eax, [rbp+var_14]
+add     eax, 1
+mov     [rbp+var_14], eax
+jmp     loc_100000F2F
+
+Symbolic Expression :
+
+p0 = rdi
+p1 = 0
+p2 = p0
+p3 = p1
+p4 = *(add(p2,p3))
+p5 = sub(p4,1)
+p6 = xor(p5,0x55)
+p7 = _serial
+p8 = p1
+p9 = *(add(p7,p8))
+p10 = 1
+p11 = p1
+p12 = add(p11,1)
+p13 = p12
+p14 = p0
+p15 = p13
+p16 = *(add(p14,p15))
+p17 = sub(p16,1)
+p18 = xor(p17,0x55)
+p19 = _serial
+p20 = p13
+p21 = *(add(p19,p20))
+
+Register Reference Table :
+
+RAX : p19
+RBX : -1
+RCX : p20
+RDX : p18
+RSI : p21
+RDI : (control)
+
+Memory Reference Table :
+
+var_4          : p10
+var_14         : p13
+var_10         : p0
+input_buffer   : [ -1 , -1 , -1 , -1 , -1 , -1 , -1 , -1 ]
+_serial_buffer : [ 0x31 , 0x3E ,0x3D ,0x26 ,0x31 ]
+
+----
+
+(Round24)
+
+Code :
+
+mov     [rbp+var_10], rdi
+mov     [rbp+var_14], 0
+cmp     [rbp+var_14], 5
+jge     loc_100000F7C
+mov     rax, [rbp+var_10]
+movsxd  rcx, [rbp+var_14]
+movsx   edx, byte ptr [rax+rcx]
+sub     edx, 1
+xor     edx, 55h
+mov     rax, cs:_serial
+movsxd  rcx, [rbp+var_14]
+movsx   esi, byte ptr [rax+rcx]
+cmp     edx, esi                  &lt;- Point
+jz      loc_100000F6E
+mov     [rbp+var_4], 1
+jmp     loc_100000F83
+mov     eax, [rbp+var_14]
+add     eax, 1
+mov     [rbp+var_14], eax
+jmp     loc_100000F2F
+
+Symbolic Expression :
+
+p0 = rdi
+p1 = 0
+p2 = p0
+p3 = p1
+p4 = *(add(p2,p3))
+p5 = sub(p4,1)
+p6 = xor(p5,0x55)
+p7 = _serial
+p8 = p1
+p9 = *(add(p7,p8))
+p10 = 1
+p11 = p1
+p12 = add(p11,1)
+p13 = p12
+p14 = p0
+p15 = p13
+p16 = *(add(p14,p15))
+p17 = sub(p16,1)
+p18 = xor(p17,0x55)
+p19 = _serial
+p20 = p13
+p21 = *(add(p19,p20))
+
+Register Reference Table :
+
+RAX : p19
+RBX : -1
+RCX : p20
+RDX : p18
+RSI : p21
+RDI : (control)
+
+Memory Reference Table :
+
+var_4          : p10
+var_14         : p13
+var_10         : p0
+input_buffer   : [ -1 , -1 , -1 , -1 , -1 , -1 , -1 , -1 ]
+_serial_buffer : [ 0x31 , 0x3E ,0x3D ,0x26 ,0x31 ]
+
+</code></pre>
+<p>在第二轮循环里面,可以看到var_14 经过了一次循环之后进行了自增,读取input_buffer 和_serial_buffer 的下一个内容.然后我们对第二轮循环进行约束条件构造</p>
+<pre><code class="language-txt">
+(RDX == RSI) =&gt; (p21 == p18) =&gt; (xor(sub(*(add(p0,p13)),1),0x55) == (*(add(_serial,p13)))) =&gt; (xor(sub(*(add(rdi,add(p11,1))),1),0x55) == (*(add(_serial,add(p11,1))))) =&gt; (xor(sub(*(add(rdi,add(p1,1))),1),0x55) == (*(add(_serial,add(p1,1))))) =&gt; (xor(sub(*(add(rdi,add(0,1))),1),0x55) == (*(add(_serial,add(0,1)))))
+
+</code></pre>
+<p>rdi 指向的是input_buffer 的缓冲区地址,那么通过符号执行现在可以计算出要读的缓存位置就是add(0,1) = 1 .我们继续精简约束:</p>
+<pre><code class="language-txt">
+(RDX == RSI) =&gt; (xor(sub(*(add(rdi,add(0,1))),1),0x55) == (*(add(_serial,add(0,1))))) =&gt; (xor(sub(X2,1),0x55) == (0x3E))
+
+</code></pre>
+<p>经过上面对寄存器和内存的布局分析理解静态符号执行的原理之后.接下来我们来思考一个问题,如何对我们希望执行的条件分支进行约束判断呢?我们继续回来阅读测试代码:</p>
+<pre><code class="language-c">
+char *serial = &quot;\x31\x3e\x3d\x26\x31&quot;;
+
+int check_password(char *ptr)
+{
+  int i = 0;
+  while (i &lt; 5){
+    if (((ptr[i] - 1) ^ 0x55) != serial[i])
+      return 1; /* bad password */
+    i++;
+  }
+  return 0; /* good password */
+}
+
+</code></pre>
+<p>注意代码中的if 判断,如果ptr 中的内容经过异或之后不符合结果,那就自动退出程序执行,所以我们寻求ptr 中唯一正确解的字符串内容,关键的要点就是要对<code>cmp edx,esi</code> 进行检验.</p>
+<pre><code class="language-txt">
+0x0100000F2F:    cmp     [rbp+var_14], 5
+0x0100000F33:    jge     loc_100000F7C      &lt;-  The condition of for check ..
+                 ;  ...
+0x0100000F5A:    cmp     edx, esi           &lt;-  Check Condition ..
+0x0100000F5C:    jz      loc_100000F6E      &lt;-  is equal
+0x0100000F62:    mov     [rbp+var_4], 1
+0x0100000F69:    jmp     loc_100000F83      &lt;-  not equal than return
+0x0100000F6E:    mov     eax, [rbp+var_14]
+0x0100000F71:    add     eax, 1
+0x0100000F74:    mov     [rbp+var_14], eax
+0x0100000F77:    jmp     loc_100000F2F      &lt;-  Jump to for condition check ..
+0x0100000F7C:    mov     [rbp+var_4], 0
+0x0100000F83:    mov     eax, [rbp+var_4]   &lt;-  Get Return Value
+0x0100000F86:    pop     rbp
+0x0100000F87:    retn
+
+</code></pre>
+<p><code>cmp edx,esi</code> 对边edx 和esi 的值,然后根据两者相等来判断是否要进行跳转到地址0x100000F6E ,接下来我们希望要在0x0100000F5A 这里设置断点计算推出edx 适合条件判断的值应该怎么操作呢?这就需要引入动态符号执行,我们以动态符号执行引擎Triton 为例子编写一个Fuzzing 脚本,这个脚本的原理是通过在<code>cmp edx,esi</code> 中进行求解得出输入缓冲区的内存:</p>
+<pre><code class="language-python">
+from triton import TritonContext, ARCH, Instruction, MemoryAccess, CPUSIZE, MODE
+
+
+function_code = {                                  #   &lt;serial&gt; function
+    0x100000F20 : '\x55' ,                         #  push    rbp
+    0x100000F21 : '\x48\x89\xe5' ,                 #  mov     rbp, rsp
+    0x100000F24 : '\x48\x89\x7d\xf0' ,             #  mov     [rbp+var_10], rdi
+    0x100000F28 : '\xc7\x45\xec\x00\x00\x00\x00' , #  mov     [rbp+var_14], 0
+    0x100000F2F : '\x83\x7d\xec\x05' ,             #  cmp     [rbp+var_14], 5
+    0x100000F33 : '\x0f\x8d\x43\x00\x00\x00' ,     #  jge     loc_100000F7C
+    0x100000F39 : '\x48\x8b\x45\xf0' ,             #  mov     rax, [rbp+var_10]
+    0x100000F3D : '\x48\x63\x4d\xec' ,             #  movsxd  rcx, [rbp+var_14]
+    0x100000F41 : '\x0f\xbe\x14\x08' ,             #  movsx   edx, byte ptr [rax+rcx]
+    0x100000F45 : '\x83\xea\x01' ,                 #  sub     edx, 1
+    0x100000F48 : '\x83\xf2\x55' ,                 #  xor     edx, 55h
+    0x100000F4B : '\x48\x8b\x05\xae\x00\x00\x00' , #  mov     rax, cs:_serial
+    0x100000F52 : '\x48\x63\x4d\xec' ,             #  movsxd  rcx, [rbp+var_14]
+    0x100000F56 : '\x0f\xbe\x34\x08' ,             #  movsx   esi, byte ptr [rax+rcx]
+    0x100000F5A : '\x39\xf2' ,                     #  cmp     edx, esi
+    0x100000F5C : '\x0f\x84\x0c\x00\x00\x00' ,     #  jz      loc_100000F6E
+    0x100000F62 : '\xc7\x45\xfc\x01\x00\x00\x00' , #  mov     [rbp+var_4], 1
+    0x100000F69 : '\xe9\x15\x00\x00\x00' ,         #  jmp     loc_100000F8
+    0x100000F6E : '\x8b\x45\xec' ,                 #  mov     eax, [rbp+var_14]
+    0x100000F71 : '\x83\xc0\x01' ,                 #  add     eax, 1
+    0x100000F74 : '\x89\x45\xec' ,                 #  mov     [rbp+var_14], eax
+    0x100000F77 : '\xe9\xb3\xff\xff\xff' ,         #  jmp     loc_100000F2F
+    0x100000F7C : '\xc7\x45\xfc\x00\x00\x00\x00' , #  mov     [rbp+var_4], 0
+    0x100000F83 : '\x8b\x45\xfc' ,                 #  mov     eax, [rbp+var_4]
+    0x100000F86 : '\x5d' ,                         #  pop     rbp
+    0x100000F87 : '\xc3' ,                         #  retn
+}
+
+Triton = TritonContext()
+
+Triton.setArchitecture(ARCH.X86_64)
+Triton.enableMode(MODE.ALIGNED_MEMORY, True)
+
+
+def run(eip_address) :
+    while eip_address in function_code :
+        #print 'Current Address:',hex(eip_address)
+        instruction_data = Instruction()
+
+        instruction_data.setOpcode(function_code[eip_address])
+        instruction_data.setAddress(eip_address)
+
+        Triton.processing(instruction_data)
+
+        eip_address = Triton.getRegisterAst(Triton.registers.rip).evaluate()
+
+def init_context(input_data) :
+    Triton.concretizeAllRegister()  #  clean register record
+    Triton.concretizeAllMemory()    #  clean memory record
+
+    for input_data_address,input_data_value in input_data.items() :
+        Triton.setConcreteMemoryValue(input_data_address,input_data_value)  #  input data buffer .
+        Triton.convertMemoryToSymbolicVariable(MemoryAccess(input_data_address, CPUSIZE.BYTE))
+        Triton.convertMemoryToSymbolicVariable(MemoryAccess(input_data_address+1, CPUSIZE.BYTE))
+
+    Triton.setConcreteMemoryValue(0x100001000, 0x31)  #  Setting data for global data string .
+    Triton.setConcreteMemoryValue(0x100001000, 0x3e)
+    Triton.setConcreteMemoryValue(0x100001000, 0x3d)
+    Triton.setConcreteMemoryValue(0x100001000, 0x26)
+    Triton.setConcreteMemoryValue(0x100001000, 0x31)
+
+    Triton.setConcreteRegisterValue(Triton.registers.rdi, 0x1000)  #  RDI is input buffer .
+    Triton.setConcreteRegisterValue(Triton.registers.rsp, 0x7fffffff)
+    Triton.setConcreteRegisterValue(Triton.registers.rbp, 0x7fffffff)
+
+def get_path() :
+    code_stream_record_list = Triton.getPathConstraints()
+    ast_context = Triton.getAstContext()
+    last_branch = ast_context.equal(ast_context.bvtrue(),ast_context.bvtrue())
+    make_input_data = []
+
+    for code_stream_record_index in code_stream_record_list :
+        if not code_stream_record_index.isMultipleBranches() :
+            continue
+
+        branch_list = code_stream_record_index.getBranchConstraints()
+
+        for branch_index in branch_list :
+            if branch_index['isTaken'] :
+                continue
+
+            models = Triton.getModel(ast_context.land([last_branch,branch_index['constraint']]))
+            print models
+
+            if len(models) == 1 :
+                if models.values()[0].getValue() == 0 :
+                    continue
+
+            temp_data = {}
+
+            for models_address_index,models_value_index in models.items() :
+                symblo = Triton.getSymbolicVariableFromId(models_address_index)
+                temp_data[symblo.getOrigin()] = models_value_index.getValue()
+
+            make_input_data.append(temp_data)
+
+        last_branch = ast_context.land([last_branch,code_stream_record_index.getTakenPathConstraintAst()])
+
+    Triton.clearPathConstraints()
+
+    return make_input_data
+
+
+if __name__ == '__main__' :
+    history_data = []
+    try_list = [{0x1000:0x00}]
+
+    while try_list :
+        print '----'
+        history_data.append(try_list[0])
+        print 'Try input &gt;&gt;&gt;',try_list[0]
+
+        init_context(try_list[0])  #  init Triton Execute Context .
+        run(0x100000F20)           #  try execute
+
+        del try_list[0]
+
+        make_input_data = get_path()  #  calculate path
+
+        for make_input_data_index in make_input_data :
+            if make_input_data_index in try_list or make_input_data_index in history_data :
+                continue
+
+            try_list.append(make_input_data_index)
+
+</code></pre>
+<p>程序运行结果如下:</p>
+<p><img src="pic7/pic4.png" alt="" /></p>
+<p>现在回来对代码进行分析,我们看到下面的代码:</p>
+<pre><code class="language-python">
+def init_context(input_data) :
+    Triton.concretizeAllRegister()  #  clean register record
+    Triton.concretizeAllMemory()    #  clean memory record
+
+</code></pre>
+<p>在Triton 尝试符号执行时首先要把寄存器布局和内存布局的记录全部清空,然后再对内存进行初始值的设定:</p>
+<pre><code class="language-python">
+    #  设置输入内存的值
+    for input_data_address,input_data_value in input_data.items() :
+        Triton.setConcreteMemoryValue(input_data_address,input_data_value)  #  input data buffer .
+        Triton.convertMemoryToSymbolicVariable(MemoryAccess(input_data_address, CPUSIZE.BYTE))
+        Triton.convertMemoryToSymbolicVariable(MemoryAccess(input_data_address+1, CPUSIZE.BYTE))
+
+    #  设置_serial_buffer 的值
+    Triton.setConcreteMemoryValue(0x100001000, 0x31)  #  Setting data for global data string .
+    Triton.setConcreteMemoryValue(0x100001000, 0x3e)
+    Triton.setConcreteMemoryValue(0x100001000, 0x3d)
+    Triton.setConcreteMemoryValue(0x100001000, 0x26)
+    Triton.setConcreteMemoryValue(0x100001000, 0x31)
+
+    #  初始化寄存器的值
+    Triton.setConcreteRegisterValue(Triton.registers.rdi, 0x1000)  #  RDI is input buffer .
+    Triton.setConcreteRegisterValue(Triton.registers.rsp, 0x7fffffff)
+    Triton.setConcreteRegisterValue(Triton.registers.rbp, 0x7fffffff)
+
+</code></pre>
+<p>初始值设置完成之后,接下来就调用<code>run()</code> 执行分析:</p>
+<pre><code class="language-python">
+def run(eip_address) :
+    while eip_address in function_code :
+        #print 'Current Address:',hex(eip_address)
+        instruction_data = Instruction()
+
+        instruction_data.setOpcode(function_code[eip_address])
+        instruction_data.setAddress(eip_address)
+
+        Triton.processing(instruction_data)
+
+        eip_address = Triton.getRegisterAst(Triton.registers.rip).evaluate()  #  执行指令并获取下一个跳转地址
+
+</code></pre>
+<p><code>get_path()</code> 则是我们对程序判断(<code>cmp edx,esi</code>) 的求解过程,精简<code>get_path()</code> 的原理如下:</p>
+<pre><code class="language-python">
+
+def get_path() :
+    code_stream_record_list = Triton.getPathConstraints()  #  获取程序执行的全部符号执行结果
+    ast_context = Triton.getAstContext()
+
+    for code_stream_record_index in code_stream_record_list :
+        if not code_stream_record_index.isMultipleBranches() :  #  判断是不是多分支结构
+            continue
+
+        branch_list = code_stream_record_index.getBranchConstraints()  #  获取分析内容
+
+        for branch_index in branch_list :
+            models = Triton.getModel(ast_context.land([last_branch,branch_index['constraint']]))  #  对分支进行求解
+
+            for models_address_index,models_value_index in models.items() :  #  获取求解数据
+                symblo = Triton.getSymbolicVariableFromId(models_address_index)
+                temp_data[symblo.getOrigin()] = models_value_index.getValue()
+
+        last_branch = ast_context.land([last_branch,code_stream_record_index.getTakenPathConstraintAst()])
+
+    Triton.clearPathConstraints()  #  清除所有执行记录
+
+</code></pre>
+<p>我们输出<code>get_path()</code> 执行的内容看看:</p>
+<p><img src="pic7/pic5.png" alt="" /></p>
+<p>可以看到,输出的内容是经过优化之后的SMT 表达式,z3 最后根据这些表达试来求解出对应的结果.</p>
+<h2 id="程序插桩与代码覆盖率"><a class="header" href="#程序插桩与代码覆盖率">程序插桩与代码覆盖率</a></h2>
+<p>讲述程序插桩这章,我们继续沿用第六章的示例代码来进行分析:</p>
+<pre><code class="language-c">
+#include &lt;memory.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+
+
+enum {
+  MessageType_Hello = 0,
+  MessageType_Execute,
+  MessageType_Data
+};
+
+void execute_command(const unsigned char* command) {
+    system(command);
+}
+
+void decrypt_data(const unsigned char* data_buffer,unsigned char data_buffer_length) {
+    unsigned char* buffer[8] = {0};
+
+    for (unsigned int data_index = 0;data_index &lt; data_buffer_length;++data_index)
+        buffer[data_index] = data_buffer[data_index] ^ 0x65;
+
+    printf(&quot;Recv:%s\n&quot;,&amp;buffer);
+}
+
+int buffer_resolver(const unsigned char* buffer) {
+    unsigned char buffer_length = buffer[0];
+
+    if (2 &lt;= buffer_length)
+        return 0;
+
+    if (MessageType_Hello == buffer[1]) {
+        printf(&quot;Hello\n&quot;);
+    } else if (MessageType_Execute == buffer[1]) {
+        unsigned char* command_buffer = (unsigned char*)malloc(buffer_length - 1);
+
+        memset(&amp;command_buffer,0,buffer_length);
+        memcpy(&amp;command_buffer,&amp;buffer[2],buffer_length - 2);
+
+        execute_command(command_buffer);
+    } else if (MessageType_Data == buffer[1]) {
+        decrypt_data(&amp;buffer[2],buffer_length - 2);
+    }
+
+    return 1;
+}
+
+</code></pre>
+<p>在此,如果我们要对这段代码进行Fuzzing ,那么Fuzzing 入口是<code>buffer_resolver()</code> ,如果要用libFuzzer 对它进行Fuzzing ,代码如下:</p>
+<pre><code class="language-c++">
+extern &quot;C&quot; int LLVMFuzzerTestOneInput(const unsigned char* data,unsigned int size) {
+	return buffer_resolver(data);
+}
+
+</code></pre>
+<p>这样对于Fuzzing buffer_resolver() 函数是一个简单粗暴的方法,那么AFL 对程序进行插桩的原理是怎么样的呢?我们先来分析一下程序执行图</p>
+<p><img src="pic6/pic13.png" alt="" /></p>
+<p>可以看到,对于buffer[1] 的检查涵盖了三个判断语句,对于buffer[0] 的检查也涵盖了一个语句.那么要对程序进行插住分析,关键的一点是在函数入口点和函数内部的判读结构进行插桩,在此记录程序的执行状态.我们先来看看AFL 的实现:</p>
+<pre><code class="language-c">
+static const u8* trampoline_fmt_32 =
+  &quot;\n&quot;
+  &quot;/* --- AFL TRAMPOLINE (32-BIT) --- */\n&quot;
+  &quot;\n&quot;
+  &quot;.align 4\n&quot;
+  &quot;\n&quot;
+  &quot;leal -16(%%esp), %%esp\n&quot;
+  &quot;movl %%edi,  0(%%esp)\n&quot;    //  movl 的意思刚好和mov 相反,是edi 赋值给(esp + 0) 而不是esp 赋值给edi
+  &quot;movl %%edx,  4(%%esp)\n&quot;
+  &quot;movl %%ecx,  8(%%esp)\n&quot;
+  &quot;movl %%eax, 12(%%esp)\n&quot;
+  &quot;movl $0x%08x, %%ecx\n&quot;      //  这里填充的数字是当前代码块的id
+  &quot;call __afl_maybe_log\n&quot;
+  &quot;movl 12(%%esp), %%eax\n&quot;
+  &quot;movl  8(%%esp), %%ecx\n&quot;
+  &quot;movl  4(%%esp), %%edx\n&quot;
+  &quot;movl  0(%%esp), %%edi\n&quot;
+  &quot;leal 16(%%esp), %%esp\n&quot;
+  &quot;\n&quot;
+  &quot;/* --- END --- */\n&quot;
+  &quot;\n&quot;;
+
+//  省略多余代码
+
+static void add_instrumentation(void) {  //  AFL instrutment code in /afl-as.c:221
+	///  ....
+
+	  if (line[1] == 'j' &amp;&amp; line[2] != 'm' &amp;&amp; R(100) &lt; inst_ratio) {  //  TIPS!
+	    //  not jmp ,is jnz jz jq jng ...
+	    printf(&quot;insert code -- line=%s inst_ratio=%d \n&quot;,line,inst_ratio);
+	    fprintf(outf, use_64bit ? trampoline_fmt_64 : trampoline_fmt_32,
+	            R(MAP_SIZE));
+
+	    ins_lines++;
+      }
+
+    ///  ....
+}
+
+</code></pre>
+<p>注释TIPS 中的判断,指的是遍历gcc 编译的.S 文件(afl 的插桩原理是通过GCC 在汇编阶段中调用as 命令来进行汇编,然后在获取到程序代码编译之后的/S 文件来进行逐行解析指令内容)中的指令是不是jz /jnz /jg 这些指令(也就是除了jmp 之外的跳转指令),然后在此下方插入插桩代码.<code>trampoline_fmt_32</code> 的代码是指,获取EDI EDX ECX EAX 的值保存到栈中,然后传递给<code>__afl_maybe_log()</code> 保存执行记录.我们把示例函数用clang 和afl-clang 编译,然后在IDA 上观察.</p>
+<p>Clang 编译的结果:</p>
+<p><img src="pic7/pic7.png" alt="" /></p>
+<p>afl-clang 的编译结果(注意,RCX 中保存的是当前块的ID ):</p>
+<p><img src="pic7/pic6.png" alt="" /></p>
+<p>可以看到,用afl-clang 编译出来的二进制程序在条件判断跳转指令的下方插入了获取寄存器信息的记录代码,我们再来看看<code>__afl_maybe_log()</code> 函数的源码:</p>
+<pre><code class="language-c">
+static const u8* main_payload_32 =
+
+  &quot;\n&quot;
+  &quot;/* --- AFL MAIN PAYLOAD (32-BIT) --- */\n&quot;
+  &quot;\n&quot;
+  &quot;.text\n&quot;
+  &quot;.att_syntax\n&quot;
+  &quot;.code32\n&quot;
+  &quot;.align 8\n&quot;
+  &quot;\n&quot;
+
+  &quot;__afl_maybe_log:\n&quot;  //  __afl_maybe_log() 函数入口点
+  &quot;\n&quot;
+  &quot;  lahf\n&quot;
+  &quot;  seto %al\n&quot;
+  &quot;\n&quot;
+  &quot;  /* Check if SHM region is already mapped. */\n&quot;
+  &quot;\n&quot;
+  &quot;  movl  __afl_area_ptr, %edx\n&quot;  //  获取__afl_area_ptr 指针
+  &quot;  testl %edx, %edx\n&quot;
+  &quot;  je    __afl_setup\n&quot;   //  判断获取__afl_area_ptr 是否为空,如果为空就调用__afl_setup 初始化
+  &quot;\n&quot;
+  &quot;__afl_store:\n&quot;      //  __afl_store() 函数入口点
+  &quot;\n&quot;
+  &quot;  /* Calculate and store hit for the code location specified in ecx. There\n&quot;
+  &quot;     is a double-XOR way of doing this without tainting another register,\n&quot;
+  &quot;     and we use it on 64-bit systems; but it's slower for 32-bit ones. */\n&quot;
+  &quot;\n&quot;
+#ifndef COVERAGE_ONLY
+  &quot;  movl __afl_prev_loc, %edi\n&quot;  //  获取__afl_prev_loc 的数据,这里保存的之前执行的代码路径记录
+  &quot;  xorl %ecx, %edi\n&quot;            //  把当前执行到的代码块位置和__afl_prev_loc 的结果进行运算
+  &quot;  shrl $1, %ecx\n&quot;              //
+  &quot;  movl %ecx, __afl_prev_loc\n&quot;  //  保存结果到__afl_prev_loc ,它的意义在于,当我们执行不同的分支路径,通过对这些代码块的id 进行位运算来识别当前程序是不是相同的执行路径
+#else
+  &quot;  movl %ecx, %edi\n&quot;
+#endif /* ^!COVERAGE_ONLY */
+  &quot;\n&quot;
+#ifdef SKIP_COUNTS
+  &quot;  orb  $1, (%edx, %edi, 1)\n&quot;
+#else
+  &quot;  incb (%edx, %edi, 1)\n&quot;
+#endif /* ^SKIP_COUNTS */
+  &quot;\n&quot;
+  &quot;__afl_return:\n&quot;
+  &quot;\n&quot;
+  &quot;  addb $127, %al\n&quot;
+  &quot;  sahf\n&quot;
+  &quot;  ret\n&quot;  //  退出__afl_maybe_log
+  &quot;\n&quot;
+  &quot;.align 8\n&quot;
+
+</code></pre>
+<p>所以,每次当代码执行到这个路径中的代码块的位置时,AFL 在程序中插桩的代码都可以检测到具体执行到的代码位置并计算执行路径.在对程序进行Fuzzing 的一个重要指标就是代码覆盖率,你的Fuzzing 策略和变异的数据可以触发更多的代码路径,那么就更能够发现隐藏的漏洞.</p>
+<p><img src="pic7/pic8.png" alt="" /></p>
+<p>从图中可以明白,如果测试样本只能覆盖Iteration1 和Iteration2 的话,那么Program 下除此之外位置的代码都是无法被执行到的,假定现在有5 个漏洞,以目前能Fuzzing 的代码覆盖率只能检测到3 个漏洞,另外2 个漏洞无法被检测出来,前面几章一直强调提高代码覆盖率的意义就在此.</p>
+<p>程序插桩除了检测代码覆盖率之外,也可以对指针越界进行检查,我们以ASAN 为例子,这是一段示例代码:</p>
+<pre><code class="language-c">
+#include &lt;memory.h&gt;
+#include &lt;stdlib.h&gt;
+
+int main(int argv,char** argc) {
+        char* buffer = (char*)malloc(10);
+
+        *(int *)&amp;buffer[4] = 0xAAAAAAAA;
+        free(buffer);
+
+        return 0;
+}
+
+</code></pre>
+<p>在不启用ASAN 的情况下编译,LLVM IR 代码如下:</p>
+<pre><code class="language-llvm">
+define i32 @main(i32, i8**) #0 {
+  %3 = alloca i32, align 4
+  %4 = alloca i32, align 4
+  %5 = alloca i8**, align 8
+  %6 = alloca i8*, align 8
+  store i32 0, i32* %3, align 4
+  store i32 %0, i32* %4, align 4
+  store i8** %1, i8*** %5, align 8
+  %7 = call i8* @malloc(i64 10) #3               #  从malloc() 中分配内存
+  store i8* %7, i8** %6, align 8
+  %8 = load i8*, i8** %6, align 8
+  %9 = getelementptr inbounds i8, i8* %8, i64 4  #  获取数组位置
+  %10 = bitcast i8* %9 to i32*                   #  转换1 字节数组成4 字节
+  store i32 -1431655766, i32* %10, align 4       #  保存数据到这里
+  %11 = load i8*, i8** %6, align 8
+  call void @free(i8* %11)
+  ret i32 0
+}
+
+</code></pre>
+<p>在启用ASAN 的情况下编译,LLVM IR 代码如下:</p>
+<pre><code class="language-llvm">
+define i32 @main(i32 %argv, i8** %argc) #0 {
+  %retval = alloca i32, align 4
+  %argv.addr = alloca i32, align 4
+  %argc.addr = alloca i8**, align 8
+  %buffer = alloca i8*, align 8
+  store i32 0, i32* %retval, align 4
+  store i32 %argv, i32* %argv.addr, align 4
+  store i8** %argc, i8*** %argc.addr, align 8
+  %1 = bitcast i8** %buffer to i8*
+  call void @llvm.lifetime.start.p0i8(i64 8, i8* %1) #4
+  %call = call i8* @malloc(i64 10) #5                     #  从malloc() 中分配内存
+  store i8* %call, i8** %buffer, align 8
+  %2 = load i8*, i8** %buffer, align 8
+  %arrayidx = getelementptr inbounds i8, i8* %2, i64 4    #  获取数组第四个元素
+  %3 = bitcast i8* %arrayidx to i32*                      #  转换1 字节数组成4 字节
+                                                          #  /-- AddressSanitizer::instrumentAddress()
+  %4 = ptrtoint i32* %3 to i64                            #  |  获取数组地址对应内容
+                                                          #  |--/-- AddressSanitizer::memToShadow()
+  %5 = lshr i64 %4, 3                                     #  |  |
+  %6 = or i64 %5, 17592186044416                          #  |  |  计算数组在Shadow 表中的位置
+                                                          #  |--\-- AddressSanitizer::memToShadow()
+  %7 = inttoptr i64 %6 to i8*                             #  |  计算Shadow 表中的数据指针位置
+  %8 = load i8, i8* %7                                    #  |  从Shadow 表中获取数据
+  %9 = icmp ne i8 %8, 0                                   #  |  判断指针是否为空
+  br i1 %9, label %10, label %16, !prof !3                #  |  判断跳转
+                                                          #  |
+; &lt;label&gt;:10:                                     ; preds = %0
+                                                          #  |--/-- AddressSanitizer::createSlowPathCmp()
+  %11 = and i64 %4, 7                                     #  |  |  (1 &lt;&lt; kDefaultShadowScale) - 1
+  %12 = add i64 %11, 3                                    #  |  |  计算写入数据的指针位置
+  %13 = trunc i64 %12 to i8                               #  |  |
+  %14 = icmp sge i8 %13, %8                               #  |  |  判断是否越界,这个是&gt;= 判断,对比写入数据指针是否超过了Buffer 的上标界限
+                                                          #  |--\-- AddressSanitizer::createSlowPathCmp()
+  br i1 %14, label %15, label %16                         #  |
+
+; &lt;label&gt;:15:                                     ; preds = %10
+                                                          #  |--/-- AddressSanitizer::generateCrashCode(）
+  call void @__asan_report_store4(i64 %4)                 #  |  |  显示ASAN 报告详细错误
+  call void asm sideeffect &quot;&quot;, &quot;&quot;()                       #  |  |
+  unreachable                                             #  |  |
+                                                          #  |--\-- AddressSanitizer::generateCrashCode()
+                                                          #  \-- AddressSanitizer::instrumentAddress()
+
+; &lt;label&gt;:16:                                     ; preds = %10, %0
+  store i32 -1431655766, i32* %3, align 4
+  %17 = load i8*, i8** %buffer, align 8
+  call void @free(i8* %17)
+  %18 = bitcast i8** %buffer to i8*
+  call void @llvm.lifetime.end.p0i8(i64 8, i8* %18) #4
+  ret i32 0
+}
+
+</code></pre>
+<p>ASAN 的代码插桩逻辑代码如下:</p>
+<pre><code class="language-c++">
+Value *AddressSanitizer::createSlowPathCmp(IRBuilder&lt;&gt; &amp;IRB, Value *AddrLong,
+                                           Value *ShadowValue,
+                                           uint32_t TypeSize) {
+  size_t Granularity = static_cast&lt;size_t&gt;(1) &lt;&lt; Mapping.Scale;
+  // Addr &amp; (Granularity - 1)
+  Value *LastAccessedByte =
+      IRB.CreateAnd(AddrLong, ConstantInt::get(IntptrTy, Granularity - 1));
+  // (Addr &amp; (Granularity - 1)) + size - 1
+  if (TypeSize / 8 &gt; 1)
+    LastAccessedByte = IRB.CreateAdd(
+        LastAccessedByte, ConstantInt::get(IntptrTy, TypeSize / 8 - 1));
+  // (uint8_t) ((Addr &amp; (Granularity-1)) + size - 1)
+  LastAccessedByte =
+      IRB.CreateIntCast(LastAccessedByte, ShadowValue-&gt;getType(), false);
+  // ((uint8_t) ((Addr &amp; (Granularity-1)) + size - 1)) &gt;= ShadowValue
+  return IRB.CreateICmpSGE(LastAccessedByte, ShadowValue);
+}
+
+Value *AddressSanitizer::memToShadow(Value *Shadow, IRBuilder&lt;&gt; &amp;IRB) {  //  计算Shadow 表位置
+  // Shadow &gt;&gt; scale
+  Shadow = IRB.CreateLShr(Shadow, Mapping.Scale);  //  插入LShr 指令
+  if (Mapping.Offset == 0) return Shadow;
+  // (Shadow &gt;&gt; scale) | offset
+  Value *ShadowBase;                          //  计算Shadow 表的基地址
+  if (LocalDynamicShadow)
+    ShadowBase = LocalDynamicShadow;
+  else
+    ShadowBase = ConstantInt::get(IntptrTy, Mapping.Offset);  //  kDefaultShadowOffset64 = 1ULL &lt;&lt; 44;
+  if (Mapping.OrShadowOffset)
+    return IRB.CreateOr(Shadow, ShadowBase);  //  插入Or 指令
+  else
+    return IRB.CreateAdd(Shadow, ShadowBase);
+}
+
+void AddressSanitizer::instrumentAddress(Instruction *OrigIns,
+                                         Instruction *InsertBefore, Value *Addr,
+                                         uint32_t TypeSize, bool IsWrite,
+                                         Value *SizeArgument, bool UseCalls,
+                                         uint32_t Exp) {  //  插桩逻辑函数
+  IRBuilder&lt;&gt; IRB(InsertBefore);
+  Value *AddrLong = IRB.CreatePointerCast(Addr, IntptrTy);  //  获取buffer 指针位置
+  size_t AccessSizeIndex = TypeSizeToSizeIndex(TypeSize);   //  计算访问内存的大小
+
+  if (UseCalls) {  //  UseCalls 的方式是指在不插桩下直接调用ASAN 内部函数进行检测
+    if (Exp == 0)
+      IRB.CreateCall(AsanMemoryAccessCallback[IsWrite][0][AccessSizeIndex],
+                     AddrLong);
+    else
+      IRB.CreateCall(AsanMemoryAccessCallback[IsWrite][1][AccessSizeIndex],
+                     {AddrLong, ConstantInt::get(IRB.getInt32Ty(), Exp)});
+    return;
+  }
+
+  Type *ShadowTy =
+      IntegerType::get(*C, std::max(8U, TypeSize &gt;&gt; Mapping.Scale));  //  kDefaultShadowScale = 3
+  Type *ShadowPtrTy = PointerType::get(ShadowTy, 0);
+  Value *ShadowPtr = memToShadow(AddrLong, IRB);  //  计算buffer 在Shadow 表中的位置
+  Value *CmpVal = Constant::getNullValue(ShadowTy);
+  Value *ShadowValue =
+      IRB.CreateLoad(IRB.CreateIntToPtr(ShadowPtr, ShadowPtrTy));  //  从Shadow 表中加载数据
+
+  Value *Cmp = IRB.CreateICmpNE(ShadowValue, CmpVal);  //  构造判断语句
+  size_t Granularity = 1ULL &lt;&lt; Mapping.Scale;
+  Instruction *CrashTerm = nullptr;
+
+  if (ClAlwaysSlowPath || (TypeSize &lt; 8 * Granularity)) {
+    // We use branch weights for the slow path check, to indicate that the slow
+    // path is rarely taken. This seems to be the case for SPEC benchmarks.
+    Instruction *CheckTerm = SplitBlockAndInsertIfThen(
+        Cmp, InsertBefore, false, MDBuilder(*C).createBranchWeights(1, 100000));  //  为前面的cmp 判断创建分支代码块
+    assert(cast&lt;BranchInst&gt;(CheckTerm)-&gt;isUnconditional());
+    BasicBlock *NextBB = CheckTerm-&gt;getSuccessor(0);
+    IRB.SetInsertPoint(CheckTerm);
+    Value *Cmp2 = createSlowPathCmp(IRB, AddrLong, ShadowValue, TypeSize);
+    if (Recover) {
+      CrashTerm = SplitBlockAndInsertIfThen(Cmp2, CheckTerm, false);
+    } else {
+      BasicBlock *CrashBlock =
+        BasicBlock::Create(*C, &quot;&quot;, NextBB-&gt;getParent(), NextBB);
+      CrashTerm = new UnreachableInst(*C, CrashBlock);
+      BranchInst *NewTerm = BranchInst::Create(CrashBlock, NextBB, Cmp2);
+      ReplaceInstWithInst(CheckTerm, NewTerm);
+    }
+  } else {
+    CrashTerm = SplitBlockAndInsertIfThen(Cmp, InsertBefore, !Recover);
+  }
+
+  Instruction *Crash = generateCrashCode(CrashTerm, AddrLong, IsWrite,
+                                         AccessSizeIndex, SizeArgument, Exp);
+  Crash-&gt;setDebugLoc(OrigIns-&gt;getDebugLoc());
+}
+
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="6.static-analysis.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next" href="8.llvm.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="6.static-analysis.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next" href="8.llvm.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="theme/pagetoc.js"></script>
+
+
+    </div>
+    </body>
+</html>

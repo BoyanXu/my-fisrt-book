@@ -1,0 +1,780 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Klee - Source and Fuzzing</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="The example book covers examples.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="./theme/custom.css">
+        <link rel="stylesheet" href="theme/pagetoc.css">
+        <link rel="stylesheet" href="./theme/catppuccin.css">
+        <link rel="stylesheet" href="./theme/catppuccin-highlight.css">
+
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="1.Github.html"><strong aria-hidden="true">1.</strong> Github</a></li><li class="chapter-item expanded "><a href="11.AI.html"><strong aria-hidden="true">2.</strong> Ai</a></li><li class="chapter-item expanded "><a href="12.libfuzzer-asan.html"><strong aria-hidden="true">3.</strong> Libfuzzer Asan</a></li><li class="chapter-item expanded "><a href="2.Fuzzing.html"><strong aria-hidden="true">4.</strong> Fuzzing</a></li><li class="chapter-item expanded "><a href="3.Fuzzing.html"><strong aria-hidden="true">5.</strong> Fuzzing</a></li><li class="chapter-item expanded "><a href="4.source-code.html"><strong aria-hidden="true">6.</strong> Source Code</a></li><li class="chapter-item expanded "><a href="5.compile.html"><strong aria-hidden="true">7.</strong> Compile</a></li><li class="chapter-item expanded "><a href="6.static-analysis.html"><strong aria-hidden="true">8.</strong> Static Analysis</a></li><li class="chapter-item expanded "><a href="7.dynamic-analysis.html"><strong aria-hidden="true">9.</strong> Dynamic Analysis</a></li><li class="chapter-item expanded "><a href="8.llvm.html"><strong aria-hidden="true">10.</strong> Llvm</a></li><li class="chapter-item expanded "><a href="9.klee.html" class="active"><strong aria-hidden="true">11.</strong> Klee</a></li><li class="chapter-item expanded "><a href="chapter_1.html"><strong aria-hidden="true">12.</strong> Chapter 1</a></li><li class="chapter-item expanded "><a href="#.html"><strong aria-hidden="true">13.</strong> Libfuzzer Asan</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="12.libfuzzer-asan/深入解析libfuzzer与asan.html"><strong aria-hidden="true">13.1.</strong> 深入解析libfuzzer与asan</a></li><li class="chapter-item expanded "><a href="#.html"><strong aria-hidden="true">13.2.</strong> 深入解析libfuzzer与asan</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="12.libfuzzer-asan/深入解析libfuzzer与asan/ASAN原理.html"><strong aria-hidden="true">13.2.1.</strong> Asan原理</a></li><li class="chapter-item expanded "><a href="12.libfuzzer-asan/深入解析libfuzzer与asan/LLVM下的插桩简述.html"><strong aria-hidden="true">13.2.2.</strong> Llvm下的插桩简述</a></li><li class="chapter-item expanded "><a href="12.libfuzzer-asan/深入解析libfuzzer与asan/libFuzzer原理.html"><strong aria-hidden="true">13.2.3.</strong> libFuzzer原理</a></li><li class="chapter-item expanded "><a href="12.libfuzzer-asan/深入解析libfuzzer与asan/参考引用.html"><strong aria-hidden="true">13.2.4.</strong> 参考引用</a></li><li class="chapter-item expanded "><a href="12.libfuzzer-asan/深入解析libfuzzer与asan/实战中ASAN会有哪些坑.html"><strong aria-hidden="true">13.2.5.</strong> 实战中asan会有哪些坑</a></li><li class="chapter-item expanded "><a href="12.libfuzzer-asan/深入解析libfuzzer与asan/深入解析libFuzzer参数与回显.html"><strong aria-hidden="true">13.2.6.</strong> 深入解析libFuzzer参数与回显</a></li><li class="chapter-item expanded "><a href="12.libfuzzer-asan/深入解析libfuzzer与asan/玩转Sanitizer-Coverage.html"><strong aria-hidden="true">13.2.7.</strong> 玩转Sanitizer Coverage</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="#.html"><strong aria-hidden="true">14.</strong> Static Analysis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="6.static-analysis/静态程序分析原理.html"><strong aria-hidden="true">14.1.</strong> 静态程序分析原理</a></li><li class="chapter-item expanded "><a href="#.html"><strong aria-hidden="true">14.2.</strong> 静态程序分析原理</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="6.static-analysis/静态程序分析原理/必备工具.html"><strong aria-hidden="true">14.2.1.</strong> 必备工具</a></li><li class="chapter-item expanded "><a href="6.static-analysis/静态程序分析原理/附录一--各图的Graphiz生成代码.html"><strong aria-hidden="true">14.2.2.</strong> 附录一  各图的Graphiz生成代码</a></li><li class="chapter-item expanded "><a href="6.static-analysis/静态程序分析原理/附录二--静态审计工具完整源码.html"><strong aria-hidden="true">14.2.3.</strong> 附录二  静态审计工具完整源码</a></li><li class="chapter-item expanded "><a href="6.static-analysis/静态程序分析原理/静态代码分析基本原理.html"><strong aria-hidden="true">14.2.4.</strong> 静态代码分析基本原理</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="#.html"><strong aria-hidden="true">15.</strong> Dynamic Analysis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="7.dynamic-analysis/动态程序分析原理.html"><strong aria-hidden="true">15.1.</strong> 动态程序分析原理</a></li><li class="chapter-item expanded "><a href="#.html"><strong aria-hidden="true">15.2.</strong> 动态程序分析原理</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="7.dynamic-analysis/动态程序分析原理/内存监控.html"><strong aria-hidden="true">15.2.1.</strong> 内存监控</a></li><li class="chapter-item expanded "><a href="7.dynamic-analysis/动态程序分析原理/动态代码分析基本原理.html"><strong aria-hidden="true">15.2.2.</strong> 动态代码分析基本原理</a></li><li class="chapter-item expanded "><a href="7.dynamic-analysis/动态程序分析原理/必备工具.html"><strong aria-hidden="true">15.2.3.</strong> 必备工具</a></li><li class="chapter-item expanded "><a href="7.dynamic-analysis/动态程序分析原理/污点追踪.html"><strong aria-hidden="true">15.2.4.</strong> 污点追踪</a></li><li class="chapter-item expanded "><a href="7.dynamic-analysis/动态程序分析原理/程序插桩与代码覆盖率.html"><strong aria-hidden="true">15.2.5.</strong> 程序插桩与代码覆盖率</a></li><li class="chapter-item expanded "><a href="7.dynamic-analysis/动态程序分析原理/符号执行.html"><strong aria-hidden="true">15.2.6.</strong> 符号执行</a></li></ol></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Source and Fuzzing</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main><div class="sidetoc"><nav class="pagetoc"></nav></div>
+                        <h1 id="11-klee符号执行框架"><a class="header" href="#11-klee符号执行框架">11. KLEE符号执行框架</a></h1>
+<ul>
+<li><a href="#%E5%BF%85%E5%A4%87%E5%B7%A5%E5%85%B7">必备工具</a></li>
+<li><a href="#%E4%BB%80%E4%B9%88%E6%98%AFklee-%E5%92%8Cklee-%E7%9A%84%E7%94%A8%E5%A4%84">什么是KLEE 和KLEE 的用处</a></li>
+<li><a href="#klee-%E5%AE%89%E8%A3%85%E8%BF%87%E7%A8%8B">KLEE 安装过程</a></li>
+<li><a href="#%E6%8A%8A%E7%A8%8B%E5%BA%8F%E7%BC%96%E8%AF%91%E4%B8%BAllvm-ir">把程序编译为LLVM IR</a></li>
+<li><a href="#klee-%E5%91%BD%E4%BB%A4%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95">KLEE 命令基本用法</a></li>
+<li><a href="#klee-%E6%A1%86%E6%9E%B6%E4%B8%AD%E7%9A%84klee_make_symbolic">KLEE 框架中的klee_make_symbolic()</a></li>
+<li><a href="#%E8%BF%9B%E4%B8%80%E6%AD%A5%E7%90%86%E8%A7%A3klee-%E6%89%A7%E8%A1%8C%E8%BF%87%E7%A8%8B">进一步理解KLEE 执行过程</a></li>
+<li><a href="#%E5%A6%82%E4%BD%95%E5%9C%A8%E5%AE%9E%E9%99%85%E4%B8%AD%E5%BA%94%E7%94%A8klee">如何在实际中应用KLEE</a></li>
+<li><a href="#whole-program-llvm">Whole-program-llvm</a></li>
+</ul>
+<h2 id="必备工具"><a class="header" href="#必备工具">必备工具</a></h2>
+<p>clang ,LLVM ,KLEE (https://github.com/klee/klee.git )</p>
+<h2 id="什么是klee-和klee-的用处"><a class="header" href="#什么是klee-和klee-的用处">什么是KLEE 和KLEE 的用处</a></h2>
+<p>在第六第七章我们已经了解到符号执行的基本原理并使用Triton 来实现一些简单的demo ,本章我们了解的KLEE 框架也是符号执行框架,与Triton 不同之处在于KLEE 能够根据源码编译出的LLVM IR 来发掘漏洞.使用KLEE 框架的程序有很多,比如在CGC (Cyber Grand Challenge ,详情参考:https://www.freebuf.com/articles/neopoints/111712.html )比赛上大获成功的S2E (http://s2e.systems/docs/s2e-env.html ).</p>
+<p>KLEE 适用于二进制的符号执行,之所以它能够支持跨平台汇编执行最关键的一点在于KLEE 使用LLVM IR 作为语句执行(因为各个平台的汇编指令不相同,如果要编写各个平台都适用的符号执行工具工作量会很大,但是LLVM IR 能够把它们作为中间语言来等价表达).所以我们是需要依赖源码编译为LLVM ByteCode 的,如果你要在二进制程序下使用KLEE 的话,那就需要使用rev.ng (https://github.com/revng/revng )把二进制程序转换为LLVM IR 然后再给KLEE 执行.</p>
+<h2 id="klee-安装过程"><a class="header" href="#klee-安装过程">KLEE 安装过程</a></h2>
+<p>安装KLEE 时会有一些坑,其实影响最明显的坑就是使用不同版本的LLVM 时编译KLEE 会产生一些意想不到的问题.所以笔者推荐在KLEE 2.0 下搭配LLVM 6.0 编译,KLEE 1.4 搭配LLVM 3.8 编译.</p>
+<p>第一步下载LLVM 库代码,地址在https://github.com/llvm-mirror/llvm</p>
+<pre><code class="language-shell">git clone --branch release_60 https://github.com/llvm-mirror/llvm
+cd llvm
+mkdir build
+cd build
+cmake ..
+sudo make install -j12
+</code></pre>
+<p>接下来下载KLEE ,地址在https://github.com/klee/klee</p>
+<pre><code class="language-shell">git clone https://github.com/klee/klee.git
+cd klee
+mkdir build
+cd build
+cmake .. -DENABLE_UNIT_TESTS=OFF -DENABLE_SYSTEM_TESTS=OFF
+sudo make install -j12
+</code></pre>
+<p>编译好之后,我们就可以使用KLEE 了</p>
+<h2 id="把程序编译为llvm-ir"><a class="header" href="#把程序编译为llvm-ir">把程序编译为LLVM IR</a></h2>
+<p>前面说到,KLEE 使用LLVM IR 进行符号执行,那么我们则需要在编译时插入参数<code>-emit-llvm -S</code> ,示例demo 如下:</p>
+<pre><code class="language-c">//  test_code.c
+
+#include &lt;memory.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+
+char* get_message(const char* message) {
+	if (strlen(message) &lt;= 4)
+		return NULL;
+
+	if (!('F' == message[0] &amp;&amp; '\x1' == message[1]))
+		return NULL;
+
+	unsigned int message_length = *(unsigned int*)&amp;message[2];
+	char* output_message = (char*)malloc(message_length);
+
+	memcpy(output_message,&amp;message[2],message_length);
+
+	return output_message;
+}
+
+int main(int argc,char** argv) {
+	char input_buffer[0x10] = {0};
+
+	scanf(&quot;%s&quot;,input_buffer);
+
+	char* message_data = get_message(input_buffer);
+
+	if (NULL == message_data)
+		printf(&quot;Error for resolve message\n&quot;);
+	else
+		printf(&quot;message data : %s\n&quot;,message_data);
+
+	return 0;
+}
+
+</code></pre>
+<p>需要注意的是,要编译LLVM IR 需要使用clang 而不是GCC 编译器,编译命令如下:</p>
+<pre><code class="language-shell">
+clang -emit-llvm -c test_code.c
+
+</code></pre>
+<h2 id="klee-命令基本用法"><a class="header" href="#klee-命令基本用法">KLEE 命令基本用法</a></h2>
+<p>然后就可以生成<code>test_code.bc</code> 文件了,我们把它传递给KLEE 执行,KLEE 会创建新目录并保存测试数据到这里.</p>
+<pre><code class="language-shell">
+MacBook-Pro-2:bin root$ klee -libc=klee test_code.bc
+KLEE: output directory is &quot;/Users/_/Desktop/code_file/klee_master/build/bin/klee-out-1&quot;
+KLEE: Using Z3 solver backend
+KLEE: WARNING: undefined reference to function: __memcpy_chk
+KLEE: WARNING: undefined reference to function: printf
+KLEE: WARNING: undefined reference to function: scanf
+KLEE: WARNING ONCE: calling external: scanf(4623811640, 4623820064) at [no debug info]
+k
+KLEE: WARNING ONCE: calling external: printf(4624019712) at [no debug info]
+Error for resolve message
+
+KLEE: done: total instructions = 273
+KLEE: done: completed paths = 1
+KLEE: done: generated tests = 1
+MacBook-Pro-2:bin root$ klee -libc=klee test_code.bc
+KLEE: output directory is &quot;/Users/_/Desktop/code_file/klee_master/build/bin/klee-out-2&quot;
+KLEE: Using Z3 solver backend
+KLEE: WARNING: undefined reference to function: __memcpy_chk
+KLEE: WARNING: undefined reference to function: printf
+KLEE: WARNING: undefined reference to function: scanf
+KLEE: WARNING ONCE: calling external: scanf(4606362680, 4606371104) at [no debug info]
+AAAAAAAAAAAAAAAAAAAAA
+KLEE: ERROR: /Users/_/Desktop/source/klee/runtime/klee-libc/strlen.c:14: memory error: out of bound pointer
+KLEE: NOTE: now ignoring this error at this location
+
+KLEE: done: total instructions = 372
+KLEE: done: completed paths = 1
+KLEE: done: generated tests = 1
+
+</code></pre>
+<p>因为程序调用了scanf() 函数,我们需要手动给它填写一些参数进去,第一次使用klee 执行程序时在scanf() 传递字符k 并没有触发崩溃,但是在第二次使用klee 执行时输入AAAAAAAAAAAAAAAAAAAAA 导致了KLEE 的内部实现strlen() 函数报错了,我们可以在klee-out-2 目录查看细节.</p>
+<pre><code class="language-shell">
+MacBook-Pro-2:bin root$ cd klee-out-2/
+MacBook-Pro-2:klee-out-2 root$ ls
+assembly.ll             messages.txt            run.stats               test000001.ktest        warnings.txt
+info                    run.istats              test000001.kquery       test000001.ptr.err
+
+</code></pre>
+<p>我们看到文件夹里的test000001.ptr.err 文件,它的意思是strlen() 的崩溃信息</p>
+<pre><code class="language-shell">
+Error: memory error: out of bound pointer
+File: /Users/fc/Desktop/source/klee/runtime/klee-libc/strlen.c
+Line: 14
+assembly.ll line: 135
+Stack:
+        #000000135 in strlen (=4606371104) at /Users/fc/Desktop/source/klee/runtime/klee-libc/strlen.c:14
+        #100000018 in get_message (=4606371104)
+        #200000096 in main (=1, =4606715776)
+Info:
+        address: 4606371120
+        next: object at 4606362472 of size 8
+                MO9[8] allocated at main():  %3 = alloca i32, align 4
+
+</code></pre>
+<p>使用ktest-tool 查看test 样本的信息:</p>
+<pre><code class="language-shell">
+MacBook-Pro-2:klee-out-2 root$ ktest-tool test000001.ktest
+ktest file : 'test000001.ktest'
+args       : ['test_code.bc']
+num objects: 0
+
+</code></pre>
+<p>使用klee-stats 查看当前本次测试的状态:</p>
+<pre><code class="language-shell">
+MacBook-Pro-2:klee-out-2 root$ klee-stats .
+---------------------------------------------------------------------
+| Path |  Instrs|  Time(s)|  ICov(%)|  BCov(%)|  ICount|  TSolver(%)|
+---------------------------------------------------------------------
+|  .   |     372|     8.49|    54.62|    25.00|     119|        0.00|
+---------------------------------------------------------------------
+
+</code></pre>
+<h2 id="klee-框架中的klee_make_symbolic"><a class="header" href="#klee-框架中的klee_make_symbolic">KLEE 框架中的klee_make_symbolic()</a></h2>
+<p>在前面的这个例子,我们并不能很好的了解到KLEE 的强大之处,接下来将要介绍的KLEE 的基本用法,自动对输入进行追踪测试.继续回顾上面的代码例子:</p>
+<pre><code class="language-c">
+#include &lt;memory.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+
+char* get_message(const char* message) {
+	if (strlen(message) &lt;= 4)
+		return NULL;
+
+	if (!('F' == message[0] &amp;&amp; '\x1' == message[1]))
+		return NULL;
+
+	unsigned int message_length = *(unsigned int*)&amp;message[2];
+	char* output_message = (char*)malloc(message_length);
+
+	memcpy(output_message,&amp;message[2],message_length);
+
+	return output_message;
+}
+
+int main(int argc,char** argv) {
+	char input_buffer[0x10] = {0};
+
+	scanf(&quot;%s&quot;,input_buffer);
+
+	char* message_data = get_message(input_buffer);
+
+	if (NULL == message_data)
+		printf(&quot;Error for resolve message\n&quot;);
+	else
+		printf(&quot;message data : %s\n&quot;,message_data);
+
+	return 0;
+}
+
+</code></pre>
+<p>在这个代码例子里,我们要特别关注scanf() 函数,因为scanf() 函数是我们的输入点,在KLEE 里,对于这种用户可控的输入的,我们需要手工给它们打上标记,KLEE 提供一个函数,声明如下:</p>
+<pre><code class="language-c">
+void klee_make_symbolic(void *array, size_t nbytes, const char *name);
+//  klee_make_symbolic(内存地址,内存大小,变量名字);
+
+</code></pre>
+<p>我们修改上面的函数如下,替换scanf() 为klee_make_symbolic() .部分代码如下:</p>
+<pre><code class="language-c">
+#include &lt;memory.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+
+#include &quot;klee/klee.h&quot;
+
+
+char* get_message(const char* message) {
+	if (strlen(message) &lt;= 4)
+		return NULL;
+
+	if (!('F' == message[0] &amp;&amp; '\x1' == message[1]))
+		return NULL;
+
+	unsigned int message_length = *(unsigned int*)&amp;message[2];
+	char* output_message = (char*)malloc(message_length);
+
+	memcpy(output_message,&amp;message[2],message_length);
+
+	return output_message;
+}
+
+int main(int argc,char** argv) {
+	char input_buffer[0x10] = {0};
+
+	klee_make_symbolic(input_buffer,sizeof(input_buffer),&quot;input_buffer&quot;);
+
+	char* message_data = get_message(input_buffer);
+
+	if (NULL == message_data)
+		printf(&quot;Error for resolve message\n&quot;);
+	else
+		printf(&quot;message data : %s\n&quot;,message_data);
+
+	return 0;
+}
+
+</code></pre>
+<p>编译命令如下(注意,因为klee/klee.h 库可能没有被复制到/usr/include 中,所以需要手工-I 为klee.h 指定路径):</p>
+<pre><code class="language-shell">
+MacBook-Pro-2:bin root$ clang -emit-llvm -c -I ../../include/ test_new_code.c
+
+</code></pre>
+<p>接下来我们继续执行KLEE ,效果如下:</p>
+<pre><code class="language-shell">
+MacBook-Pro-2:bin root$ klee -libc=klee test_new_code.bc
+KLEE: output directory is &quot;/Users/_/Desktop/code_file/klee_master/build/bin/klee-out-3&quot;
+KLEE: Using Z3 solver backend
+KLEE: WARNING: undefined reference to function: __memcpy_chk
+KLEE: WARNING: undefined reference to function: printf
+KLEE: WARNING ONCE: calling external: printf(4470092000) at [no debug info]
+Error for resolve message
+Error for resolve message
+Error for resolve message
+Error for resolve message
+Error for resolve message
+Error for resolve message
+Error for resolve message
+KLEE: ERROR: (location information missing) concretized symbolic size
+KLEE: NOTE: now ignoring this error at this location
+KLEE: WARNING ONCE: Alignment of memory from call &quot;malloc&quot; is not modelled. Using alignment of 8.
+Error for resolve message
+KLEE: NOTE: found huge malloc, returning 0
+KLEE: WARNING ONCE: Large alloc: 33554431 bytes.  KLEE may run out of memory.
+Error for resolve message
+KLEE: WARNING ONCE: calling external: __memcpy_chk(4484030464, 4469892434, (ZExt w64 (ReadLSB w32 2 input_buffer)), 18446744073709551615) at [no debug info]
+Error for resolve message
+message data :
+KLEE: ERROR: (location information missing) external call with symbolic argument: __memcpy_chk
+KLEE: NOTE: now ignoring this error at this location
+Error for resolve message
+message data :
+Error for resolve message
+KLEE: NOTE: found huge malloc, returning 0
+KLEE: NOTE: found huge malloc, returning 0
+Error for resolve message
+message data :
+Error for resolve message
+message data :
+Error for resolve message
+Error for resolve message
+KLEE: NOTE: found huge malloc, returning 0
+KLEE: NOTE: found huge malloc, returning 0
+Error for resolve message
+message data :
+Error for resolve message
+Error for resolve message
+KLEE: NOTE: found huge malloc, returning 0
+message data :
+Error for resolve message
+Error for resolve message
+message data :
+KLEE: NOTE: found huge malloc, returning 0
+KLEE: NOTE: found huge malloc, returning 0
+Error for resolve message
+message data :
+Error for resolve message
+KLEE: ERROR: /Users/_/Desktop/source/klee/runtime/klee-libc/strlen.c:14: memory error: out of bound pointer
+KLEE: NOTE: now ignoring this error at this location
+message data :
+KLEE: NOTE: found huge malloc, returning 0
+Error for resolve message
+Error for resolve message
+KLEE: NOTE: found huge malloc, returning 0
+Error for resolve message
+Error for resolve message
+message data :
+message data :
+
+KLEE: done: total instructions = 1312
+KLEE: done: completed paths = 60
+KLEE: done: generated tests = 41
+
+</code></pre>
+<p>我们来查看KLEE 的输出结果:</p>
+<pre><code class="language-shell">
+MacBook-Pro-2:klee-out-3 root$ ls
+assembly.ll             test000004.ktest        test000010.ktest        test000016.ktest        test000024.ktest        test000032.ktest        test000038.ktest
+info                    test000005.ktest        test000011.exec.err     test000017.ktest        test000025.ktest        test000033.ktest        test000039.ktest
+messages.txt            test000006.ktest        test000011.kquery       test000018.ktest        test000026.ktest        test000034.kquery       test000040.ktest
+run.istats              test000007.kquery       test000011.ktest        test000019.ktest        test000027.ktest        test000034.ktest        test000041.ktest
+run.stats               test000007.ktest        test000012.ktest        test000020.ktest        test000028.ktest        test000034.ptr.err      warnings.txt
+test000001.ktest        test000007.model.err    test000013.ktest        test000021.ktest        test000029.ktest        test000035.ktest
+test000002.ktest        test000008.ktest        test000014.ktest        test000022.ktest        test000030.ktest        test000036.ktest
+test000003.ktest        test000009.ktest        test000015.ktest        test000023.ktest        test000031.ktest        test000037.ktest
+
+</code></pre>
+<p>从文件列表可以知道,本次测试发现了两处崩溃,我们使用ktest-tool 分别查看它们的信息:</p>
+<pre><code class="language-shell">
+MacBook-Pro-2:klee-out-3 root$ ktest-tool test000007.ktest
+ktest file : 'test000007.ktest'
+args       : ['test_new_code.bc']
+num objects: 1
+object 0: name: 'input_buffer'
+object 0: size: 16
+object 0: data: b'F\x01\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff'
+object 0: hex : 0x4601ffffff00ffffffffffffffffffff
+object 0: text: F...............
+MacBook-Pro-2:klee-out-3 root$ ktest-tool test000034.ktest
+ktest file : 'test000034.ktest'
+args       : ['test_new_code.bc']
+num objects: 1
+object 0: name: 'input_buffer'
+object 0: size: 16
+object 0: data: b'\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff'
+object 0: hex : 0xffffffffffffffffffffffffffffffff
+object 0: text: ................
+MacBook-Pro-2:klee-out-3 root$ ktest-tool test000011.ktest
+ktest file : 'test000011.ktest'
+args       : ['test_new_code.bc']
+num objects: 1
+object 0: name: 'input_buffer'
+object 0: size: 16
+object 0: data: b'F\x01\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\xff\xff\xff'
+object 0: hex : 0x4601ffffffff00ffffffffffffffffff
+object 0: text: F..............
+
+</code></pre>
+<p>有了这些Payload ,我们使用ASAN 来验证一下这些测试用例是否是正确的,修改代码如下:</p>
+<pre><code class="language-c">
+#include &lt;memory.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+
+#include &quot;klee/klee.h&quot;
+
+
+char* get_message(const char* message) {
+	if (strlen(message) &lt;= 4)
+		return NULL;
+
+	if (!('F' == message[0] &amp;&amp; '\x1' == message[1]))
+		return NULL;
+
+	unsigned int message_length = *(unsigned int*)&amp;message[2];
+	char* output_message = (char*)malloc(message_length);
+
+	memcpy(output_message,&amp;message[2],message_length);
+
+	return output_message;
+}
+
+int main(int argc,char** argv) {
+	char* message_data = get_message(&quot;F\x01\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\0&quot;); //(input_buffer);
+
+	if (NULL == message_data)
+		printf(&quot;Error for resolve message\n&quot;);
+	else
+		printf(&quot;message data : %s\n&quot;,message_data);
+
+	return 0;
+}
+
+</code></pre>
+<p>编译并执行程序,观察ASAN 会不会报错和产生的报错信息:</p>
+<pre><code class="language-shell">
+MacBook-Pro-2:bin root$ clang -fsanitize=address test_asan_code.c -o test_asan_code
+MacBook-Pro-2:bin root$ ./test_asan_code
+=================================================================
+==29638==ERROR: AddressSanitizer: global-buffer-overflow on address 0x0001034dee52 at pc 0x00010353b59f bp 0x7ffeec721a40 sp 0x7ffeec7211f0
+READ of size 16777215 at 0x0001034dee52 thread T0
+    #0 0x10353b59e in __asan_memcpy (libclang_rt.asan_osx_dynamic.dylib:x86_64h+0x5459e)
+    #1 0x1034decd3 in get_message (test_asan_code:x86_64+0x100000cd3)
+    #2 0x1034ded14 in main (test_asan_code:x86_64+0x100000d14)
+    #3 0x7fff790c1014 in start (libdyld.dylib:x86_64+0x1014)
+
+0x0001034dee52 is located 0 bytes to the right of global variable '&lt;string literal&gt;' defined in 'test_asan_code.c:26:35' (0x1034dee40) of size 18
+SUMMARY: AddressSanitizer: global-buffer-overflow (libclang_rt.asan_osx_dynamic.dylib:x86_64h+0x5459e) in __asan_memcpy
+Shadow bytes around the buggy address:
+  0x10002069bd70: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x10002069bd80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x10002069bd90: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x10002069bda0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x10002069bdb0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+=&gt;0x10002069bdc0: 00 00 00 00 00 00 00 00 00 00[02]f9 f9 f9 f9 f9
+  0x10002069bdd0: 00 00 00 00 00 00 00 03 f9 f9 f9 f9 00 00 03 f9
+  0x10002069bde0: f9 f9 f9 f9 00 00 00 00 00 00 00 00 00 00 00 00
+  0x10002069bdf0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x10002069be00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x10002069be10: 00 00 00 00 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9 f9
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+==29638==ABORTING
+Abort trap: 6
+
+</code></pre>
+<h2 id="进一步理解klee-执行过程"><a class="header" href="#进一步理解klee-执行过程">进一步理解KLEE 执行过程</a></h2>
+<p>KLEE 框架的整体原理是通过一个状态上下文(状态上下文对象维护栈堆,函数调用和符号对象等重要信息)和解析器.本节着重于深入解析器的实现原理.</p>
+<p>KLEE 的解析器代码位于<code>/lib/Core/Executor.cpp!Executor::executeInstruction()</code> 函数里,该函数主要是模拟操作LLVM IR 指令的操作并根据相关的操作变成符号对象并保存到内存对象中:</p>
+<pre><code class="language-c++">
+ // ... 省略无关代码
+
+  case Instruction::Add: {
+    ref&lt;Expr&gt; left = eval(ki, 0, state).value;  //  获取该值,因为这个值可能是数字或者是一个符号
+    ref&lt;Expr&gt; right = eval(ki, 1, state).value;
+    bindLocal(ki, state, AddExpr::create(left, right));  //  AddExpr::create() 的意思是创建一个Add 符号对象
+    break;
+  }
+
+  case Instruction::Sub: {
+    ref&lt;Expr&gt; left = eval(ki, 0, state).value;
+    ref&lt;Expr&gt; right = eval(ki, 1, state).value;
+    bindLocal(ki, state, SubExpr::create(left, right));
+    break;
+  }
+
+  case Instruction::Mul: {
+    ref&lt;Expr&gt; left = eval(ki, 0, state).value;
+    ref&lt;Expr&gt; right = eval(ki, 1, state).value;
+    bindLocal(ki, state, MulExpr::create(left, right));
+    break;
+  }
+
+  case Instruction::UDiv: {
+    ref&lt;Expr&gt; left = eval(ki, 0, state).value;
+    ref&lt;Expr&gt; right = eval(ki, 1, state).value;
+    ref&lt;Expr&gt; result = UDivExpr::create(left, right);
+    bindLocal(ki, state, result);
+    break;
+  }
+
+ // ... 省略无关代码
+
+</code></pre>
+<p>理解了KLEE 的模拟执行原理,请思考一下:<strong>如果程序调用到了系统函数,那应该怎么办呢,我们的符号化过程不就会在这里缺失了记录吗</strong>.答案是肯定的,所以KLEE 使用uclibc (https://github.com/klee/klee-uclibc )来导入libc 的函数,<strong>因为系统中的libc 库是已经编译好的,不能作为LLVM IR 传递给KLEE 继续符号化,于是我们应该通过libc 库的源码去编译出一个LLVM IR 的代码库,这样才能够让KLEE 执行</strong>.</p>
+<p>细心的读者一定会注意到,笔者在前面的KLEE 命令中额外添加了一个参数<code>-libc=klee</code> ,它的意义在于使用klee 自带的libc 库引入到执行环境中.KLEE 中自带的libc 库函数并不多,所以在执行更大的程序中还是需要依赖uclibc ,建议在Ubuntu 下编译uclibc ,然后再使用<code>klee -libc=uclibc</code>引入它.</p>
+<h2 id="如何在实际中应用klee"><a class="header" href="#如何在实际中应用klee">如何在实际中应用KLEE</a></h2>
+<p>前面介绍到KLEE 的基本命令和基本原理,那么我们就需要在实地中应用它来做一些漏洞挖掘的工作.很遗憾的是,KLEE 并不能在任何项目都能够完全使用,这是因为LLVM 的历史遗留问题(参考笔者提的issus : https://github.com/klee/klee/issues/1091 ),简单地说是因为KLEE 需要对一些内置函数进行重写成LLVM 代码,但是LLVM 在编译时大部分的内置函数时链接GCC 的内置函数库,导致了KLEE 不能对这些内置函数进行等价的LLVM IR 转换(目前KLEE 和LLVM 有做一部分内置函数处理,但是因为内置函数太多所以没有完全支持,当跑一些图像处理库时会调用一些矩阵操作的函数,KLEE 和LLVM 都不支持这些函数),这是我碰到的一个例子和分析:</p>
+<p><img src="pic9/pic1.png" alt="" /></p>
+<p>除开这个比较大的坑之外,跑一些相对较小的程序(比如协议处理,反序列化数据这种)KLEE 的威力还是很不错的,接下来我们复现CVE-2016-5180(https://c-ares.haxx.se/adv_20160929.html )</p>
+<p>对于这种工程化的项目,一般我们都是使用./configure cmake 等来生成makefile 然后编译的,如果我们直接在CFLAGS/CXXFLAGS 里面插入<code>-emit-llvm -c</code> 会遇到一个很常见的问题,那就是在编译的时候出错.</p>
+<p>案例一:</p>
+<p><img src="pic9/pic2.png" alt="" /></p>
+<p>案例二:</p>
+<p><img src="pic9/pic3.png" alt="" /></p>
+<p>因为应对这个问题,笔者写了一个工具,使用的就是AFL 的原理,在最后构造编译命令的时候插入<code>-emit-llvm -c</code> 参数,并在在链接时生成bca 文件(LLVM IR 静态代码库),代码地址在: https://github.com/lcatro/klee-fl ,执行脚本<code>sh ./build_kleefl.sh</code>.</p>
+<p>省去klee-fl 的编译过程,我们以klee-fl 里面的c-ares 为例子,首先使用./buildconf 来生成./configure 文件.</p>
+<pre><code class="language-shell">
+MacBook-Pro-2:save_code root$ ./buildconf
+
+</code></pre>
+<p>在./configure 阶段时,我们就需要指定CC 为klee-clang 让我们自定义的编译器插入编译参数.</p>
+<pre><code class="language-shell">
+MacBook-Pro-2:code_file root$ ./configure CC=klee-clang
+MacBook-Pro-2:code_file root$ make
+
+</code></pre>
+<p>klee-fl 应用了libFuzzer 的思想,给定一个入口KleeFuzzingEntry (在libFuzzer 里为LLVMFuzzerTestOneInput ),构造代码如下:</p>
+<pre><code class="language-c">
+#include &lt;ares.h&gt;
+#include &lt;nameser.h&gt;
+
+
+int KleeFuzzingEntry(int argc,char** argv) {
+  unsigned char *output_buffer;
+  int output_buflen;
+  unsigned char input_buffer[64] = {0};
+
+  klee_make_symbolic(&amp;input_buffer, sizeof(input_buffer), &quot;input_buffer&quot;);  //  把input_buffer 作为输入求解
+
+  ares_create_query(input_buffer, ns_c_in, ns_t_a, 0x1234, 0, &amp;output_buffer, &amp;output_buflen, 0);
+
+  return 0;
+}
+
+</code></pre>
+<p>然后编译Klee-Fuzzer ,编译命令如下:</p>
+<pre><code class="language-shell">
+MacBook-Pro-2:c-ares root$ klee-build ./klee_fuzzer.c .
+
+</code></pre>
+<p>最后一步就是使用<code>sh run_fuzz.sh</code> 执行编译出来的Klee-Fuzzer ,效果如下:</p>
+<p><img src="pic9/pic4.png" alt="" /></p>
+<p>可以看到KLEE 提示<code>out of bound pointer</code> 找到一处越界.接下来使用ktest-tool 查看Payload :</p>
+<p><img src="pic9/pic5.png" alt="" /></p>
+<p>最后,我们来复现Payload 是否有效,代码如下:</p>
+<pre><code class="language-c">
+#include &lt;ares.h&gt;
+#include &lt;nameser.h&gt;
+
+#define PAYLOAD &quot;\\.\x00\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\&quot;
+
+int main(int argc,char** argv) {
+        unsigned char* output_buffer;
+        int output_buflen;
+
+        ares_create_query(PAYLOAD, ns_c_in, ns_t_a, 0x1234, 0, &amp;output_buffer, &amp;output_buflen, 0);
+
+        return 0;
+}
+
+</code></pre>
+<p>启用ASAN 编译:</p>
+<pre><code class="language-shell">
+MacBook-Pro-2:c-ares root$ make CFLAGS=&quot;-fsanitize=address&quot;
+MacBook-Pro-2:c-ares root$ clang -fsanitize=address valid.c libcares_la-*.o  -o valid
+
+</code></pre>
+<p>验证结果如下:</p>
+<p><img src="pic9/pic6.png" alt="" /></p>
+<h2 id="whole-program-llvm"><a class="header" href="#whole-program-llvm">Whole-program-llvm</a></h2>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="8.llvm.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next" href="chapter_1.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="8.llvm.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next" href="chapter_1.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="theme/pagetoc.js"></script>
+
+
+    </div>
+    </body>
+</html>

@@ -1,0 +1,427 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>内存监控 - Source and Fuzzing</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="The example book covers examples.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../../highlight.css">
+        <link rel="stylesheet" href="../../tomorrow-night.css">
+        <link rel="stylesheet" href="../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../.././theme/custom.css">
+        <link rel="stylesheet" href="../../theme/pagetoc.css">
+        <link rel="stylesheet" href="../.././theme/catppuccin.css">
+        <link rel="stylesheet" href="../.././theme/catppuccin-highlight.css">
+
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../../1.Github.html"><strong aria-hidden="true">1.</strong> Github</a></li><li class="chapter-item expanded "><a href="../../11.AI.html"><strong aria-hidden="true">2.</strong> Ai</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan.html"><strong aria-hidden="true">3.</strong> Libfuzzer Asan</a></li><li class="chapter-item expanded "><a href="../../2.Fuzzing.html"><strong aria-hidden="true">4.</strong> Fuzzing</a></li><li class="chapter-item expanded "><a href="../../3.Fuzzing.html"><strong aria-hidden="true">5.</strong> Fuzzing</a></li><li class="chapter-item expanded "><a href="../../4.source-code.html"><strong aria-hidden="true">6.</strong> Source Code</a></li><li class="chapter-item expanded "><a href="../../5.compile.html"><strong aria-hidden="true">7.</strong> Compile</a></li><li class="chapter-item expanded "><a href="../../6.static-analysis.html"><strong aria-hidden="true">8.</strong> Static Analysis</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis.html"><strong aria-hidden="true">9.</strong> Dynamic Analysis</a></li><li class="chapter-item expanded "><a href="../../8.llvm.html"><strong aria-hidden="true">10.</strong> Llvm</a></li><li class="chapter-item expanded "><a href="../../9.klee.html"><strong aria-hidden="true">11.</strong> Klee</a></li><li class="chapter-item expanded "><a href="../../chapter_1.html"><strong aria-hidden="true">12.</strong> Chapter 1</a></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">13.</strong> Libfuzzer Asan</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan.html"><strong aria-hidden="true">13.1.</strong> 深入解析libfuzzer与asan</a></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">13.2.</strong> 深入解析libfuzzer与asan</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/ASAN原理.html"><strong aria-hidden="true">13.2.1.</strong> Asan原理</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/LLVM下的插桩简述.html"><strong aria-hidden="true">13.2.2.</strong> Llvm下的插桩简述</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/libFuzzer原理.html"><strong aria-hidden="true">13.2.3.</strong> libFuzzer原理</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/参考引用.html"><strong aria-hidden="true">13.2.4.</strong> 参考引用</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/实战中ASAN会有哪些坑.html"><strong aria-hidden="true">13.2.5.</strong> 实战中asan会有哪些坑</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/深入解析libFuzzer参数与回显.html"><strong aria-hidden="true">13.2.6.</strong> 深入解析libFuzzer参数与回显</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/玩转Sanitizer-Coverage.html"><strong aria-hidden="true">13.2.7.</strong> 玩转Sanitizer Coverage</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">14.</strong> Static Analysis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../6.static-analysis/静态程序分析原理.html"><strong aria-hidden="true">14.1.</strong> 静态程序分析原理</a></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">14.2.</strong> 静态程序分析原理</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../6.static-analysis/静态程序分析原理/必备工具.html"><strong aria-hidden="true">14.2.1.</strong> 必备工具</a></li><li class="chapter-item expanded "><a href="../../6.static-analysis/静态程序分析原理/附录一--各图的Graphiz生成代码.html"><strong aria-hidden="true">14.2.2.</strong> 附录一  各图的Graphiz生成代码</a></li><li class="chapter-item expanded "><a href="../../6.static-analysis/静态程序分析原理/附录二--静态审计工具完整源码.html"><strong aria-hidden="true">14.2.3.</strong> 附录二  静态审计工具完整源码</a></li><li class="chapter-item expanded "><a href="../../6.static-analysis/静态程序分析原理/静态代码分析基本原理.html"><strong aria-hidden="true">14.2.4.</strong> 静态代码分析基本原理</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">15.</strong> Dynamic Analysis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理.html"><strong aria-hidden="true">15.1.</strong> 动态程序分析原理</a></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">15.2.</strong> 动态程序分析原理</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/内存监控.html" class="active"><strong aria-hidden="true">15.2.1.</strong> 内存监控</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/动态代码分析基本原理.html"><strong aria-hidden="true">15.2.2.</strong> 动态代码分析基本原理</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/必备工具.html"><strong aria-hidden="true">15.2.3.</strong> 必备工具</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/污点追踪.html"><strong aria-hidden="true">15.2.4.</strong> 污点追踪</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/程序插桩与代码覆盖率.html"><strong aria-hidden="true">15.2.5.</strong> 程序插桩与代码覆盖率</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/符号执行.html"><strong aria-hidden="true">15.2.6.</strong> 符号执行</a></li></ol></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Source and Fuzzing</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main><div class="sidetoc"><nav class="pagetoc"></nav></div>
+                        <h2 id="内存监控"><a class="header" href="#内存监控">内存监控</a></h2>
+<p>在动态调试代码的过程中,我们往往会需要对某一块特定的内存,字符串或对代码执行过程进行跟踪分析.内存监控分为软件监控和硬件监控,下面将一一描述.</p>
+<h3 id="软件监控"><a class="header" href="#软件监控">软件监控</a></h3>
+<p>软件监控的方式分为两种,一种是在代码段中插入<code>Int 3</code>指令,代码执行到这段指令后就会触发调试中断;另一种是对内存区域进行读写权限限制,对于某个在堆(HeapAlloc())的权限是不可读写的,但是通过malloc() 申请的内存是可以被读写的,那么一旦这块内存产生越界读写就可以触发程序异常.</p>
+<p>我们以UPX 加壳举个例子,Link : https://github.com/lcatro/my-blog/blob/master/2015/%E5%88%A9%E7%94%A8Debug%20API%20%E5%AE%9E%E7%8E%B0%E5%86%85%E5%AD%98%E6%B3%A8%E5%86%8C%E6%9C%BA.md .假定已经通过逆向知道0x4307CC 是UPX 解压缩之后的程序入口点,那么我们在编写调试器的时候可以在0x4307CC 处设置调试断点.</p>
+<pre><code class="language-c">
+#include &lt;malloc.h&gt;
+#include &lt;memory.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;windows.h&gt;
+#include &lt;winnt.h&gt;
+
+#define BREAK_ADDRESS_SHELL_JMP 0x4307CC
+#define BREAK_ADDRESS_JE        0x401188
+#define BREAK_FLAG 0xCC
+
+const char* set_break(HANDLE process,LPVOID set_address,unsigned int set_length=1) {  //  设置断点
+    if (!set_length) return NULL;
+
+    char* break_flag_buffer=(char*)malloc(set_length);
+    memset(break_flag_buffer,BREAK_FLAG,set_length);
+    DWORD write_length=0;
+
+    char* old_code_buffer=(char*)malloc(set_length);
+    DWORD read_length=0;
+    ReadProcessMemory(process,set_address,(LPVOID)old_code_buffer,set_length,&amp;read_length);  //  原理是通过写0xCC 来实现软中断
+
+    WriteProcessMemory(process,set_address,(LPVOID)break_flag_buffer,set_length,&amp;write_length);
+    free(break_flag_buffer);
+
+    return old_code_buffer;
+}
+
+bool remove_break(HANDLE process,LPVOID remove_address,const char* rewrite_code_buffer,unsigned int remove_length) {  //  删除断点
+    DWORD write_length=0;
+
+    return (bool)WriteProcessMemory(process,remove_address,(LPVOID)rewrite_code_buffer,remove_length,&amp;write_length);
+}
+
+HANDLE open_process(DWORD processid) {
+    return OpenProcess(PROCESS_ALL_ACCESS,FALSE,processid);
+}
+
+int main(int argc,char** argv) {
+    STARTUPINFO process_startupinfo={0};
+    PROCESS_INFORMATION process_info={0};
+    CreateProcess(NULL,&quot;crackme_shell.exe&quot;,NULL,NULL,FALSE,DEBUG_ONLY_THIS_PROCESS | CREATE_NEW_CONSOLE,NULL,NULL,&amp;process_startupinfo,&amp;process_info);  //  启动调试程序
+    printf(&quot;CreateProcessId=%X\n&quot;,process_info.dwProcessId);
+
+    HANDLE process=open_process(process_info.dwProcessId);
+
+    set_break(process,(void*)BREAK_ADDRESS_SHELL_JMP,1);  //  在UPX 解压结束的长跳转中设置中断
+
+    DEBUG_EVENT debug_event={0};
+    debug_event.dwProcessId=process_info.dwProcessId;
+
+    while (WaitForDebugEvent(&amp;debug_event,INFINITE)) {  //  等待系统发来中断事件
+        switch (debug_event.dwDebugEventCode) {
+            case EXCEPTION_DEBUG_EVENT: {
+                switch (debug_event.u.Exception.ExceptionRecord.ExceptionCode) {
+                    case EXCEPTION_BREAKPOINT: {
+                        CONTEXT regesit={0};
+                        regesit.ContextFlags=CONTEXT_FULL;
+                        GetThreadContext(process_info.hThread,&amp;regesit);  //  主要是读取EIP
+                        printf(&quot;EIP=%X\n&quot;,regesit.Eip);
+
+                        switch (--regesit.Eip) {
+                            case BREAK_ADDRESS_SHELL_JMP: {
+                                SetThreadContext(process_info.hThread,&amp;regesit);
+                                char jmp_code[1]={0xE9};
+                                remove_break(process,(void*)BREAK_ADDRESS_SHELL_JMP,jmp_code,sizeof(jmp_code));  //  消除断点替换0xE9 (JMP 的指令码)
+
+                                char nop_code[2]={0x90,0x90};
+                                remove_break(process,(void*)BREAK_ADDRESS_JE,nop_code,sizeof(nop_code));  //  往JE 写两个NOP
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (EXIT_PROCESS_DEBUG_EVENT==debug_event.dwDebugEventCode)  //  程序退出
+            break;
+        ContinueDebugEvent(process_info.dwProcessId,process_info.dwThreadId,DBG_CONTINUE);
+
+    }
+    printf(&quot;OK!\n&quot;);
+
+    return 0;
+}
+
+</code></pre>
+<p>调试程序运行到0x4307CC 执行<code>INT 3</code>指令中断,然后把原来的中断二进制数据0xCC (INT 3 指令的Opcode)换回0xE9 (JMP 指令的Opcode),然后让被调试的程序执行至结束.执行结果如下:</p>
+<p><img src="pic7/pic1.png" alt="" /></p>
+<p>那么对内存区域进行读写权限限制具体是有哪些表现的.先用JAVA 举个例子(在https://tool.lu/coderunner/ 上执行):</p>
+<pre><code class="language-java">
+class Untitled {
+	public static void main(String[] args) {
+		String data = new String(&quot;Hello&quot;);
+
+		data.charAt(0);
+		data.charAt(6);
+
+		System.out.println(data);
+	}
+}
+
+</code></pre>
+<p>程序输出如下:</p>
+<pre><code class="language-txt">
+Exception in thread &quot;main&quot; java.lang.StringIndexOutOfBoundsException: String index out of range: 6
+	at java.base/java.lang.StringLatin1.charAt(StringLatin1.java:47)
+	at java.base/java.lang.String.charAt(String.java:693)
+	at Untitled.main(Untitled.java:6)
+
+</code></pre>
+<p>JAVA 在执行阶段,会根据对字符串的操作索引位置和字符串长度来检测是否存在上下标越界的问题,但是C/C++ 底层的汇编却不会对buffer 的操作索引进行检查.对于这个问题的解决方案,我们就使用<code>VirtualProtect()</code> 函数进行内存权限设置,一旦越界触发读写内存异常,下面是一段示例代码:</p>
+<pre><code class="language-c">
+#include &lt;malloc.h&gt;
+#include &lt;memory.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+
+
+#define TEST_FLAG &quot;AAAAAAAAAAAAAAAAAAAAAA&quot;
+
+
+int main(int argc,char** argv) {
+    char* buffer = (char*)malloc(0x10);
+
+    printf(&quot;heap_address = 0x%X\n&quot;,buffer);
+
+    memcpy(buffer,TEST_FLAG,strlen(TEST_FLAG));
+
+    printf(&quot;Buffer Address = 0x%X\n&quot;,buffer);
+    printf(&quot;Buffer = %s\n&quot;,buffer);
+
+    return 0;
+}
+
+</code></pre>
+<p>这段代码会触发越界写问题,但是程序没有因为越界写的问题导致程序崩溃.</p>
+<p><img src="pic7/pic20.png" alt="" /></p>
+<p>然后我们构造两个buffer ,一个是外层是不允许访问的,然后在这个buffer 内部再分配一个可以读写的buffer .布局如下:</p>
+<pre><code class="language-txt">
+ outside-buffer               outside-buffer
+ _______^___________________________^______
+|  No-Access  |  Read-Write  |  No-Access  |
+               -------v------
+                inside-buffer
+
+</code></pre>
+<p>测试代码如下:</p>
+<pre><code class="language-c++">
+
+#include &lt;memory.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;string.h&gt;
+
+#include &lt;windows.h&gt;
+
+
+#define TEST_FLAG &quot;AAAAAAAAAAAAAAAAAAAAAA&quot;
+
+
+int main(int argc,char** argv) {
+    LPVOID heap_region = VirtualAlloc(NULL,0x1000,MEM_COMMIT,PAGE_NOACCESS);
+
+    printf(&quot;heap_region = 0x%X\n&quot;,heap_region);
+
+    LPVOID address = (LPVOID)((DWORD)heap_region + 0x100);
+
+    printf(&quot;heap_address = 0x%X\n&quot;,address);
+
+    VirtualProtect((LPVOID)address,10,PAGE_READWRITE,0);
+
+    char* buffer = (char*)address;
+
+    memcpy(buffer,TEST_FLAG,strlen(TEST_FLAG));
+
+    printf(&quot;Buffer Address = 0x%X\n&quot;,buffer);
+    printf(&quot;Buffer = %s\n&quot;,buffer);
+
+    return 0;
+}
+
+</code></pre>
+<p>检测效果如下:</p>
+<p><img src="pic7/pic21.png" alt="" /></p>
+<h3 id="硬件监控"><a class="header" href="#硬件监控">硬件监控</a></h3>
+<p>前面提到,用INT 3 指令可以触发调试中断,但这是软中断.在硬件层上还有个更底层的调试中断寄存器:DR 寄存器.我们以OD 为例子来介绍,启动OD 并调试程序,点击菜单&quot;调试&quot;-&gt;&quot;硬件断点&quot;.</p>
+<p><img src="pic7/pic9.png" alt="" /></p>
+<p>OD 会弹出硬件断点窗口.</p>
+<p><img src="pic7/pic10.png" alt="" /></p>
+<p>我们回到OD 的汇编窗口,任意点击一条汇编指令,点击右键&quot;断点&quot;-&gt;&quot;硬件执行&quot;.</p>
+<p><img src="pic7/pic11.png" alt="" /></p>
+<p>然后再回来到硬件断点窗口,就可以看到前面设置的记录了.</p>
+<p><img src="pic7/pic12.png" alt="" /></p>
+<p>来到寄存器窗口右键点击空白区域,可以看到查看调试寄存器.</p>
+<p><img src="pic7/pic13.png" alt="" /></p>
+<p>就能看到调试寄存器的内容输出.</p>
+<p><img src="pic7/pic14.png" alt="" /></p>
+<p>DR 调试器包含DR0-DR3 ,DR6-DR7 .其中DR0-DR3 保存的是中断地址;DR6 是命中中断时记录地址是DR0-DR3 中的哪个编号;DR7 是调试控制位.在DR6 中保存的数据,如果命中了DR0 寄存器,那么DR6 寄存器的第15 位将会设置为1 .</p>
+<p><img src="pic7/pic15.png" alt="" /></p>
+<p><img src="pic7/pic16.png" alt="" /></p>
+<p>然后F9 执行,命中中断,DR6 寄存器数值产生了改变.</p>
+<p><img src="pic7/pic17.png" alt="" /></p>
+<p><img src="pic7/pic18.png" alt="" /></p>
+<p>DR7 寄存器各位的字段如下:</p>
+<p><img src="pic7/pic19.png" alt="" /></p>
+<p>关于DR7 寄存器详细字段请自行查阅手册,使用DR 寄存器的方法和设置调试方法差别不大(一般应用DB 寄存器比较多的是在反反调试和反病毒中,此时一些常见软件调试手段会失效,比如代码自检函数头Hook 点,自动清除INT 3 指令,大量抛出异常干扰调试(这需要根据调试代码来识别,软件调试一般触发的事件有EXCEPTION_BREAKPOINT ,EXCEPTION_FLT_DIVIDE_BY_ZERO 等.但DB 寄存器会抛出STATUS_SINGLE_STEP ,这是硬件异常警告),这就需要依靠硬件寄存器来帮助调试),此处不再细说.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../#.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next" href="../../7.dynamic-analysis/动态程序分析原理/动态代码分析基本原理.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../#.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next" href="../../7.dynamic-analysis/动态程序分析原理/动态代码分析基本原理.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../elasticlunr.min.js"></script>
+        <script src="../../mark.min.js"></script>
+        <script src="../../searcher.js"></script>
+
+        <script src="../../clipboard.min.js"></script>
+        <script src="../../highlight.js"></script>
+        <script src="../../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../../theme/pagetoc.js"></script>
+
+
+    </div>
+    </body>
+</html>

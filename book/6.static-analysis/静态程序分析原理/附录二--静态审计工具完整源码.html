@@ -1,0 +1,621 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>附录二  静态审计工具完整源码 - Source and Fuzzing</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="The example book covers examples.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../../highlight.css">
+        <link rel="stylesheet" href="../../tomorrow-night.css">
+        <link rel="stylesheet" href="../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../.././theme/custom.css">
+        <link rel="stylesheet" href="../../theme/pagetoc.css">
+        <link rel="stylesheet" href="../.././theme/catppuccin.css">
+        <link rel="stylesheet" href="../.././theme/catppuccin-highlight.css">
+
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../../1.Github.html"><strong aria-hidden="true">1.</strong> Github</a></li><li class="chapter-item expanded "><a href="../../11.AI.html"><strong aria-hidden="true">2.</strong> Ai</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan.html"><strong aria-hidden="true">3.</strong> Libfuzzer Asan</a></li><li class="chapter-item expanded "><a href="../../2.Fuzzing.html"><strong aria-hidden="true">4.</strong> Fuzzing</a></li><li class="chapter-item expanded "><a href="../../3.Fuzzing.html"><strong aria-hidden="true">5.</strong> Fuzzing</a></li><li class="chapter-item expanded "><a href="../../4.source-code.html"><strong aria-hidden="true">6.</strong> Source Code</a></li><li class="chapter-item expanded "><a href="../../5.compile.html"><strong aria-hidden="true">7.</strong> Compile</a></li><li class="chapter-item expanded "><a href="../../6.static-analysis.html"><strong aria-hidden="true">8.</strong> Static Analysis</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis.html"><strong aria-hidden="true">9.</strong> Dynamic Analysis</a></li><li class="chapter-item expanded "><a href="../../8.llvm.html"><strong aria-hidden="true">10.</strong> Llvm</a></li><li class="chapter-item expanded "><a href="../../9.klee.html"><strong aria-hidden="true">11.</strong> Klee</a></li><li class="chapter-item expanded "><a href="../../chapter_1.html"><strong aria-hidden="true">12.</strong> Chapter 1</a></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">13.</strong> Libfuzzer Asan</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan.html"><strong aria-hidden="true">13.1.</strong> 深入解析libfuzzer与asan</a></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">13.2.</strong> 深入解析libfuzzer与asan</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/ASAN原理.html"><strong aria-hidden="true">13.2.1.</strong> Asan原理</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/LLVM下的插桩简述.html"><strong aria-hidden="true">13.2.2.</strong> Llvm下的插桩简述</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/libFuzzer原理.html"><strong aria-hidden="true">13.2.3.</strong> libFuzzer原理</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/参考引用.html"><strong aria-hidden="true">13.2.4.</strong> 参考引用</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/实战中ASAN会有哪些坑.html"><strong aria-hidden="true">13.2.5.</strong> 实战中asan会有哪些坑</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/深入解析libFuzzer参数与回显.html"><strong aria-hidden="true">13.2.6.</strong> 深入解析libFuzzer参数与回显</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/玩转Sanitizer-Coverage.html"><strong aria-hidden="true">13.2.7.</strong> 玩转Sanitizer Coverage</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">14.</strong> Static Analysis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../6.static-analysis/静态程序分析原理.html"><strong aria-hidden="true">14.1.</strong> 静态程序分析原理</a></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">14.2.</strong> 静态程序分析原理</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../6.static-analysis/静态程序分析原理/必备工具.html"><strong aria-hidden="true">14.2.1.</strong> 必备工具</a></li><li class="chapter-item expanded "><a href="../../6.static-analysis/静态程序分析原理/附录一--各图的Graphiz生成代码.html"><strong aria-hidden="true">14.2.2.</strong> 附录一  各图的Graphiz生成代码</a></li><li class="chapter-item expanded "><a href="../../6.static-analysis/静态程序分析原理/附录二--静态审计工具完整源码.html" class="active"><strong aria-hidden="true">14.2.3.</strong> 附录二  静态审计工具完整源码</a></li><li class="chapter-item expanded "><a href="../../6.static-analysis/静态程序分析原理/静态代码分析基本原理.html"><strong aria-hidden="true">14.2.4.</strong> 静态代码分析基本原理</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">15.</strong> Dynamic Analysis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理.html"><strong aria-hidden="true">15.1.</strong> 动态程序分析原理</a></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">15.2.</strong> 动态程序分析原理</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/内存监控.html"><strong aria-hidden="true">15.2.1.</strong> 内存监控</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/动态代码分析基本原理.html"><strong aria-hidden="true">15.2.2.</strong> 动态代码分析基本原理</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/必备工具.html"><strong aria-hidden="true">15.2.3.</strong> 必备工具</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/污点追踪.html"><strong aria-hidden="true">15.2.4.</strong> 污点追踪</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/程序插桩与代码覆盖率.html"><strong aria-hidden="true">15.2.5.</strong> 程序插桩与代码覆盖率</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/符号执行.html"><strong aria-hidden="true">15.2.6.</strong> 符号执行</a></li></ol></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Source and Fuzzing</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main><div class="sidetoc"><nav class="pagetoc"></nav></div>
+                        <h2 id="附录二----静态审计工具完整源码"><a class="header" href="#附录二----静态审计工具完整源码">附录二 -- 静态审计工具完整源码</a></h2>
+<pre><code class="language-python">
+
+import json
+
+import cparser
+
+
+code_emun = '''
+enum {
+  MessageType_Hello = 0,
+  MessageType_Execute,
+  MessageType_Data
+};
+'''
+
+code_execute_command = '''
+void execute_command(const unsigned char* command) {
+    system(command);
+}
+'''
+
+code_decrypt_data = '''
+void decrypt_data(const unsigned char* data_buffer,unsigned char data_buffer_length) {
+    unsigned char* buffer[8] = {0};
+
+    for (unsigned int data_index = 0;data_index &lt; data_buffer_length;++data_index)
+        buffer[data_index] = data_buffer[data_index] ^ 0x65;
+
+    printf(&quot;Recv:%s\n&quot;,&amp;buffer);
+}
+'''
+
+code_buffer_resolver = '''
+int buffer_resolver(const unsigned char* buffer) {
+    unsigned char buffer_length = buffer[0];
+
+    if (2 &lt;= buffer_length)
+        return 0;
+
+    if (MessageType_Hello == buffer[1]) {
+        printf(&quot;Hello\n&quot;);
+    } else if (MessageType_Execute == buffer[1]) {
+        unsigned char* command_buffer = (unsigned char*)malloc(buffer_length - 1);
+
+        memset(&amp;command_buffer,0,buffer_length);
+        memcpy(&amp;command_buffer,&amp;buffer[2],buffer_length - 2);
+
+        execute_command(command_buffer);
+    } else if (MessageType_Data == buffer[1]) {
+        decrypt_data(&amp;buffer[2],buffer_length - 2);
+    }
+
+    return 1;
+}
+'''
+
+
+def resolver_function_parameter(code_string) :
+    code_string = code_string.strip()
+    code_block_declare_offset = code_string.find('{')
+
+    if -1 == code_block_declare_offset :
+        return False
+
+    try :
+        function_declare_string = code_string[ : code_block_declare_offset ].strip()
+        function_return_type = function_declare_string.split(' ')[0]
+        function_name = function_declare_string.split('(')[0]
+        function_name = function_name.split(' ')[1]
+        function_parameters_string = function_declare_string.split('(')[1].strip()
+        function_parameters_string = function_parameters_string.split(')')[0].strip()
+        resolve_function_parameters_list = function_parameters_string.split(',')
+        function_parameters_list = []
+
+        for resolve_function_parameters_index in resolve_function_parameters_list :
+            function_parameters_list.append({
+                'type' : resolve_function_parameters_index[ : resolve_function_parameters_index.rfind(' ') ] ,
+                'name' : resolve_function_parameters_index.split(' ')[-1] ,
+            })
+
+        return {
+            'type' : function_return_type ,
+            'name' : function_name ,
+            'parameters' : function_parameters_list ,
+        }
+    except :
+        pass
+
+    return False
+
+
+code_stream = {
+    'global_enum' : {
+        'code' : cparser.get_func_tree(code_emun) ,
+        'declare' : resolver_function_parameter(code_emun) ,
+    } ,
+    'decrypt_data' : {
+        'code' : cparser.get_func_tree(code_decrypt_data) ,
+        'declare' : resolver_function_parameter(code_decrypt_data) ,
+    } ,
+    'execute_command' : {
+        'code' : cparser.get_func_tree(code_execute_command) ,
+        'declare' : resolver_function_parameter(code_execute_command) ,
+    } ,
+    'buffer_resolver' : {
+        'code' : cparser.get_func_tree(code_buffer_resolver) ,
+        'declare' : resolver_function_parameter(code_buffer_resolver) ,
+    } ,
+}
+
+
+def get_function_parameters(ast_node) :
+    parameters_list = []
+
+    for subnode_index in ast_node.subnode :
+        if subnode_index[1].type == 'parallel' :
+            parameters_list += get_function_parameters(subnode_index[1])
+        elif subnode_index[0] == 'parameters' :
+            parameters_list.append({
+                'type' : subnode_index[1].type ,
+                'value' : subnode_index[1].value ,
+            })
+        elif subnode_index[0].startswith('exp') :
+            parameters_list.append({
+                'type' : subnode_index[1].type ,
+                'value' : subnode_index[1].value ,
+            })
+
+    return parameters_list
+
+def recursive_find_call(ast_node,find_function_name) :
+    find_result = []
+
+    for subnode_index in ast_node.subnode :
+        if subnode_index[1] == None :
+            continue
+
+        if 'function_call' == subnode_index[1].type :
+            if find_function_name == '*' or find_function_name == subnode_index[1].value :
+                parameters_list = get_function_parameters(subnode_index[1])
+
+                find_result.append((subnode_index,parameters_list))
+
+        find_result += recursive_find_call(subnode_index[1],find_function_name)
+
+    return find_result
+
+def print_search_result(call_list) :
+    for call_index in call_list :
+        ast_node_info = call_index[0]
+        parameters_info = call_index[1]
+
+        print 'Call Function Name :',ast_node_info[1].value
+        print '  Function Argument :',parameters_info
+
+def resolve_strategy(user_search_strategy) :
+    user_search_strategy = user_search_strategy.split('\n')
+    check_strategy = []
+
+    for user_search_strategy_index in user_search_strategy :
+        strategy_record = user_search_strategy_index.strip()
+
+        if not len(strategy_record) :
+            continue
+
+        search_function_name = strategy_record.split('(')[0].strip()
+        search_parameter_string = strategy_record.split('(')[1].strip()
+        search_parameter_string = search_parameter_string.split(')')[0].strip()
+        search_parameter_list = []
+
+        if len(search_parameter_string) :
+            if not -1 == search_parameter_string.find(',') :
+                search_parameter_string = search_parameter_string.split(',')
+                parameter_index = -1
+
+                for search_parameter_index in search_parameter_string :
+                    check_parameter = search_parameter_index.strip()
+                    parameter_index += 1
+
+                    if not check_parameter == '*' :
+                        continue
+
+                    search_parameter_list.append(parameter_index)
+            else :
+                check_parameter = search_parameter_string.strip()
+
+                if check_parameter == '*' :
+                    search_parameter_list.append(0)
+
+        check_strategy.append((search_function_name,search_parameter_list))
+
+    return check_strategy
+
+def search_call_by_strategy(search_strategy,code_object) :
+    search_strategy = resolve_strategy(search_strategy)
+    search_record = {}
+
+    for search_strategy_index in search_strategy :  #  Search Call by Strategy
+        find_function_name = search_strategy_index[0]
+        search_check_parameter_list = search_strategy_index[1]
+        find_function_call = recursive_find_call(code_object,find_function_name)
+        search_record_list = []
+
+        print_search_result(find_function_call)
+
+        for call_index in find_function_call :  #  Find Match Strategy Call
+            ast_node_info = call_index[0]
+            parameters_list = call_index[1]
+
+            if search_check_parameter_list :
+                check_parameter_list = []
+
+                for search_check_parameter_index in search_check_parameter_list :  #  Filter Call Argument
+                    if len(parameters_list) &lt;= search_check_parameter_index :
+                        continue
+
+                    target_search_parameter = parameters_list[search_check_parameter_index]
+
+                    if not target_search_parameter['type'] in ['variable','address_of'] :  #  Check this Argument is a Variant ..
+                        continue
+
+                    check_parameter_list.append(target_search_parameter)
+
+                if check_parameter_list :
+                    search_record_list.append((ast_node_info,check_parameter_list))
+            else :
+                search_record_list.append((ast_node_info,[]))
+
+        if search_record_list :
+            search_record[find_function_name] = search_record_list
+
+    return search_record
+
+
+def xref_variant(trance_record,bingo_parameter_name,function_declare) :
+    xref_record = []
+
+    for trance_record_index in trance_record[ :: -1 ] :
+        if trance_record_index[1].type in ['get_element','assign'] :
+            if bingo_parameter_name in trance_record_index[1].value :
+                xref_record.append({
+                    'type' : trance_record_index[1].type ,
+                    'value' : trance_record_index[1].value ,
+                    'node' : trance_record_index
+                })
+        elif trance_record_index[1].type == 'function_call' :
+            function_parameters = get_function_parameters(trance_record_index[1])
+
+            for function_parameter_index in function_parameters :
+                if not bingo_parameter_name in function_parameter_index['value'] :
+                    continue
+
+                xref_record.append({
+                    'type' : trance_record_index[1].type ,
+                    'value' : trance_record_index[1].value ,
+                    'node' : trance_record_index
+                })
+
+    for function_parameter_index in function_declare['parameters'] :
+        function_parameter_name = function_parameter_index['name']
+
+        if not bingo_parameter_name == function_parameter_name :
+            continue
+
+        xref_record.append({
+            'type' : 'parameter' ,
+            'value' : function_parameter_name ,
+            'node' : None
+        })
+
+    return xref_record
+
+def trance_record_by_ast(start_node,target_node,bingo_parameters,function_declare,trance_record) :
+    code_record = []
+
+    for node_object_index in start_node.subnode :
+        if node_object_index == target_node :
+            xref_record_list = []
+
+            for bingo_parameter_index in bingo_parameters :
+                xref_record_list.append(xref_variant(trance_record + code_record,bingo_parameter_index['value'],function_declare))
+
+            return (True,xref_record_list)
+
+        code_record.append(node_object_index)
+
+        is_search,sub_data = trance_record_by_ast(node_object_index[1],target_node,bingo_parameters,function_declare,trance_record + code_record)
+
+        if is_search :
+            xref_record_list = sub_data
+
+            return (True,xref_record_list)
+
+        sub_code_record = sub_data
+        code_record += sub_code_record
+
+    return (False,code_record)
+
+def get_condition(ast_node) :
+    for index in ast_node.subnode :
+        if 'condition' == index[0] :
+            return index[1].value
+
+    return False
+
+def trance_control_flow_by_ast(start_node,target_node,trance_record) :
+    code_record = []
+
+    for node_object_index in start_node.subnode :
+        if node_object_index == target_node :
+            all_trance_record = trance_record + code_record
+            control_flow_list = []
+
+            for trance_record_index in all_trance_record :
+                if trance_record_index[1].type == 'if' :
+                    control_flow_list.append(get_condition(trance_record_index[1]))
+
+            return (True,control_flow_list)
+
+        code_record.append(node_object_index)
+
+        is_search,sub_data = trance_control_flow_by_ast(node_object_index[1],target_node,trance_record + code_record)
+
+        if is_search :
+            control_flow_record_list = sub_data
+
+            return (True,control_flow_record_list)
+
+    return (False,code_record)
+
+def xref_function(code_stream,search_function_name) :
+    search_xref_data = {}
+
+    for function_name in code_stream.keys() :
+        function_code = code_stream[function_name]['code']
+        search_result = recursive_find_call(function_code,search_function_name)
+
+        if not search_result :
+            continue
+
+        xref_record = xref_function(code_stream,function_name)
+        search_xref_data[function_name] = {
+            'xref' : xref_record ,
+            'reference' : search_result ,
+        }
+
+    return search_xref_data
+
+def deep_trance(reference_point_list,xref_reference_function_name,current_function_name) :
+    trance_record = {}
+    #print 'deep_trance  :  ',current_function_name,'-&gt;',xref_reference_function_name
+
+    for reference_point in reference_point_list :
+        code_object = code_stream[xref_reference_function_name]['code']
+        code_function_declare = code_stream[xref_reference_function_name]['declare']
+        reference_point_ast_node = reference_point[0]
+        reference_variant_list = reference_point[1]
+        control_flow_list = trance_control_flow_by_ast(code_object,reference_point_ast_node,[])[1]
+        data_flow_list = trance_record_by_ast(code_object,reference_point_ast_node,reference_variant_list,code_function_declare,[])[1]
+        xref_function_list = xref_function(code_stream,xref_reference_function_name)
+        xref_record_list = []
+
+        for xref_function_name in xref_function_list.keys() :
+            xref_function_object = xref_function_list[xref_function_name]
+
+            xref_record_list.append(deep_trance(xref_function_object['reference'],xref_function_name,xref_reference_function_name))
+
+        trance_record[xref_reference_function_name] = {
+            'data_flow' : data_flow_list ,
+            'control_flow' : control_flow_list ,
+            'xref' : xref_record_list ,
+        }
+
+    return trance_record
+
+
+search_strategy = 'system(*)'
+search_record_list = []
+
+for function_name in code_stream.keys() :
+    search_record = search_call_by_strategy(search_strategy,code_stream[function_name]['code'])
+
+    #print 'Search Record :',search_record
+
+    if not search_record :
+        continue
+
+    search_record_list.append({
+        'function_name' : function_name ,
+        'record' : search_record ,
+    })
+
+for search_record_index in search_record_list :
+    xref_reference_function_name = search_record_index['function_name']
+    reference_record_list = search_record_index['record']
+
+    for reference_function_name in reference_record_list.keys() :
+        reference_point_list = reference_record_list[reference_function_name]
+
+        print 'Xref-Search for',reference_function_name,'deep_trance() Result :'
+        print deep_trance(reference_point_list,xref_reference_function_name,reference_function_name)
+
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../6.static-analysis/静态程序分析原理/附录一--各图的Graphiz生成代码.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next" href="../../6.static-analysis/静态程序分析原理/静态代码分析基本原理.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../6.static-analysis/静态程序分析原理/附录一--各图的Graphiz生成代码.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next" href="../../6.static-analysis/静态程序分析原理/静态代码分析基本原理.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../elasticlunr.min.js"></script>
+        <script src="../../mark.min.js"></script>
+        <script src="../../searcher.js"></script>
+
+        <script src="../../clipboard.min.js"></script>
+        <script src="../../highlight.js"></script>
+        <script src="../../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../../theme/pagetoc.js"></script>
+
+
+    </div>
+    </body>
+</html>

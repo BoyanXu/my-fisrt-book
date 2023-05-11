@@ -1,0 +1,650 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>污点追踪 - Source and Fuzzing</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="The example book covers examples.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../../highlight.css">
+        <link rel="stylesheet" href="../../tomorrow-night.css">
+        <link rel="stylesheet" href="../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../.././theme/custom.css">
+        <link rel="stylesheet" href="../../theme/pagetoc.css">
+        <link rel="stylesheet" href="../.././theme/catppuccin.css">
+        <link rel="stylesheet" href="../.././theme/catppuccin-highlight.css">
+
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../../1.Github.html"><strong aria-hidden="true">1.</strong> Github</a></li><li class="chapter-item expanded "><a href="../../11.AI.html"><strong aria-hidden="true">2.</strong> Ai</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan.html"><strong aria-hidden="true">3.</strong> Libfuzzer Asan</a></li><li class="chapter-item expanded "><a href="../../2.Fuzzing.html"><strong aria-hidden="true">4.</strong> Fuzzing</a></li><li class="chapter-item expanded "><a href="../../3.Fuzzing.html"><strong aria-hidden="true">5.</strong> Fuzzing</a></li><li class="chapter-item expanded "><a href="../../4.source-code.html"><strong aria-hidden="true">6.</strong> Source Code</a></li><li class="chapter-item expanded "><a href="../../5.compile.html"><strong aria-hidden="true">7.</strong> Compile</a></li><li class="chapter-item expanded "><a href="../../6.static-analysis.html"><strong aria-hidden="true">8.</strong> Static Analysis</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis.html"><strong aria-hidden="true">9.</strong> Dynamic Analysis</a></li><li class="chapter-item expanded "><a href="../../8.llvm.html"><strong aria-hidden="true">10.</strong> Llvm</a></li><li class="chapter-item expanded "><a href="../../9.klee.html"><strong aria-hidden="true">11.</strong> Klee</a></li><li class="chapter-item expanded "><a href="../../chapter_1.html"><strong aria-hidden="true">12.</strong> Chapter 1</a></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">13.</strong> Libfuzzer Asan</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan.html"><strong aria-hidden="true">13.1.</strong> 深入解析libfuzzer与asan</a></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">13.2.</strong> 深入解析libfuzzer与asan</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/ASAN原理.html"><strong aria-hidden="true">13.2.1.</strong> Asan原理</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/LLVM下的插桩简述.html"><strong aria-hidden="true">13.2.2.</strong> Llvm下的插桩简述</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/libFuzzer原理.html"><strong aria-hidden="true">13.2.3.</strong> libFuzzer原理</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/参考引用.html"><strong aria-hidden="true">13.2.4.</strong> 参考引用</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/实战中ASAN会有哪些坑.html"><strong aria-hidden="true">13.2.5.</strong> 实战中asan会有哪些坑</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/深入解析libFuzzer参数与回显.html"><strong aria-hidden="true">13.2.6.</strong> 深入解析libFuzzer参数与回显</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/玩转Sanitizer-Coverage.html"><strong aria-hidden="true">13.2.7.</strong> 玩转Sanitizer Coverage</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">14.</strong> Static Analysis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../6.static-analysis/静态程序分析原理.html"><strong aria-hidden="true">14.1.</strong> 静态程序分析原理</a></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">14.2.</strong> 静态程序分析原理</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../6.static-analysis/静态程序分析原理/必备工具.html"><strong aria-hidden="true">14.2.1.</strong> 必备工具</a></li><li class="chapter-item expanded "><a href="../../6.static-analysis/静态程序分析原理/附录一--各图的Graphiz生成代码.html"><strong aria-hidden="true">14.2.2.</strong> 附录一  各图的Graphiz生成代码</a></li><li class="chapter-item expanded "><a href="../../6.static-analysis/静态程序分析原理/附录二--静态审计工具完整源码.html"><strong aria-hidden="true">14.2.3.</strong> 附录二  静态审计工具完整源码</a></li><li class="chapter-item expanded "><a href="../../6.static-analysis/静态程序分析原理/静态代码分析基本原理.html"><strong aria-hidden="true">14.2.4.</strong> 静态代码分析基本原理</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">15.</strong> Dynamic Analysis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理.html"><strong aria-hidden="true">15.1.</strong> 动态程序分析原理</a></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">15.2.</strong> 动态程序分析原理</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/内存监控.html"><strong aria-hidden="true">15.2.1.</strong> 内存监控</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/动态代码分析基本原理.html"><strong aria-hidden="true">15.2.2.</strong> 动态代码分析基本原理</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/必备工具.html"><strong aria-hidden="true">15.2.3.</strong> 必备工具</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/污点追踪.html" class="active"><strong aria-hidden="true">15.2.4.</strong> 污点追踪</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/程序插桩与代码覆盖率.html"><strong aria-hidden="true">15.2.5.</strong> 程序插桩与代码覆盖率</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/符号执行.html"><strong aria-hidden="true">15.2.6.</strong> 符号执行</a></li></ol></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Source and Fuzzing</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main><div class="sidetoc"><nav class="pagetoc"></nav></div>
+                        <h2 id="污点追踪"><a class="header" href="#污点追踪">污点追踪</a></h2>
+<p>污点追踪的主要原理是,在输入处构造一些带有标签的数据,然后在敏感函数和位置设置Hook ,观察带有标签的输入数据是否能够流到这个位置来判断漏洞是否存在.我们以prvd (https://github.com/fate0/prvd ,PHP 污点追踪工具)为例子介绍污点追踪.prvd 包含了生成污点数据,追踪数据流,复现漏洞.该项目的作者还写了一个PHP Hook 框架xmark (https://github.com/fate0/xmark ),这两者一起结合使用.整体结构如下:</p>
+<p><img src="pic7/pic22.png" alt="" /></p>
+<p>先提示一下,xmark 框架分两点:1.重定向Opcode 的执行回调函数,达到Hook Opcode 的执行;2.重命名原函数名,然后再自定义同名函数达到Hook .先来看看prvd 的PHP.ini 文件,配置数据如下:</p>
+<pre><code class="language-txt">
+auto_prepend_file = &quot;/data/prvd/src/Entry.php&quot;   #  导入prvd 的Entry.php ,这是为了给输入打污染标签.
+
+[xmark]  #  导入XMARK hook 框架
+xmark.enable = 1
+xmark.rename_enable = 0
+xmark.rename_classes = &quot;  #  重命名类名称
+    SQLite3:prvd_SQLite3,
+    mysqli:prvd_mysqli,
+    PDO:prvd_PDO,
+&quot;
+xmark.rename_functions = &quot;  #  重命名函数列表
+    base64_decode:prvd_base64_decode,
+    basename:prvd_basename,
+    dirname:prvd_dirname,
+    explode:prvd_explode,
+    gzuncompress:prvd_gzuncompress,
+    hex2bin:prvd_hex2bin,
+    html_entity_decode:prvd_html_entity_decode,
+    htmlspecialchars_decode:prvd_htmlspecialchars_decode,
+    implode:prvd_implode,
+    join:prvd_join,
+    json_decode:prvd_json_decode,
+    ltrim:prvd_ltrim,
+    pathinfo:prvd_pathinfo,
+    rawurldecode:prvd_rawurldecode,
+    rawurlencode:prvd_rawurlencode,
+    rtrim:prvd_rtrim,
+    sprintf:prvd_sprintf,
+    str_ireplace:prvd_str_ireplace,
+    str_pad:prvd_str_pad,
+    str_replace:prvd_str_replace,
+    strstr:prvd_strstr,
+    strtolower:prvd_strtolower,
+    strtoupper:prvd_strtoupper,
+    substr:prvd_substr,
+    trim:prvd_trim,
+    urldecode:prvd_urldecode,
+    urlencode:prvd_urlencode,
+    vsprintf:prvd_vsprintf,
+    exec:prvd_exec,
+    passthru:prvd_passthru,
+    popen:prvd_popen,
+    proc_open:prvd_proc_open,
+    shell_exec:prvd_shell_exec,
+    system:prvd_system,
+    unserialize:prvd_unserialize,
+    copy:prvd_copy,
+    dir:prvd_dir,
+    file:prvd_file,
+    file_get_contents:prvd_file_get_contents,
+    file_put_contents:prvd_file_put_contents,
+    fopen:prvd_fopen,
+    glob:prvd_glob,
+    highlight_file:prvd_highlight_file,
+    link:prvd_link,
+    move_uploaded_file:prvd_move_uploaded_file,
+    opendir:prvd_opendir,
+    readfile:prvd_readfile,
+    rename:prvd_rename,
+    rmdir:prvd_rmdir,
+    scandir:prvd_scandir,
+    show_source:prvd_show_source,
+    unlink:prvd_unlink,
+    mysqli_init:prvd_mysqli_init,
+    mysqli_multi_query:prvd_mysqli_multi_query,
+    mysqli_query:prvd_mysqli_query,
+    mysqli_prepare:prvd_mysqli_prepare,
+    mysqli_real_query:prvd_mysqli_real_query,
+    pg_prepare:prvd_pg_prepare,
+    pg_query:prvd_pg_query,
+    pg_query_params:prvd_pg_query_params,
+    pg_send_prepare:prvd_pg_send_prepare,
+    pg_send_query:prvd_pg_send_query,
+    pg_send_query_params:prvd_pg_send_query_params,
+    curl_exec:prvd_curl_exec,
+    fsockopen:prvd_fsockopen,
+    get_headers:prvd_get_headers,
+    print_r:prvd_print_r,
+    printf:prvd_printf,
+    vprintf:prvd_vprintf
+&quot;
+
+</code></pre>
+<p>xmark 的初始化函数主要是读取配置文件内的数据并初始化内部变量.</p>
+<pre><code class="language-c">
+PHP_INI_BEGIN()
+  STD_PHP_INI_BOOLEAN(&quot;xmark.enable&quot;, &quot;0&quot;, PHP_INI_SYSTEM, OnUpdateBool, enable, zend_xmark_globals, xmark_globals)
+  STD_PHP_INI_BOOLEAN(&quot;xmark.enable_rename&quot;, &quot;0&quot;, PHP_INI_SYSTEM, OnUpdateBool, enable_rename, zend_xmark_globals, xmark_globals)
+  STD_PHP_INI_ENTRY(&quot;xmark.rename_functions&quot;, &quot;&quot;, PHP_INI_SYSTEM, OnUpdateString, rename_functions, zend_xmark_globals, xmark_globals)  //  从配置文件中的rename_functions 字段读取数据到rename_functions 变量
+  STD_PHP_INI_ENTRY(&quot;xmark.rename_classes&quot;, &quot;&quot;, PHP_INI_SYSTEM, OnUpdateString, rename_classes, zend_xmark_globals, xmark_globals)
+PHP_INI_END()
+
+// 省略无关代码
+
+PHP_MINIT_FUNCTION(xmark)
+{
+    // ...
+
+    REGISTER_LONG_CONSTANT(&quot;XMARK_ECHO&quot;, ZEND_ECHO, CONST_CS|CONST_PERSISTENT);  //  设置常量值..
+    REGISTER_LONG_CONSTANT(&quot;XMARK_EXIT&quot;, ZEND_EXIT, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT(&quot;XMARK_INIT_METHOD_CALL&quot;, ZEND_INIT_METHOD_CALL, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT(&quot;XMARK_INIT_USER_CALL&quot;, ZEND_INIT_USER_CALL, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT(&quot;XMARK_INIT_DYNAMIC_CALL&quot;, ZEND_INIT_DYNAMIC_CALL, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT(&quot;XMARK_INCLUDE_OR_EVAL&quot;, ZEND_INCLUDE_OR_EVAL, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT(&quot;XMARK_CONCAT&quot;, ZEND_CONCAT, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT(&quot;XMARK_FAST_CONCAT&quot;, ZEND_FAST_CONCAT, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT(&quot;XMARK_ASSIGN_CONCAT&quot;, ZEND_ASSIGN_CONCAT, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT(&quot;XMARK_ROPE_END&quot;, ZEND_ROPE_END, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT(&quot;XMARK_DO_FCALL&quot;, ZEND_DO_FCALL, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT(&quot;XMARK_DO_ICALL&quot;, ZEND_DO_ICALL, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT(&quot;XMARK_DO_UCALL&quot;, ZEND_DO_UCALL, CONST_CS|CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT(&quot;XMARK_DO_FCALL_BY_NAME&quot;, ZEND_DO_FCALL_BY_NAME, CONST_CS|CONST_PERSISTENT);
+
+    php_xmark_register_opcode_handlers();  //  设置Hook Opcode 回调函数
+    rename_from_ini_value(CG(function_table), XMARK_G(rename_functions), XMARK_IS_FUNCTION);  //  function_table 和class_table 是PHP 内核的表,rename_from_ini_value 就是根据ini 文件的规则来重命名它们.
+    rename_from_ini_value(CG(class_table), XMARK_G(rename_classes), XMARK_IS_CLASS);
+
+    return SUCCESS;
+}
+
+static void php_xmark_register_opcode_handlers()
+{
+    zend_set_user_opcode_handler(ZEND_ECHO, php_xmark_op1_handler);  //  设置Opcode 回调函数..
+    zend_set_user_opcode_handler(ZEND_EXIT, php_xmark_op1_handler);
+    zend_set_user_opcode_handler(ZEND_INIT_METHOD_CALL, php_xmark_op2_handler);
+    zend_set_user_opcode_handler(ZEND_INIT_USER_CALL, php_xmark_op2_handler);
+    zend_set_user_opcode_handler(ZEND_INIT_DYNAMIC_CALL, php_xmark_op2_handler);
+    zend_set_user_opcode_handler(ZEND_INCLUDE_OR_EVAL, php_xmark_op1_handler);
+    zend_set_user_opcode_handler(ZEND_CONCAT, php_xmark_concat_handler);
+    zend_set_user_opcode_handler(ZEND_FAST_CONCAT, php_xmark_concat_handler);
+    zend_set_user_opcode_handler(ZEND_ASSIGN_CONCAT, php_xmark_assign_concat_handler);
+    zend_set_user_opcode_handler(ZEND_ROPE_END, php_xmark_rope_end_handler);
+    zend_set_user_opcode_handler(ZEND_DO_FCALL, php_xmark_fcall_handler);
+    zend_set_user_opcode_handler(ZEND_DO_ICALL, php_xmark_fcall_handler);
+    zend_set_user_opcode_handler(ZEND_DO_UCALL, php_xmark_fcall_handler);
+    zend_set_user_opcode_handler(ZEND_DO_FCALL_BY_NAME, php_xmark_fcall_handler);
+
+    if (XMARK_G(enable_rename))
+        zend_set_user_opcode_handler(ZEND_INIT_FCALL, php_xmark_init_fcall);
+}
+
+//  这个函数由PHP 内核声明的.https://github.com/php/php-src/blob/852485d8ecd784153e41e565a0a87abf99cf4e0d/Zend/zend_execute.c#L4294
+
+ZEND_API int zend_set_user_opcode_handler(zend_uchar opcode, user_opcode_handler_t handler)  //  设置Opcode 回调函数
+{
+  if (opcode != ZEND_USER_OPCODE) {
+    if (handler == NULL) {
+      /* restore the original handler */
+      zend_user_opcodes[opcode] = opcode;
+    } else {
+      zend_user_opcodes[opcode] = ZEND_USER_OPCODE;
+    }
+    zend_user_opcode_handlers[opcode] = handler;
+    return SUCCESS;
+  }
+  return FAILURE;
+}
+
+</code></pre>
+<p>定位到<code>php_xmark_op1_handler()</code> 的代码,这个函数是处理对Opcode 的第一个操作参数进行处理的回调函数.实现细节如下:</p>
+<pre><code class="language-c">
+static int php_xmark_op1_handler(zend_execute_data *execute_data) {
+    //  zend_execute_data 结构表示当前执行上下文环境,保存了代码执行位置和局部变量等数据.
+    const zend_op *opline = execute_data-&gt;opline;  //  获取当前执行的Opcode
+    zend_free_op free_op1;
+    zval *op1;
+    zval *z_fname;
+    zval call_func_ret;
+
+    if (XMARK_G(in_callback)) {  //  Opcode 调用过程中可能会触发多次回调函数被调用,这个标志就是识别是否多次重复被调用了.
+        return ZEND_USER_OPCODE_DISPATCH;
+    }
+
+    z_fname = zend_hash_index_find(&amp;XMARK_G(callbacks), opline-&gt;opcode);  //  用户自定义Hook Opcode 回调
+    if (!z_fname) {
+        return ZEND_USER_OPCODE_DISPATCH;
+    }
+
+    XMARK_G(in_callback) = 1;  //  设置重复调用标记
+
+    op1 = php_xmark_get_zval_ptr(execute_data, opline-&gt;op1_type, opline-&gt;op1, &amp;free_op1, BP_VAR_R, 0);  //  获取第一个Opcode 操作数
+
+    if (op1) {
+        if (SUCCESS != call_user_function(EG(function_table), NULL, z_fname, &amp;call_func_ret, 1, op1)) {
+            zend_error(E_WARNING, &quot;call function error&quot;);
+        }
+
+        zval_ptr_dtor_nogc(&amp;call_func_ret);
+    }
+
+    XMARK_G(in_callback) = 0;
+    return ZEND_USER_OPCODE_DISPATCH;
+}
+
+</code></pre>
+<p>关于xmark 就介绍到此,然后我们再跟踪prvd 的Entry.php 文件,</p>
+<pre><code class="language-php">
+&lt;?php
+
+if (!extension_loaded('xmark')) {
+    trigger_error(&quot;xmark not installed&quot;, E_USER_WARNING);
+    return;
+}
+
+// 省略代码
+
+require(PRVD_ABSPATH.&quot;Config.php&quot;);  // 引入Config.php
+require(PRVD_ABSPATH.&quot;Utils.php&quot;);   // 引入Utils.php
+
+// mark 输入变量
+prvd_xmark($_GET, true);  // 给输入点打标签
+prvd_xmark($_POST, true);
+prvd_xmark($_COOKIE, true);
+prvd_xmark($_FILES, true);
+prvd_xmark($_REQUEST, true);
+
+foreach ($_SERVER as $key =&gt; &amp;$value) {
+    if (stripos($key, 'HTTP_') === 0) {
+        prvd_xmark($value);
+    }
+}
+
+// 1. 加载 sink
+prvd_load_file(PRVD_ABSPATH.&quot;sink/*/*.php&quot;);  // 这些目录下的都是规则命名文件.
+// 2. 加载 filter
+prvd_load_file(PRVD_ABSPATH.&quot;filter/*.php&quot;);
+// 3. 加载 opcode
+prvd_load_opcode(PRVD_ABSPATH.&quot;opcode/*.php&quot;);
+
+</code></pre>
+<p><code>prvd_xmark()</code> 函数则是调用xmark 拓展里面的函数给变量打标记.</p>
+<pre><code class="language-php">
+function prvd_xmark(&amp;$var, $recursive=true) {
+    if (!PRVD_TAINT_ENABLE) return;
+    if (is_string($var)) {
+        xmark($var);
+    } elseif (is_array($var) &amp;&amp; $recursive) {
+        foreach ($var as $key =&gt; &amp;$value) {
+            prvd_xmark($value, $recursive);
+        }
+    }
+}
+
+</code></pre>
+<p>回到xmark.c 找到xmark() 函数声明,可以发现是通过给PHP 变量数据结构类型中的<code>type_info</code> 字段中做了标签记录(IS_XMARK_FLAG),这只适用于string 类型的PHP 变量.</p>
+<pre><code class="language-c">
+//  https://github.com/fate0/xmark/blob/34dd79d3e38dfb7f22c67eaedaa540a4cd88aee6/xmark.c#L1291
+
+PHP_FUNCTION(xmark)  //  xmark.dll 导出函数
+{
+    zval *z_str;
+
+    if (!XMARK_G(enable)) {
+        RETURN_FALSE;
+    }
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), &quot;z&quot;, &amp;z_str) == FAILURE) {
+        return;
+    }
+
+    ZVAL_DEREF(z_str);
+    if (IS_STRING != Z_TYPE_P(z_str) || Z_STRLEN_P(z_str) == 0) {  //  只给String 类型的变量打标记
+        RETURN_FALSE;
+    }
+
+    if (xmark_zstr(z_str) == FAILURE) {
+        RETURN_FALSE;
+    }
+
+    RETURN_TRUE;
+}
+
+//  https://github.com/fate0/xmark/blob/34dd79d3e38dfb7f22c67eaedaa540a4cd88aee6/xmark.c#L1124
+
+static zend_always_inline int xmark_zstr(zval *z_str)  //  给变量打标记
+{
+    if (!XCHECK_FLAG(Z_STR_P(z_str))) {
+        zend_string *str = zend_string_init(Z_STRVAL_P(z_str), Z_STRLEN_P(z_str), 0);  //  创建新字符串对象
+        ZSTR_LEN(str) = Z_STRLEN_P(z_str);
+        zend_string_release(Z_STR_P(z_str));
+        XMARK_FLAG(str);
+        ZVAL_STR(z_str, str);
+    }
+
+    return SUCCESS;
+}
+
+//  https://github.com/fate0/xmark/blob/34dd79d3e38dfb7f22c67eaedaa540a4cd88aee6/php_xmark.h#L41
+
+#if PHP_VERSION_ID &lt; 70300
+#   define IS_XMARK_FLAG            (1&lt;&lt;6)
+#   define XMARK_FLAG(str)          (GC_FLAGS((str)) |= IS_XMARK_FLAG)
+#   define XCLEAR_FLAG(str)         (GC_FLAGS((str)) &amp;= ~IS_XMARK_FLAG)
+#   define XCHECK_FLAG(str)         (GC_FLAGS((str)) &amp; IS_XMARK_FLAG)
+#else
+#   define EX_CONSTANT(op)          RT_CONSTANT(EX(opline), op)
+#   define IS_XMARK_FLAG            (1&lt;&lt;5)
+#   define XMARK_FLAG(str)          GC_ADD_FLAGS(str, IS_XMARK_FLAG)
+#   define XCLEAR_FLAG(str)         GC_DEL_FLAGS(str, IS_XMARK_FLAG)
+#   define XCHECK_FLAG(str)         (GC_FLAGS((str)) &amp; IS_XMARK_FLAG)
+#endif
+
+//  https://github.com/php/php-src/blob/c4e4ef0498f691788e30e4cdfae3c3aa9dd3b1f1/Zend/zend_types.h#L516
+
+static zend_always_inline uint32_t zval_gc_flags(uint32_t gc_type_info) {
+  return (gc_type_info &gt;&gt; GC_FLAGS_SHIFT) &amp; (GC_FLAGS_MASK &gt;&gt; GC_FLAGS_SHIFT);
+}
+
+#define GC_TYPE_INFO(p)     (p)-&gt;gc.u.type_info
+#define GC_FLAGS(p)         zval_gc_flags(GC_TYPE_INFO(p))
+
+</code></pre>
+<p>Entry.php 最后一部分就是引入检测规则,因为前面已经使用xmark 重命名了这些变量,那么接下来就需要以这些被重命名的函数进行重新声明,达到hook 的目的.</p>
+<pre><code class="language-php">
+// 1. 加载 sink
+prvd_load_file(PRVD_ABSPATH.&quot;sink/*/*.php&quot;);  //  敏感函数
+// 2. 加载 filter
+prvd_load_file(PRVD_ABSPATH.&quot;filter/*.php&quot;);  //  过滤函数
+// 3. 加载 opcode
+prvd_load_opcode(PRVD_ABSPATH.&quot;opcode/*.php&quot;);  //  敏感Opcode
+
+</code></pre>
+<p><code>prvd_load_file()</code> 函数接下来不断把目录里面的规则文件require 进来.</p>
+<pre><code class="language-php">
+function prvd_load_file($pattern) {  //  加载策略文件函数
+    $glob = prvd_get_function(&quot;glob&quot;);
+    $ksort = prvd_get_function(&quot;ksort&quot;);
+    $basename = prvd_get_function(&quot;basename&quot;);
+    $file_list = $glob($pattern);
+    $result_list = array();
+    foreach ($file_list as $absfilename) {
+        if (in_array($basename($absfilename), $result_list)) {
+            prvd_log(&quot;error: function &quot;.$basename($absfilename).&quot; already exists in &quot;.$file_list[$basename($absfilename)]);
+            continue;
+        }
+        $result_list[$basename($absfilename)] = $absfilename;
+    }
+    $ksort($result_list);
+    foreach ($result_list as $filename =&gt; $absfilename) {
+        $funcname = preg_replace(&quot;/\d{3}\-/&quot;, &quot;&quot;, $filename);
+        $funcname = preg_replace(&quot;/.php$/&quot;, &quot;&quot;, $funcname);
+        if (!function_exists(PRVD_RENAME_PREFIX.$funcname) &amp;&amp; !class_exists(PRVD_RENAME_PREFIX.$funcname)) {
+            prvd_log(&quot;error: function/class &quot;.PRVD_RENAME_PREFIX.$funcname.&quot; not exists&quot;);
+            continue;
+        }
+        if (function_exists($funcname) || class_exists($funcname)) {
+            prvd_log(&quot;error: function/class &quot;.$funcname.&quot; already exists&quot;);
+            continue;
+        }
+        require($absfilename);
+    }
+}
+
+</code></pre>
+<p>我们以<code>src/sink/rce/001-system.php</code> 举个例子,最后在重命名的<code>system()</code> 函数里面插入对函数参数的数据检测代码.</p>
+<pre><code class="language-php">
+&lt;?php
+function system($command, &amp;$return_var = null) {
+    prvd_check_rce($command, prvd_translate(&quot;Remote Command Execute&quot;));
+    return call_user_func_array(PRVD_RENAME_PREFIX.&quot;system&quot;, array($command, &amp;$return_var));
+}
+
+</code></pre>
+<p>漏洞检测方法如下:</p>
+<pre><code class="language-php">
+/**
+ * 检测是否存在命令注入
+ * @param $command
+ * @param $message
+ */
+function prvd_check_rce(&amp;$command, $message) {
+    global $prvd_sentry_client;
+    if (!$prvd_sentry_client) return;
+    if (prvd_detect_cmd_injection($command)) {
+        $prvd_sentry_client-&gt;captureVuln($message);
+    } else if (PRVD_TAINT_ENABLE &amp;&amp; prvd_xcheck($command)) {
+        $prvd_sentry_client-&gt;captureVuln($message, &quot;debug&quot;);
+    }
+}
+
+/**
+ * 检测 CMD 语句是否异常
+ * @param $cmd_string
+ * @return bool
+ */
+function prvd_detect_cmd_injection($cmd_string) {
+    // TODO: 目前只考虑了逃脱引号的情况，在双引号内的情况暂未支持
+    $strlen = prvd_get_function('strlen');
+    $stripos = prvd_get_function('stripos');
+    $substr = prvd_get_function('substr');
+    $in_array = prvd_get_function('in_array');
+    $cur_pos = 0;
+    $cmd_string_len = $strlen($cmd_string);
+    while ($cur_pos &lt; $cmd_string_len) {
+        while ($stripos(PRVD_WHITESPACE, $substr($cmd_string, $cur_pos, 1)) !== FALSE) $cur_pos++;
+        if ($stripos('\'&quot;', $substr($cmd_string, $cur_pos, 1)) !== FALSE) {
+            // handle literal
+            $quote = $substr($cmd_string, $cur_pos, 1);
+            $cur_pos ++;
+            while ($cur_pos &lt; $cmd_string_len) {
+                if ($quote === $substr($cmd_string, $cur_pos, 1))
+                    break;
+                elseif ($in_array($substr($cmd_string, $cur_pos, 2), array('\\\\', '\\\'', '\\&quot;')))
+                    $cur_pos += 1;
+                $cur_pos ++;
+            }
+            // broken cmd statement
+            if ($cur_pos == $cmd_string_len) return TRUE;
+            $cur_pos ++;
+        } elseif ($stripos(PRVD_KEYWORD_ALLOW_CHARS, $substr($cmd_string, $cur_pos, 1)) === FALSE) {
+            // handle op
+            $cur_pos ++;
+        } else {
+            // handle keyword
+            $keyword_start = $cur_pos;
+            while ($cur_pos &lt; $cmd_string_len) {
+                if ($stripos(PRVD_KEYWORD_ALLOW_CHARS, $substr($cmd_string, $cur_pos, 1)) === FALSE) break;
+                $cur_pos ++;
+            }
+            if ($stripos($substr($cmd_string, $keyword_start, $cur_pos-$keyword_start),  PRVD_TANZI) !== FALSE)
+                return TRUE;
+        }
+    }
+    return FALSE;
+}
+
+</code></pre>
+<p>关于Prvd 的污点追踪原理就介绍到此了,如有兴趣可以更深入去了解(Link : http://blog.fatezero.org/2018/11/11/prvd/ ).在部署好Prvd 之后,启用payload 模式,此时Prvd 会在$_GET $_POST 等中的数据插入一些攻击Payload ,然后由规则来匹配是否存在漏洞.对于这个步骤,测试者是不需要对HTTP 数据包(URL 中的输入位置,HTTP body ,HTTP Cookie )进行Payload 插入测试,测试者只需要根据页面进行常见的功能测试方法,然后Prvd 就会自行插入数据并且检测,这个也就是IAST (交互式安全测试)的原理.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../7.dynamic-analysis/动态程序分析原理/必备工具.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next" href="../../7.dynamic-analysis/动态程序分析原理/程序插桩与代码覆盖率.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../7.dynamic-analysis/动态程序分析原理/必备工具.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next" href="../../7.dynamic-analysis/动态程序分析原理/程序插桩与代码覆盖率.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../elasticlunr.min.js"></script>
+        <script src="../../mark.min.js"></script>
+        <script src="../../searcher.js"></script>
+
+        <script src="../../clipboard.min.js"></script>
+        <script src="../../highlight.js"></script>
+        <script src="../../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../../theme/pagetoc.js"></script>
+
+
+    </div>
+    </body>
+</html>

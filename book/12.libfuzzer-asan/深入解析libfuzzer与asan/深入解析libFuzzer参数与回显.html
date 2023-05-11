@@ -1,0 +1,438 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>深入解析libFuzzer参数与回显 - Source and Fuzzing</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="The example book covers examples.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../../highlight.css">
+        <link rel="stylesheet" href="../../tomorrow-night.css">
+        <link rel="stylesheet" href="../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../.././theme/custom.css">
+        <link rel="stylesheet" href="../../theme/pagetoc.css">
+        <link rel="stylesheet" href="../.././theme/catppuccin.css">
+        <link rel="stylesheet" href="../.././theme/catppuccin-highlight.css">
+
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../../1.Github.html"><strong aria-hidden="true">1.</strong> Github</a></li><li class="chapter-item expanded "><a href="../../11.AI.html"><strong aria-hidden="true">2.</strong> Ai</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan.html"><strong aria-hidden="true">3.</strong> Libfuzzer Asan</a></li><li class="chapter-item expanded "><a href="../../2.Fuzzing.html"><strong aria-hidden="true">4.</strong> Fuzzing</a></li><li class="chapter-item expanded "><a href="../../3.Fuzzing.html"><strong aria-hidden="true">5.</strong> Fuzzing</a></li><li class="chapter-item expanded "><a href="../../4.source-code.html"><strong aria-hidden="true">6.</strong> Source Code</a></li><li class="chapter-item expanded "><a href="../../5.compile.html"><strong aria-hidden="true">7.</strong> Compile</a></li><li class="chapter-item expanded "><a href="../../6.static-analysis.html"><strong aria-hidden="true">8.</strong> Static Analysis</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis.html"><strong aria-hidden="true">9.</strong> Dynamic Analysis</a></li><li class="chapter-item expanded "><a href="../../8.llvm.html"><strong aria-hidden="true">10.</strong> Llvm</a></li><li class="chapter-item expanded "><a href="../../9.klee.html"><strong aria-hidden="true">11.</strong> Klee</a></li><li class="chapter-item expanded "><a href="../../chapter_1.html"><strong aria-hidden="true">12.</strong> Chapter 1</a></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">13.</strong> Libfuzzer Asan</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan.html"><strong aria-hidden="true">13.1.</strong> 深入解析libfuzzer与asan</a></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">13.2.</strong> 深入解析libfuzzer与asan</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/ASAN原理.html"><strong aria-hidden="true">13.2.1.</strong> Asan原理</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/LLVM下的插桩简述.html"><strong aria-hidden="true">13.2.2.</strong> Llvm下的插桩简述</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/libFuzzer原理.html"><strong aria-hidden="true">13.2.3.</strong> libFuzzer原理</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/参考引用.html"><strong aria-hidden="true">13.2.4.</strong> 参考引用</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/实战中ASAN会有哪些坑.html"><strong aria-hidden="true">13.2.5.</strong> 实战中asan会有哪些坑</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/深入解析libFuzzer参数与回显.html" class="active"><strong aria-hidden="true">13.2.6.</strong> 深入解析libFuzzer参数与回显</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/玩转Sanitizer-Coverage.html"><strong aria-hidden="true">13.2.7.</strong> 玩转Sanitizer Coverage</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">14.</strong> Static Analysis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../6.static-analysis/静态程序分析原理.html"><strong aria-hidden="true">14.1.</strong> 静态程序分析原理</a></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">14.2.</strong> 静态程序分析原理</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../6.static-analysis/静态程序分析原理/必备工具.html"><strong aria-hidden="true">14.2.1.</strong> 必备工具</a></li><li class="chapter-item expanded "><a href="../../6.static-analysis/静态程序分析原理/附录一--各图的Graphiz生成代码.html"><strong aria-hidden="true">14.2.2.</strong> 附录一  各图的Graphiz生成代码</a></li><li class="chapter-item expanded "><a href="../../6.static-analysis/静态程序分析原理/附录二--静态审计工具完整源码.html"><strong aria-hidden="true">14.2.3.</strong> 附录二  静态审计工具完整源码</a></li><li class="chapter-item expanded "><a href="../../6.static-analysis/静态程序分析原理/静态代码分析基本原理.html"><strong aria-hidden="true">14.2.4.</strong> 静态代码分析基本原理</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">15.</strong> Dynamic Analysis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理.html"><strong aria-hidden="true">15.1.</strong> 动态程序分析原理</a></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">15.2.</strong> 动态程序分析原理</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/内存监控.html"><strong aria-hidden="true">15.2.1.</strong> 内存监控</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/动态代码分析基本原理.html"><strong aria-hidden="true">15.2.2.</strong> 动态代码分析基本原理</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/必备工具.html"><strong aria-hidden="true">15.2.3.</strong> 必备工具</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/污点追踪.html"><strong aria-hidden="true">15.2.4.</strong> 污点追踪</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/程序插桩与代码覆盖率.html"><strong aria-hidden="true">15.2.5.</strong> 程序插桩与代码覆盖率</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/符号执行.html"><strong aria-hidden="true">15.2.6.</strong> 符号执行</a></li></ol></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Source and Fuzzing</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main><div class="sidetoc"><nav class="pagetoc"></nav></div>
+                        <h2 id="深入解析libfuzzer参数与回显"><a class="header" href="#深入解析libfuzzer参数与回显">深入解析libFuzzer参数与回显</a></h2>
+<p>本小节着重于对实用情景下对libFuzzer的用法和坑(参数,回显,bug等)做深入的分析,为什么要将它放到最后来解释呢?笔者在实际工作中遇到了一些难以处理问题,都是依靠前面对libFuzzer源码的浅薄理解而解决的.</p>
+<h4 id="编译时使用-libfuzzera和-fsanitizefuzzer有区别嘛"><a class="header" href="#编译时使用-libfuzzera和-fsanitizefuzzer有区别嘛">编译时使用 libFuzzer.a和-fsanitize=fuzzer有区别嘛?</a></h4>
+<p>回顾libfuzzer-workshop的例子,示例的第一步要求我们先对libFuzzer的源码进行编译,生成libFuzzer.a静态库,然后再自行编写Fuzz逻辑入口,把Fuzzer,库源码,libFuzzer.a同时链接,生成可执行Fuzzer.实际上clang中已经内置了libFuzzer,我们使用-fsanitize=fuzzer也可以引入它.举个例子:</p>
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+
+
+int LLVMFuzzerTestOneInput(const char* Data,unsigned int Size) {
+	if (Size &gt; 4) {
+		if (Data[1] == 'F' &amp;&amp; Data[3] == 'A') {
+			printf(&quot;bingo \n&quot;);
+			exit(0);
+		}
+	}
+
+	return 0;
+}
+</code></pre>
+<p>命令行下执行结果:</p>
+<pre><code class="language-sh">ubuntu@ubuntu-virtual-machine:~/Desktop/temp$ clang -fsanitize=fuzzer 1.c -o 1_fuzzer &amp;&amp; ./1_fuzzer
+INFO: Seed: 3655122303
+INFO: Loaded 1 modules   (5 inline 8-bit counters): 5 [0x4e8080, 0x4e8085),
+INFO: Loaded 1 PC tables (5 PCs): 5 [0x4bee00,0x4bee50),
+INFO: -max_len is not provided; libFuzzer will not generate inputs larger than 4096 bytes
+INFO: A corpus is not provided, starting from an empty corpus
+#2	INITED cov: 2 ft: 2 corp: 1/1b exec/s: 0 rss: 28Mb
+#219	NEW    cov: 3 ft: 3 corp: 2/7b lim: 6 exec/s: 0 rss: 28Mb L: 6/6 MS: 2 CopyPart-CrossOver-
+#245	REDUCE cov: 3 ft: 3 corp: 2/6b lim: 6 exec/s: 0 rss: 28Mb L: 5/5 MS: 1 EraseBytes-
+#4770	REDUCE cov: 4 ft: 4 corp: 3/12b lim: 48 exec/s: 0 rss: 28Mb L: 6/6 MS: 5 CrossOver-ShuffleBytes-EraseBytes-ChangeBinInt-ShuffleBytes-
+#4773	REDUCE cov: 4 ft: 4 corp: 3/11b lim: 48 exec/s: 0 rss: 28Mb L: 5/5 MS: 3 CopyPart-ShuffleBytes-EraseBytes-
+bingo
+==822227== ERROR: libFuzzer: fuzz target exited
+    #0 0x4adb40 in __sanitizer_print_stack_trace (/home/ubuntu/Desktop/temp/1_fuzzer+0x4adb40)
+    #1 0x459498 in fuzzer::PrintStackTrace() (/home/ubuntu/Desktop/temp/1_fuzzer+0x459498)
+    #2 0x43f58c in fuzzer::Fuzzer::ExitCallback() (/home/ubuntu/Desktop/temp/1_fuzzer+0x43f58c)
+    #3 0x7f064ebb9a56 in __run_exit_handlers stdlib/exit.c:108:8
+    #4 0x7f064ebb9bff in exit stdlib/exit.c:139:3
+    #5 0x4adf32 in LLVMFuzzerTestOneInput (/home/ubuntu/Desktop/temp/1_fuzzer+0x4adf32)
+    #6 0x440a31 in fuzzer::Fuzzer::ExecuteCallback(unsigned char const*, unsigned long) (/home/ubuntu/Desktop/temp/1_fuzzer+0x440a31)
+    #7 0x440175 in fuzzer::Fuzzer::RunOne(unsigned char const*, unsigned long, bool, fuzzer::InputInfo*, bool*) (/home/ubuntu/Desktop/temp/1_fuzzer+0x440175)
+    #8 0x441ba0 in fuzzer::Fuzzer::MutateAndTestOne() (/home/ubuntu/Desktop/temp/1_fuzzer+0x441ba0)
+    #9 0x442615 in fuzzer::Fuzzer::Loop(std::__Fuzzer::vector&lt;fuzzer::SizedFile, fuzzer::fuzzer_allocator&lt;fuzzer::SizedFile&gt; &gt;&amp;) (/home/ubuntu/Desktop/temp/1_fuzzer+0x442615)
+    #10 0x432025 in fuzzer::FuzzerDriver(int*, char***, int (*)(unsigned char const*, unsigned long)) (/home/ubuntu/Desktop/temp/1_fuzzer+0x432025)
+    #11 0x459c72 in main (/home/ubuntu/Desktop/temp/1_fuzzer+0x459c72)
+    #12 0x7f064eb9dcb1 in __libc_start_main csu/../csu/libc-start.c:314:16
+    #13 0x40684d in _start (/home/ubuntu/Desktop/temp/1_fuzzer+0x40684d)
+
+SUMMARY: libFuzzer: fuzz target exited
+MS: 1 InsertByte-; base unit: 0c7d9271cf3d2a4e2c3eec3e76a2d1dc1431af36
+0xa,0x46,0xf6,0x41,0xa,0xa,
+\x0aF\xf6A\x0a\x0a
+artifact_prefix='./'; Test unit written to ./crash-8860dc7909080bcb9ca9827f67704611bbdf02b9
+Base64: Ckb2QQoK
+ubuntu@ubuntu-virtual-machine:~/Desktop/temp$
+</code></pre>
+<p>这看起来和直接引入libFuzzer.a的效果一样,那么接下来我们再引入**-fsanitize-coverage=trace-pc-guard**重新编译运行.结果如下:</p>
+<pre><code class="language-sh">ubuntu@ubuntu-virtual-machine:~/Desktop/temp$ clang -v
+Ubuntu clang version 11.0.0-2
+Target: x86_64-pc-linux-gnu
+ubuntu@ubuntu-virtual-machine:~/Desktop/temp$ clang -fsanitize=fuzzer -fsanitize-coverage=trace-pc-guard 1.c -o 1_fuzzer &amp;&amp; ./1_fuzzer
+-fsanitize-coverage=trace-pc-guard is no longer supported by libFuzzer.
+Please either migrate to a compiler that supports -fsanitize=fuzzer
+or use an older version of libFuzzer
+ubuntu@ubuntu-virtual-machine:~/Desktop/temp$
+</code></pre>
+<p>这是因为高版本的clang不支持trace-pc-guard和trace-pc了.对此有两个解决方法:</p>
+<ul>
+<li>使用-fsanitize-coverage=trace-gep,trace-div,trace-cmp替代trace-pc-guard.(适用于Windows平台)</li>
+<li>使用低版本的libFuzzer编译出静态库然后导入链接.因为不支持trace-pc-guard的逻辑是在libFuzzer中写死的(参考FuzzerTracePC.cpp __sanitizer_cov_trace_pc_guard()函数),即使换成高版本libFuzzer的静态库也是一样的提示.</li>
+</ul>
+<h4 id="为什么libfuzzer要删除对trace-pc的支持"><a class="header" href="#为什么libfuzzer要删除对trace-pc的支持">为什么libFuzzer要删除对trace-pc的支持?</a></h4>
+<p>libFuzzer开发者kcc在2019年1月的Commit中删除了libFuzzer对trace-pc的支持,相关diff如下:</p>
+<ul>
+<li>
+<p>https://github.com/llvm/llvm-project/commit/62d727061053dac28447a900fce064c54d366bd6#</p>
+</li>
+<li>
+<p>https://github.com/llvm/llvm-project/commit/62d727061053dac28447a900fce064c54d366bd6#</p>
+<p>笔者找遍了文档和提交记录,对于为什么要删除trace-pc的支持找不到任何相关信息,于是只能通过阅读源码和效果对比测试来理解和推测.相关结论如下:</p>
+</li>
+<li>
+<p>删除trace-pc是因为trace-pc的代码覆盖率统计方法可以被替代.</p>
+</li>
+<li>
+<p>trace-pc随后被inline-8bit-counter(统计BasicBlock执行次数)和trace-cmp(在分支之前插桩)替代,因为trace-cmp可以主动发现逻辑判断中对比的数值,部分场景下能够增强主动模糊测试效果.</p>
+<p>我们先对比一下改变前后的libFuzzer编译结果.旧版本的libFuzzer使用trace-pc插桩之后的代码逻辑如下,<code>生成的Data让逻辑执行到某个特定的BasicBlock时才记录代码覆盖</code>,这样模糊测试工具相对<em>被动</em>.</p>
+</li>
+</ul>
+<p><img src="./pic12/old_libfuzzer_santizer_coverage.png" alt="" /></p>
+<p>新版本的libFuzzer默认使用trace-cmp插桩之后,会在判断逻辑前面插桩并收集判断逻辑的数据(比如下面的反编译就是收集判断<code>if(Data[0] = '1')</code>的字符1),然后回馈到语料库(fuzzer::TracePC::TableOfRecentCompares).有了这些判断中的数据,生成模糊测试的数据就能相对有个方向,更为<em>主动</em>.其中__santizer_cov_trace_const_cmp4是由trace-cmp插桩的逻辑,++byte_4EB071是由inline-8bit-Counter插桩的逻辑.</p>
+<p><img src="./pic12/new_libfuzzer_santizer_coverage.png" alt="" /></p>
+<p>两种插桩模式的模糊测试效果对比如下:</p>
+<p><img src="./pic12/new_libfuzzer_effect.png" alt="" /></p>
+<p>附加参考链接:https://reviews.llvm.org/rC352818</p>
+<h4 id="windows平台下怎么引用libfuzzer"><a class="header" href="#windows平台下怎么引用libfuzzer">Windows平台下怎么引用libFuzzer?</a></h4>
+<p>Windows平台下使用libFuzzer建议还是使用LLVM官网的Windows编译套件,因为使用Visutal Studio Installer下载的LLVM版本只支持32位编译(只有32位的静态库),LLVM官网的Windows编译套件32/64位都支持.</p>
+<p>Visual Studio项目需要修改编译工具集为LLVM-clang和正确平台SDK的即可.有几点需要注意:</p>
+<ul>
+<li>clang的编译语法和MSVC不一样,有一些不应该提示的错误可以使用-Wno-xxx关闭警告.</li>
+<li>clang甚至不支持一些MSVC内置函数(比如__cpuid等),可以尝试引入intrin.h解决.</li>
+<li>有一些MSVC或者WinAPI符号无法被clang识别,这是因为C++重载问题导致clang找不到符号.比如InternalLockAdd(LONG)和InternalLockAdd(ULONG),clang会认为是两个不一样的函数,但是WinAPI只有一个.所以建议直接对函数参数传参做强制转换,.对齐标准WinAPI声明.</li>
+<li>链接时需要手工引入.lib库,还记得前面的compiler-RT库嘛,插桩逻辑和Fuzzer调度逻辑都在这里,clang默认不会加载.</li>
+</ul>
+<h4 id="libfuzzer怎么样提高模糊测试效果"><a class="header" href="#libfuzzer怎么样提高模糊测试效果">libFuzzer怎么样提高模糊测试效果?</a></h4>
+<p><code>-dict</code>参数指定一个语料库,后续ManualDict这些数据变异模块就可以从这里拿到<strong>和当前被测试的逻辑强相关的关键词</strong>.举个例子,我们对SQL注入做测试,这些关键词是不是就包含了:union select,from,count()等;对文件解析测试,是不是就需要包含7zip,PE,MZ,Rar!等关键词呢.我们传递的这些关键词,最终会被拼接到LLVMFuzzerTestOneInput()的data参数中.</p>
+<p>实际上,libFuzzer也能够像AFL一样接受一批样本数据作为初始化输入来做模糊测试.这样的话我们就可以根据模糊测试的对象的业务去github和各个项目的测试用例中搜罗样本数据了.</p>
+<p>上面两个参数是可以结合使用的,不带参数和带参数的对路径探测的结果影响如下:</p>
+<pre><code class="language-sh">ubuntu@ubuntu-virtual-machine:~/Desktop/fuzz$ ./test_case
+INFO: Seed: 1117474860
+INFO: Loaded 1 modules (10682 guards): [0x110c9b8, 0x11170a0),
+INFO: -max_len is not provided; libFuzzer will not generate inputs larger than 4096 bytes
+INFO: A corpus is not provided, starting from an empty corpus
+#0	READ units: 1
+#1	INITED cov: 869 ci: 0K ft: 180 corp: 1/1b exec/s: 0 rss: 135Mb
+#2	NEW    cov: 869 ci: 0K ft: 208 corp: 2/2b exec/s: 0 rss: 135Mb L: 1 MS: 1 ShuffleBytes-
+#3	NEW    cov: 885 ci: 0K ft: 229 corp: 3/4b exec/s: 0 rss: 135Mb L: 2 MS: 2 ShuffleBytes-CrossOver-
+#5	NEW    cov: 886 ci: 0K ft: 239 corp: 4/5b exec/s: 0 rss: 135Mb L: 1 MS: 4 ShuffleBytes-CrossOver-EraseBytes-ChangeBit-
+#8	NEW    cov: 886 ci: 0K ft: 248 corp: 5/8b exec/s: 0 rss: 135Mb L: 3 MS: 2 ChangeBit-CrossOver-
+#9	NEW    cov: 887 ci: 0K ft: 249 corp: 6/12b exec/s: 0 rss: 135Mb L: 4 MS: 3 ChangeBit-CrossOver-InsertByte-
+#12	NEW    cov: 898 ci: 0K ft: 264 corp: 7/89b exec/s: 0 rss: 145Mb L: 77 MS: 1 InsertRepeatedBytes-
+#13	NEW    cov: 898 ci: 1K ft: 267 corp: 8/210b exec/s: 0 rss: 145Mb L: 121 MS: 2 InsertRepeatedBytes-CopyPart-
+#14	NEW    cov: 898 ci: 2K ft: 269 corp: 9/401b exec/s: 0 rss: 145Mb L: 191 MS: 3 InsertRepeatedBytes-CopyPart-CopyPart-
+#15	NEW    cov: 898 ci: 2K ft: 270 corp: 10/593b exec/s: 0 rss: 145Mb L: 192 MS: 4 InsertRepeatedBytes-CopyPart-CopyPart-InsertByte-
+#21	NEW    cov: 899 ci: 41K ft: 271 corp: 11/4689b exec/s: 0 rss: 145Mb L: 4096 MS: 5 ChangeBit-EraseBytes-EraseBytes-ChangeBit-CrossOver-
+#25	NEW    cov: 899 ci: 41K ft: 272 corp: 12/5513b exec/s: 0 rss: 145Mb L: 824 MS: 4 ChangeByte-CMP-CrossOver-CrossOver- DE: &quot;\xef\x0f&quot;-
+#43	NEW    cov: 899 ci: 41K ft: 280 corp: 13/5516b exec/s: 0 rss: 145Mb L: 3 MS: 2 ChangeBinInt-CopyPart-
+#90	NEW    cov: 899 ci: 41K ft: 281 corp: 14/5746b exec/s: 0 rss: 145Mb L: 230 MS: 4 ChangeByte-PersAutoDict-CopyPart-InsertRepeatedBytes- DE: &quot;\xef\x0f&quot;-
+#106	NEW    cov: 899 ci: 41K ft: 283 corp: 15/6032b exec/s: 0 rss: 145Mb L: 286 MS: 5 EraseBytes-ChangeBit-ShuffleBytes-ChangeBit-InsertRepeatedBytes-
+#117	NEW    cov: 899 ci: 41K ft: 284 corp: 16/6071b exec/s: 0 rss: 145Mb L: 39 MS: 1 EraseBytes-
+#124	NEW    cov: 899 ci: 41K ft: 286 corp: 17/6076b exec/s: 0 rss: 145Mb L: 5 MS: 3 ChangeByte-ShuffleBytes-PersAutoDict- DE: &quot;\xef\x0f&quot;-
+#163	NEW    cov: 899 ci: 41K ft: 288 corp: 18/6093b exec/s: 0 rss: 145Mb L: 17 MS: 2 CMP-CMP- DE: &quot;\x00\x00\x00\x00\x00\x00\x00\x00&quot;-&quot;\xff\xff\xff\xff\xff\xff\x0b[&quot;-
+#164	NEW    cov: 899 ci: 41K ft: 290 corp: 19/6106b exec/s: 0 rss: 145Mb L: 13 MS: 3 CMP-CMP-EraseBytes- DE: &quot;\x00\x00\x00\x00\x00\x00\x00\x00&quot;-&quot;\xff\xff\xff\xff\xff\xff\x0b[&quot;-
+#169	NEW    cov: 899 ci: 41K ft: 292 corp: 20/6118b exec/s: 0 rss: 145Mb L: 12 MS: 3 ChangeByte-ChangeBinInt-CMP- DE: &quot;objective&quot;-
+#182	NEW    cov: 899 ci: 41K ft: 294 corp: 21/6129b exec/s: 0 rss: 145Mb L: 11 MS: 1 CMP- DE: &quot;\xff\xff\xff\xff\xff\xff\xff\xff&quot;-
+#529	NEW    cov: 899 ci: 41K ft: 295 corp: 22/6131b exec/s: 0 rss: 146Mb L: 2 MS: 3 ChangeBit-InsertByte-ChangeBit-
+#634	NEW    cov: 899 ci: 41K ft: 296 corp: 23/10227b exec/s: 0 rss: 146Mb L: 4096 MS: 3 CopyPart-CrossOver-ChangeBit-
+#702	NEW    cov: 899 ci: 41K ft: 298 corp: 24/10418b exec/s: 702 rss: 146Mb L: 191 MS: 1 ChangeBinInt-
+#1041	NEW    cov: 899 ci: 41K ft: 299 corp: 25/10424b exec/s: 1041 rss: 146Mb L: 6 MS: 5 ShuffleBytes-CMP-CrossOver-EraseBytes-EraseBytes- DE: &quot;\x00\x00\x00Z&quot;-
+</code></pre>
+<pre><code class="language-sh">ubuntu@ubuntu-virtual-machine:~/Desktop/fuzz$ ./test_case -dict=./libfuzzer_keywork.txt sample/
+Dictionary: 375 entries
+INFO: Seed: 1048768538
+INFO: Loaded 1 modules (10682 guards): [0x110c9b8, 0x11170a0),
+Loading corpus dir: sample/
+Loaded 1024/2640 files from sample/
+Loaded 2048/2640 files from sample/
+INFO: -max_len is not provided; libFuzzer will not generate inputs larger than 1048576 bytes
+#0	READ units: 2638
+#1024	pulse  cov: 1805 ci: 609K ft: 1585 corp: 73/15289b exec/s: 512 rss: 748Mb
+#2048	pulse  cov: 3774 ci: 5983K ft: 6522 corp: 259/3660Kb exec/s: 341 rss: 785Mb
+#2638	INITED cov: 4286 ci: 18481K ft: 9928 corp: 490/79Mb exec/s: 131 rss: 997Mb
+#2639	NEW    cov: 4286 ci: 18481K ft: 9929 corp: 491/79Mb exec/s: 131 rss: 997Mb L: 94081 MS: 1 CMP- DE: &quot;N4LIEF17read_out_&quot;-
+#2665	NEW    cov: 4325 ci: 18481K ft: 9988 corp: 492/79Mb exec/s: 133 rss: 997Mb L: 165541 MS: 2 CMP-PersAutoDict- DE: &quot;\x0a\x00&quot;-&quot;N4LIEF17read_out_&quot;-
+#2713	NEW    cov: 4325 ci: 18481K ft: 9999 corp: 493/79Mb exec/s: 129 rss: 997Mb L: 103145 MS: 5 CMP-InsertRepeatedBytes-EraseBytes-ManualDict-ChangeByte- DE: &quot;\x01\x00\x00\x00\x00\x01\x89\xca&quot;-&quot;PowerPoint&quot;-
+#2804	NEW    cov: 4326 ci: 18481K ft: 10006 corp: 494/79Mb exec/s: 127 rss: 997Mb L: 94081 MS: 1 ChangeBit-
+#2960	NEW    cov: 4326 ci: 18481K ft: 10007 corp: 495/79Mb exec/s: 118 rss: 997Mb L: 67143 MS: 2 PersAutoDict-CMP- DE: &quot;\x01\x00\x00\x00\x00\x01\x89\xca&quot;-&quot;\x00\x00\x00\x00\x00\x00\x13}&quot;-
+#3011	NEW    cov: 4326 ci: 18481K ft: 10008 corp: 496/79Mb exec/s: 120 rss: 997Mb L: 94205 MS: 3 ChangeASCIIInt-InsertRepeatedBytes-ChangeBinInt-
+#3014	NEW    cov: 4327 ci: 18481K ft: 10009 corp: 497/79Mb exec/s: 120 rss: 997Mb L: 67143 MS: 1 CopyPart-
+#3102	NEW    cov: 4327 ci: 18481K ft: 10013 corp: 498/79Mb exec/s: 114 rss: 997Mb L: 81784 MS: 4 ManualDict-ShuffleBytes-ChangeBit-CopyPart- DE: &quot;Jet\x00&quot;-
+#3106	NEW    cov: 4327 ci: 18481K ft: 10027 corp: 499/79Mb exec/s: 115 rss: 997Mb L: 72629 MS: 3 CopyPart-ChangeByte-CMP- DE: &quot;\x0b\x00&quot;-
+#3109	NEW    cov: 4327 ci: 18481K ft: 10030 corp: 500/79Mb exec/s: 115 rss: 997Mb L: 65197 MS: 1 CMP- DE: &quot;\x1f\x00\x00\x00\x00\x00\x00\x00&quot;-
+#3522	NEW    cov: 4328 ci: 18481K ft: 10031 corp: 501/80Mb exec/s: 103 rss: 997Mb L: 39524 MS: 4 InsertByte-ChangeBit-EraseBytes-InsertByte-
+
+</code></pre>
+<p>其中cov值则是执行分支总数,可以看到两次Fuzzer运行之间的巨大差异(第一次执行只覆盖899个分支,第二次执行覆盖4328个分支).这里-worker是指同时使用多个进程来执行Fuzzer(源码实现在FuzzerDriver.cpp WorkerThread()).</p>
+<h4 id="多个libfuzzer同时启动时怎么样区分不同的libfuzzer生成的crash"><a class="header" href="#多个libfuzzer同时启动时怎么样区分不同的libfuzzer生成的crash">多个libFuzzer同时启动时,怎么样区分不同的libFuzzer生成的Crash?</a></h4>
+<p>libFuzzer产生崩溃时,会记录当前的崩溃样本到本地,但是这些崩溃样本都是以crash slow-unit oom作为前缀.在一些模糊测试场景中,我们会在当前目录下执行多个libFuzzer程序,那就会导致多个libFuzzer产生的崩溃样本无法辨识,此时引入-artifact_prefix参数为崩溃样本自定义前缀即可.</p>
+<p><img src="./pic12/3.png" alt="" /></p>
+<h4 id="依赖库没有源码时有没有必要使用libfuzzer"><a class="header" href="#依赖库没有源码时有没有必要使用libfuzzer">依赖库没有源码时有没有必要使用libFuzzer?</a></h4>
+<p>通过前面的分析,我们知道libFuzzer想要实现遗传算法进行模糊测试,那就需要依赖代码覆盖率Sanitize-Coverage进行插桩.但是有时候要进行模糊测试的程序要依赖到动态库和静态库,此时我们就无法对此进行插桩了.笔者在工作中遇到这种情况,处理思路如下:</p>
+<ul>
+<li><strong>依赖库中的源码和被模糊测试的源码之间有很大的关联性</strong>.举个例子,项目中依赖7zip的解压库,然后项目对此进行一层性能优化封装,那么要测试的代码也就必须要包含项目中的封装层代码和7zip依赖库源码,因为缺少了其中任意一部分的代码,就会很难覆盖全整个功能所需要的代码,会导致有些逻辑没法被覆盖到.</li>
+<li><strong>依赖库中的源码和被模糊测试的源码之间关联系不大</strong>.比如项目中引用了protobuf进行数据解析,然后具体的处理逻辑则是由项目处理,那么依赖库protobuf就不应该包含在模糊测试范围中.</li>
+</ul>
+<h4 id="如何并行执行多个libfuzzer"><a class="header" href="#如何并行执行多个libfuzzer">如何并行执行多个libFuzzer?</a></h4>
+<p>libFuzzer默认只执行一个进程来做模糊测试.我们使用-jobs和-workers参数就能让libFuzzer创建多个<strong>进程</strong>并行执行.命令如下:</p>
+<pre><code class="language-sh">fuzzing@fuzzing-virtual-machine:~/Desktop/test_code$ ./test_code -jobs=10
+</code></pre>
+<p><img src="./pic12/4.png" alt="" /></p>
+<p>假设读者的电脑配置是4核8G内存的话,那么就会同时有两个进程在执行.如果要同时跑四个进程的话,那就设置为<code>-workers=4</code>,workers的值默认是当前CPU核数/2.</p>
+<p>-jobs参数是指完成了n个libFuzzer进程之后就退出程序,默认值为0.如果我们要同时执行8个进程并行执行libFuzzer的命令如下:</p>
+<pre><code class="language-sh">fuzzing@fuzzing-virtual-machine:~/Desktop/test_code$ ./test_code -jobs=8 -workers=8
+</code></pre>
+<p>需要特别注意的是,如果读者们要并行执行libFuzzer,jobs和workers参数的传值缺一不可.因为libFuzzer代码中的逻辑就是workers和jobs必须要大于0才可以执行并行多进程,所以这个隐藏的坑就是为什么只设置了<code>-workers=8</code>但是libFuzzer没有执行并行的原因,因为此时jobs值为默认为0.</p>
+<p>还有一点值得提示一下,libFuzzer所做的模糊测试,实际上并没有尝试去维护<em>干净的上下文</em>然后重新模糊测试.笔者举个Qemu Fuzzer的例子来说明一下.</p>
+<p>我们在对Qemu进行模糊测试时,会生成大量的MMIO和Port IO的方式来进行设备通信.那么大量的测试数据会导致Qemu设备的<em>状态不断发生改变,而不是从一个初始的状态开始执行</em>.比如说解析PE文件的接口,我们实例化类之后把文件内容传递到接口去测试,那么这个类都是从初始的状态去执行数据解析然后改变状态.但是对于Qemu虚拟机这样复杂的系统,它需要维护很多上下文相关的对象,所以每次模糊测试和设备交互时,都会对设备的状态进行改变,导致无法从<em>初始的状态</em>开始测试,影响最终复现漏洞的结果.为了解决这个问题,Qemu 5.2.0中支持的模糊测试方法是在libFuzzer LLVMFuzzerTestOneInput()中为TracePC创建共享内存,然后fork()出子进程执行模糊测试,父进程wait()等待子进程模糊测试结束,然后从共享内存中收集代码覆盖信息,回馈到libFuzzer核心逻辑中去.</p>
+<p><img src="./pic12/11.png" alt="" /></p>
+<h4 id="libfuzzer输出哪些信息怎么样根据这些信息优化fuzzer"><a class="header" href="#libfuzzer输出哪些信息怎么样根据这些信息优化fuzzer">libFuzzer输出哪些信息,怎么样根据这些信息优化Fuzzer?</a></h4>
+<p>运行libFuzzer编译的程序,从启动到崩溃输出的信息如下:</p>
+<p><img src="./pic12/5.png" alt="" /></p>
+<p>第一行输出<code>INFO: Seed: 1410507973</code>,意思是当前的随机数种子的初始值.因为每一次执行libFuzzer随机数种子的值都是随机的,但是如果读者们想要复现libFuzzer模糊测试,那就需要使用参数<code>-seed</code>指定随机数种子的值.</p>
+<p>第二行输出<code>INFO: Loaded 1 modules   (10 inline 8-bit counters): 10 [0x5a6ed0, 0x5a6eda)</code>,意思是显示当前libFuzzer中使用到的插桩方式(inline 8-bit counters)以及Edge分支信息的内存区域开始和结束信息(Start:0x5a6ed0,End:0x5a6eda,总分支数:10).第三行输出亦是同样意义.</p>
+<p>第四行输出<code>INFO: -max_len is not provided; libFuzzer will not generate inputs larger than 4096 bytes</code>,意思是当前没有指定参数<code>-max_len</code>,默认max_len的值是4096字节(4K).max_len参数的意义在于限制libFuzzer生成的Data内容大小.有时候在对协议处理的功能进行模糊测试,那么max_len相对的取值是小一点的,但是对于文件处理的功能进行模糊测试,那么max_len有可能需要设置为100K,具体场景具体分析.</p>
+<p>第五行输出<code>INFO: A corpus is not provided, starting from an empty corpus</code>,意思是没有指定输入样本,从空数据生成开始模糊测试.</p>
+<p>第六行输出<code>#2	INITED cov: 2 ft: 2 corp: 1/1b exec/s: 0 rss: 31Mb</code>,意思是执行完所有初始样本输入数据,代码覆盖(cov字段)2个块(以BasicBlock或Edge为单位),2条执行路径(ft字段);每秒执行次数0(exec/s字段);内存占用为31 MB(rss字段).libFuzzer会对程序执行内存有限制,默认内存上限是2 GB.在模糊测试的过程中因为大量内存分配超出rss,那就会导致libFuzzer崩溃,记录当前样本到OOM-xxx文件,如果读者们需要控制libFuzzer的内存上限值,那就使用<code>-rss_limit_mb</code>参数(注意,内存泄露也记录在这个范畴中).</p>
+<p>第七行输出<code>#1949	NEW    cov: 3 ft: 3 corp: 2/21b lim: 21 exec/s: 0 rss: 31Mb L: 20/20 MS: 2 InsertByte-InsertRepeatedBytes-</code>,意思是发现程序执行到新路径,此时代码覆盖3个块,3条执行路径;本次发现新路径时生成模糊测试数据大小为20字节(L字段);数据生成使用了2个数据变异模块串联生成(MS字段);所使用的模块顺序是InsertByte=&gt;InsertRepeatedBytes.</p>
+<p>libFuzzer输出模糊测试状态时,每行的第二个字段代表的含义如下:</p>
+<ul>
+<li>
+<p>READ ,意思是当前模糊测试阶段是从给定的样本文件夹中读取模糊测试数据来执行.</p>
+</li>
+<li>
+<p>INITED ,意思是使用所有初始样本执行完LLVMFuzzerTestOneInput之后的状态信息.</p>
+</li>
+<li>
+<p>NEW ,意思是发现新路径时的状态信息.</p>
+</li>
+<li>
+<p>REDUCE ,意思是已经执行过的路径发现了更精简的输入.</p>
+</li>
+<li>
+<p>RELOAD ,意思是从样本文件夹中发现并加载了新样本.</p>
+</li>
+<li>
+<p>pulse ,没有什么特别的意义,就是定时告诉用户libFuzzer还在运行.</p>
+</li>
+<li>
+<p>DONE ,libFuzzer执行结束.</p>
+</li>
+</ul>
+<p>!!!!! 如何优化再补充一下~~~~</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/实战中ASAN会有哪些坑.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next" href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/玩转Sanitizer-Coverage.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/实战中ASAN会有哪些坑.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next" href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/玩转Sanitizer-Coverage.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../elasticlunr.min.js"></script>
+        <script src="../../mark.min.js"></script>
+        <script src="../../searcher.js"></script>
+
+        <script src="../../clipboard.min.js"></script>
+        <script src="../../highlight.js"></script>
+        <script src="../../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../../theme/pagetoc.js"></script>
+
+
+    </div>
+    </body>
+</html>

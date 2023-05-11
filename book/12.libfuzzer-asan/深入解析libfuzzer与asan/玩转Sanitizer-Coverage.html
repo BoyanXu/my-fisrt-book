@@ -1,0 +1,774 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>玩转Sanitizer Coverage - Source and Fuzzing</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="The example book covers examples.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../../highlight.css">
+        <link rel="stylesheet" href="../../tomorrow-night.css">
+        <link rel="stylesheet" href="../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../.././theme/custom.css">
+        <link rel="stylesheet" href="../../theme/pagetoc.css">
+        <link rel="stylesheet" href="../.././theme/catppuccin.css">
+        <link rel="stylesheet" href="../.././theme/catppuccin-highlight.css">
+
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../../1.Github.html"><strong aria-hidden="true">1.</strong> Github</a></li><li class="chapter-item expanded "><a href="../../11.AI.html"><strong aria-hidden="true">2.</strong> Ai</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan.html"><strong aria-hidden="true">3.</strong> Libfuzzer Asan</a></li><li class="chapter-item expanded "><a href="../../2.Fuzzing.html"><strong aria-hidden="true">4.</strong> Fuzzing</a></li><li class="chapter-item expanded "><a href="../../3.Fuzzing.html"><strong aria-hidden="true">5.</strong> Fuzzing</a></li><li class="chapter-item expanded "><a href="../../4.source-code.html"><strong aria-hidden="true">6.</strong> Source Code</a></li><li class="chapter-item expanded "><a href="../../5.compile.html"><strong aria-hidden="true">7.</strong> Compile</a></li><li class="chapter-item expanded "><a href="../../6.static-analysis.html"><strong aria-hidden="true">8.</strong> Static Analysis</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis.html"><strong aria-hidden="true">9.</strong> Dynamic Analysis</a></li><li class="chapter-item expanded "><a href="../../8.llvm.html"><strong aria-hidden="true">10.</strong> Llvm</a></li><li class="chapter-item expanded "><a href="../../9.klee.html"><strong aria-hidden="true">11.</strong> Klee</a></li><li class="chapter-item expanded "><a href="../../chapter_1.html"><strong aria-hidden="true">12.</strong> Chapter 1</a></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">13.</strong> Libfuzzer Asan</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan.html"><strong aria-hidden="true">13.1.</strong> 深入解析libfuzzer与asan</a></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">13.2.</strong> 深入解析libfuzzer与asan</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/ASAN原理.html"><strong aria-hidden="true">13.2.1.</strong> Asan原理</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/LLVM下的插桩简述.html"><strong aria-hidden="true">13.2.2.</strong> Llvm下的插桩简述</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/libFuzzer原理.html"><strong aria-hidden="true">13.2.3.</strong> libFuzzer原理</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/参考引用.html"><strong aria-hidden="true">13.2.4.</strong> 参考引用</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/实战中ASAN会有哪些坑.html"><strong aria-hidden="true">13.2.5.</strong> 实战中asan会有哪些坑</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/深入解析libFuzzer参数与回显.html"><strong aria-hidden="true">13.2.6.</strong> 深入解析libFuzzer参数与回显</a></li><li class="chapter-item expanded "><a href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/玩转Sanitizer-Coverage.html" class="active"><strong aria-hidden="true">13.2.7.</strong> 玩转Sanitizer Coverage</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">14.</strong> Static Analysis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../6.static-analysis/静态程序分析原理.html"><strong aria-hidden="true">14.1.</strong> 静态程序分析原理</a></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">14.2.</strong> 静态程序分析原理</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../6.static-analysis/静态程序分析原理/必备工具.html"><strong aria-hidden="true">14.2.1.</strong> 必备工具</a></li><li class="chapter-item expanded "><a href="../../6.static-analysis/静态程序分析原理/附录一--各图的Graphiz生成代码.html"><strong aria-hidden="true">14.2.2.</strong> 附录一  各图的Graphiz生成代码</a></li><li class="chapter-item expanded "><a href="../../6.static-analysis/静态程序分析原理/附录二--静态审计工具完整源码.html"><strong aria-hidden="true">14.2.3.</strong> 附录二  静态审计工具完整源码</a></li><li class="chapter-item expanded "><a href="../../6.static-analysis/静态程序分析原理/静态代码分析基本原理.html"><strong aria-hidden="true">14.2.4.</strong> 静态代码分析基本原理</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">15.</strong> Dynamic Analysis</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理.html"><strong aria-hidden="true">15.1.</strong> 动态程序分析原理</a></li><li class="chapter-item expanded "><a href="../../#.html"><strong aria-hidden="true">15.2.</strong> 动态程序分析原理</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/内存监控.html"><strong aria-hidden="true">15.2.1.</strong> 内存监控</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/动态代码分析基本原理.html"><strong aria-hidden="true">15.2.2.</strong> 动态代码分析基本原理</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/必备工具.html"><strong aria-hidden="true">15.2.3.</strong> 必备工具</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/污点追踪.html"><strong aria-hidden="true">15.2.4.</strong> 污点追踪</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/程序插桩与代码覆盖率.html"><strong aria-hidden="true">15.2.5.</strong> 程序插桩与代码覆盖率</a></li><li class="chapter-item expanded "><a href="../../7.dynamic-analysis/动态程序分析原理/符号执行.html"><strong aria-hidden="true">15.2.6.</strong> 符号执行</a></li></ol></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Source and Fuzzing</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main><div class="sidetoc"><nav class="pagetoc"></nav></div>
+                        <h2 id="玩转sanitizer-coverage"><a class="header" href="#玩转sanitizer-coverage">玩转Sanitizer-Coverage</a></h2>
+<h4 id="sanitizer-coverage初体验"><a class="header" href="#sanitizer-coverage初体验">Sanitizer-Coverage初体验</a></h4>
+<p>接触过二进制Fuzzing的朋友们应该知道,代码覆盖率的用意是了解当前的模糊测试方式与用例触发程序执行的代码占整体代码的百分比,这个比值越高,越说明有很多的代码分支和函数被执行到,能够挖掘到隐藏在代码的漏洞的概率就更大.</p>
+<p>下面是一段简单的测试代码:</p>
+<pre><code class="language-c">#include &lt;stdlib.h&gt;
+
+int function1(int a) {
+    if (1 == a)
+        return 0;
+
+    return 1;
+}
+
+int function2() {
+    return -1;
+}
+
+int main() {
+    if (rand() % 2)
+        function1(rand() % 3);
+    else
+        function2();
+
+    return 0;
+}
+</code></pre>
+<p>要想Clang引入Sanitizer-Coverage,需要提供编译参数<code>-fsanitize-coverage=trace-pc-guard</code>,编译命令如下:</p>
+<pre><code class="language-makefile">all:
+	clang -fsanitize-coverage=trace-pc-guard ./test_case.c -g -o ./test_case
+</code></pre>
+<p>把编译后的可执行程序<code>./test_case</code>拿到IDA逆向,可以发现LLVM Sanitizer-Coverage的插桩原理:</p>
+<pre><code class="language-c">int __cdecl main(int argc, const char **argv, const char **envp)
+{
+  int v3; // eax
+  __int64 v4; // rdx
+  int v5; // eax
+
+  _sanitizer_cov_trace_pc_guard(&amp;unk_439BC0, argv, envp);
+  v3 = rand();
+  v4 = (unsigned int)(v3 &gt;&gt; 31);
+  LODWORD(v4) = v3 % 2;
+  if ( v3 % 2 )
+  {
+    _sanitizer_cov_trace_pc_guard((char *)&amp;unk_439BC0 + 4, argv, v4);
+    v5 = rand();
+    function1(v5 % 3);
+  }
+  else
+  {
+    _sanitizer_cov_trace_pc_guard((char *)&amp;unk_439BC0 + 8, argv, v4);
+    function2();
+  }
+  return 0;
+}
+</code></pre>
+<p>其中**_sanitizer_cov_trace_pc_guard()**就是插桩回调函数,如果没有重写该函数,那就LLVM就会使用默认版本,官方文档有一处示例代码,使用自定义该回调函数打印插桩分支信息.</p>
+<pre><code class="language-c">//  多余注释已经删除,感兴趣可自行到官网查看
+extern &quot;C&quot; void __sanitizer_cov_trace_pc_guard(uint32_t *guard) {
+  if (!*guard) return;
+  void *PC = __builtin_return_address(0);
+  char PcDescr[1024];
+
+  __sanitizer_symbolize_pc(PC, &quot;%p %F %L&quot;, PcDescr, sizeof(PcDescr));
+  printf(&quot;guard: %p %x PC %s\n&quot;, guard, *guard, PcDescr);
+}
+</code></pre>
+<p>把函数代码放到test_case.c中并添加相关头文件后,编译后执行效果如下:</p>
+<pre><code class="language-sh">ubuntu@ubuntu-virtual-machine:~/Desktop/instrument_note$ ./test_case
+guard: 0x439bc0 5 PC 0x423c06 in main /home/ubuntu/Desktop/instrument_note/./test_case.c:17
+guard: 0x439bc4 6 PC 0x423c3b in main /home/ubuntu/Desktop/instrument_note/./test_case.c:19:19
+guard: 0x439bb0 1 PC 0x423b6c in function1 /home/ubuntu/Desktop/instrument_note/./test_case.c:6
+guard: 0x439bb4 2 PC 0x423b98 in function1 /home/ubuntu/Desktop/instrument_note/./test_case.c:8:9
+ubuntu@ubuntu-virtual-machine:~/Desktop/instrument_note$
+</code></pre>
+<h4 id="一个简单的代码覆盖率demo"><a class="header" href="#一个简单的代码覆盖率demo">一个简单的代码覆盖率Demo</a></h4>
+<p>统计程序的代码覆盖率需要两个要素:<code>当前程序所有分支总数/执行过的程序路径总数</code>.对于当前程序所有分支总数的获取,我们可以直接通过<code>__sanitizer_cov_trace_pc_guard()</code>统计得到,那么当前程序所有分支总数怎么获取呢?我们发现LLVM还提供了Sanitizer-Coverage初始化函数<code>__sanitizer_cov_trace_pc_guard_init()</code>,来看看它的声明.</p>
+<pre><code class="language-c">void __sanitizer_cov_trace_pc_guard_init(uint32_t *start, uint32_t *stop);
+</code></pre>
+<p>其中,start和stop参数分别指的是插桩数据开始到结束的指针,那么只需要计算<code>stop-start</code>即可获取当前程序所有分支总数.</p>
+<pre><code class="language-c">uint32_t __sancov_current_all_guard_count = 0;
+
+void __sanitizer_cov_trace_pc_guard_init(uint32_t *start,uint32_t *stop) {
+    __sancov_current_all_guard_count = (stop - start);
+
+    printf(&quot;Sanitizer All Coverage edges: 0x%X \n&quot;,__sancov_current_all_guard_count);
+}
+</code></pre>
+<pre><code class="language-sh">ubuntu@ubuntu-virtual-machine:~/Desktop/instrument_note$ make &amp;&amp; ./test_case
+clang -fsanitize-coverage=trace-pc-guard ./test_case.c -g -o ./test_case
+./test_case.c:31:3: warning: implicit declaration of function '__sanitizer_symbolize_pc' is invalid in C99 [-Wimplicit-function-declaration]
+  __sanitizer_symbolize_pc(PC, &quot;%p %F %L&quot;, PcDescr, sizeof(PcDescr));
+  ^
+1 warning generated.
+Sanitizer All Coverage edges: 0x7
+ubuntu@ubuntu-virtual-machine:~/Desktop/instrument_note$
+</code></pre>
+<p>稍微对代码进行修改,就可以完成一个简单的代码覆盖率统计Demo</p>
+<pre><code class="language-c">uint32_t __sancov_current_all_guard_count = 0;
+uint32_t __sancov_current_execute_guard_count = 0;
+
+void __sanitizer_cov_trace_pc_guard(uint32_t *guard) {
+  if (!*guard) return;
+  void *PC = __builtin_return_address(0);
+  char PcDescr[1024];
+
+  __sanitizer_symbolize_pc(PC, &quot;%p %F %L&quot;, PcDescr, sizeof(PcDescr));
+  printf(&quot;guard: %p %x PC %s\n&quot;, guard, *guard, PcDescr);
+  ++__sancov_current_execute_guard_count;
+}
+
+void __sanitizer_cov_trace_pc_guard_init(uint32_t *start,uint32_t *stop) {
+    int index = 0;
+
+    for (uint32_t *p = start;p &lt; stop;++p)  //  为什么这里要需要for循环初始化呢,下一章会提到
+        *p = ++index;
+
+    __sancov_current_all_guard_count = (stop - start);
+
+    printf(&quot;Sanitizer All Coverage edges: 0x%X \n&quot;,__sancov_current_all_guard_count);
+}
+
+int main() {
+    if (rand() % 2)
+        function1(rand() % 3);
+    else
+        function2();
+
+    printf(&quot;Coverage Rate:%.2f% (%d/%d)\n&quot;,
+        __sancov_current_execute_guard_count,
+        __sancov_current_all_guard_count,
+        ((float)__sancov_current_execute_guard_count/(float)__sancov_current_all_guard_count) * 100);
+
+    return 0;
+}
+</code></pre>
+<pre><code class="language-sh">ubuntu@ubuntu-virtual-machine:~/Desktop/instrument_note$ make &amp;&amp; ./test_case
+clang -fsanitize-coverage=trace-pc-guard ./test_case.c -g -o ./test_case
+Sanitizer All Coverage edges: 0x7
+guard: 0x439bc0 5 PC 0x423ca6 in main /home/ubuntu/Desktop/instrument_note/./test_case.c:41
+guard: 0x439bc4 6 PC 0x423cdb in main /home/ubuntu/Desktop/instrument_note/./test_case.c:43:19
+guard: 0x439bb0 1 PC 0x423c0c in function1 /home/ubuntu/Desktop/instrument_note/./test_case.c:30
+guard: 0x439bb4 2 PC 0x423c38 in function1 /home/ubuntu/Desktop/instrument_note/./test_case.c:32:9
+Coverage Rate:57.14% (4/7)
+ubuntu@ubuntu-virtual-machine:~/Desktop/instrument_note$
+</code></pre>
+<h4 id="深入探索sanitizer-coverage实现"><a class="header" href="#深入探索sanitizer-coverage实现">深入探索Sanitizer-Coverage实现</a></h4>
+<p>前一章节中留下了一个疑问,如果有自行使用这段代码编译运行就会发现,为什么用户自定义函数<code>__sanitizer_cov_trace_pc_guard_init()</code>之后,<code>__sanitizer_cov_trace_pc_guard()</code>就没有任何程序执行输出了?为什么<code>__sanitizer_cov_trace_pc_guard_init()</code>对start和stop初始化之后就可以成功运行了?为了深入理解这个问题,我们需要逆向Sanitizer-Coverage编译后的二进制程序.</p>
+<p>我们阅读默认版本的<code>__sanitizer_cov_trace_pc_guard_init()</code>代码:</p>
+<pre><code class="language-c">//  默认版本()
+unsigned __int64 __usercall _sanitizer_cov_trace_pc_guard_init@&lt;rax&gt;(unsigned __int64 result@&lt;rax&gt;, unsigned __int64 a2@&lt;rdi&gt;, __sancov *a3@&lt;rsi&gt;, __m128i a4@&lt;xmm1&gt;, __m128i a5@&lt;xmm8&gt;)
+{
+  //  省略很多代码
+  v5 = (_DWORD *)a2;  //  start
+  if ( *(_DWORD *)a2 )
+    return result;
+  v6 = (unsigned __int64)a3;  //  stop
+  //  省略很多代码
+  do
+   {
+    *v5 = ++v8;
+    ++v5;
+   }
+  while ( (unsigned __int64)v5 &lt; v6 );
+  //  省略很多代码
+  return result;
+}
+</code></pre>
+<p>初始化函数会对start和stop这块内存区域进行计数写入,再来看看这块内存的分布.</p>
+<pre><code class="language-assembly">__sancov_guards:0000000000439BB0 ; ===========================================================================
+__sancov_guards:0000000000439BB0
+__sancov_guards:0000000000439BB0 ; Segment type: Pure data
+__sancov_guards:0000000000439BB0 ; Segment permissions: Read/Write
+__sancov_guards:0000000000439BB0 __sancov_guards segment dword public 'DATA' use64
+__sancov_guards:0000000000439BB0                 assume cs:__sancov_guards
+__sancov_guards:0000000000439BB0                 ;org 439BB0h
+__sancov_guards:0000000000439BB0                 public __start___sancov_guards
+__sancov_guards:0000000000439BB0 ; uint32_t _start___sancov_guards[3]
+__sancov_guards:0000000000439BB0 __start___sancov_guards dd 0            ; start参数起始地址
+__sancov_guards:0000000000439BB4                 db    0
+__sancov_guards:0000000000439BB5                 db    0
+__sancov_guards:0000000000439BB6                 db    0
+__sancov_guards:0000000000439BB7                 db    0
+__sancov_guards:0000000000439BB8                 db    0
+__sancov_guards:0000000000439BB9                 db    0
+__sancov_guards:0000000000439BBA                 db    0
+__sancov_guards:0000000000439BBB                 db    0
+__sancov_guards:0000000000439BBC ; uint32_t guard
+__sancov_guards:0000000000439BBC guard           dd 0
+__sancov_guards:0000000000439BC0 ; uint32_t dword_439BC0[3]
+__sancov_guards:0000000000439BC0 dword_439BC0    dd 0
+__sancov_guards:0000000000439BC0
+__sancov_guards:0000000000439BC4                 db    0
+__sancov_guards:0000000000439BC5                 db    0
+__sancov_guards:0000000000439BC6                 db    0
+__sancov_guards:0000000000439BC7                 db    0
+__sancov_guards:0000000000439BC8                 db    0
+__sancov_guards:0000000000439BC9                 db    0
+__sancov_guards:0000000000439BCA                 db    0
+__sancov_guards:0000000000439BCB                 db    0
+__sancov_guards:0000000000439BCB __sancov_guards ends
+__sancov_guards:0000000000439BCB
+LOAD:0000000000439BCC ; stop结束地址
+</code></pre>
+<p>这样来看这块内存数据不太容易理解,我们再读一下funtion1()的反汇编代码.</p>
+<pre><code class="language-c">int __cdecl function1(int a)
+{
+  int v2; // [rsp+Ch] [rbp-4h]
+
+  _sanitizer_cov_trace_pc_guard(_start___sancov_guards);  //  从start[0]读取数据调用trace_pc_guard()
+  if ( a == 1 )
+  {
+    _sanitizer_cov_trace_pc_guard(&amp;_start___sancov_guards[1]);  //  从start[1]读取数据调用trace_pc_guard()
+    v2 = 0;
+  }
+  else
+  {
+    _sanitizer_cov_trace_pc_guard(&amp;_start___sancov_guards[2]);  //  从start[2]读取数据调用trace_pc_guard()
+    v2 = 1;
+  }
+  return v2;
+}
+
+// 执行function1()后的输出如下:
+// guard: 0x439bb0 1 PC 0x423c1c in function1 /home/ubuntu/Desktop/instrument_note/./test_case.c:31
+// guard: 0x439bb4 2 PC 0x423c48 in function1 /home/ubuntu/Desktop/instrument_note/./test_case.c:33:9
+
+</code></pre>
+<p>对<code>function1()</code>的逆向和运行可以发现,start[0]-start[2]的内存数据是用于保存当前执行的分支ID数据.综上所述,Sanitizer-Coverage会创造一块专用的区段用于保存插桩分支ID信息,但是这块内存默认是空数据,所以才需要<code>__sanitizer_cov_trace_pc_guard_init</code>遍历生成ID写入这块内存,后续<code>__sanitizer_cov_trace_pc_guard()</code>就可以成功从这里读取到分支ID数据.理解这个细节之后,再回来阅读上面的自定义<code>__sanitizer_cov_trace_pc_guard_init()</code>容易明白意义何在了.</p>
+<pre><code class="language-c">//  用户自定义版本
+void __cdecl _sanitizer_cov_trace_pc_guard_init(uint32_t *start, uint32_t *stop)
+{
+  uint32_t *p; // [rsp+0h] [rbp-20h]
+  int index; // [rsp+Ch] [rbp-14h]
+
+  index = 0;
+  for ( p = start; p &lt;= stop; ++p )  // 初始化分支ID表
+    *p = ++index;
+  _sancov_current_all_guard_count = stop - start;  // 计算所有程序分支总数
+  printf(&quot;Sanitizer All Coverage edges: 0x%X \n&quot;, (unsigned int)(stop - start), p);
+}
+</code></pre>
+<h4 id="llvm-pass-for-sanitizercoveragecpp实现细节"><a class="header" href="#llvm-pass-for-sanitizercoveragecpp实现细节">LLVM Pass for SanitizerCoverage.cpp实现细节</a></h4>
+<p>了解Sanitizer-Coverage的运行原理后,现在从Clang编译的角度去探索它是怎么做实现的.SanitizerCoverage的实现代码在LLVM的<code>\llvm-project\llvm\lib\Transforms\Instrumentation\SanitizerCoverage.cpp</code>目录.在阅读插桩代码之前简短提示下LLVM的Pass(优化模块)运行过程,插桩时一般用到ModulePass和FunctionPass,如果对整个代码文件进行处理时,那就用到ModulePass对象;如果对所有函数都处理,那就用到FunctionPass.PassManager控制所有Pass的执行过程.</p>
+<pre><code class="language-c++">class ModuleSanitizerCoverageLegacyPass : public ModulePass {
+public:
+  bool runOnModule(Module &amp;M) override {
+    ModuleSanitizerCoverage ModuleSancov(Options, Allowlist.get(),
+                                         Blocklist.get());
+    // Allowlist/Blocklist由参数-fsanitize-coverage-allowlist/-fsanitize-coverage-blocklist指定函数列表,有些场景下会用到
+    auto DTCallback = [this](Function &amp;F) -&gt; const DominatorTree * {
+      return &amp;this-&gt;getAnalysis&lt;DominatorTreeWrapperPass&gt;(F).getDomTree();
+    };
+    auto PDTCallback = [this](Function &amp;F) -&gt; const PostDominatorTree * {
+      return &amp;this-&gt;getAnalysis&lt;PostDominatorTreeWrapperPass&gt;(F)
+                  .getPostDomTree();
+    };
+    return ModuleSancov.instrumentModule(M, DTCallback, PDTCallback);
+  }
+}
+</code></pre>
+<p>ModulePass执行时的入口点在<code>runOnModule()</code>中,这里主要是把相关的参数传递给<code>instrumentModule()</code>.</p>
+<pre><code class="language-c++">bool ModuleSanitizerCoverage::instrumentModule(
+    Module &amp;M, DomTreeCallback DTCallback, PostDomTreeCallback PDTCallback) {
+  if (Options.CoverageType == SanitizerCoverageOptions::SCK_None)
+    return false;
+  if (Allowlist &amp;&amp;
+      !Allowlist-&gt;inSection(&quot;coverage&quot;, &quot;src&quot;, M.getSourceFileName()))
+    return false;
+  if (Blocklist &amp;&amp;
+      Blocklist-&gt;inSection(&quot;coverage&quot;, &quot;src&quot;, M.getSourceFileName()))
+    return false;
+  C = &amp;(M.getContext());
+  DL = &amp;M.getDataLayout();
+  CurModule = &amp;M;
+  CurModuleUniqueId = getUniqueModuleId(CurModule);
+  TargetTriple = Triple(M.getTargetTriple());
+  FunctionGuardArray = nullptr;
+  Function8bitCounterArray = nullptr;
+  FunctionBoolArray = nullptr;
+  FunctionPCsArray = nullptr;
+  IntptrTy = Type::getIntNTy(*C, DL-&gt;getPointerSizeInBits());
+  IntptrPtrTy = PointerType::getUnqual(IntptrTy);
+  Type *VoidTy = Type::getVoidTy(*C);
+  IRBuilder&lt;&gt; IRB(*C);
+  Int64PtrTy = PointerType::getUnqual(IRB.getInt64Ty());
+  Int32PtrTy = PointerType::getUnqual(IRB.getInt32Ty());
+  Int8PtrTy = PointerType::getUnqual(IRB.getInt8Ty());
+  Int1PtrTy = PointerType::getUnqual(IRB.getInt1Ty());
+  Int64Ty = IRB.getInt64Ty();
+  Int32Ty = IRB.getInt32Ty();
+  Int16Ty = IRB.getInt16Ty();
+  Int8Ty = IRB.getInt8Ty();
+  Int1Ty = IRB.getInt1Ty();
+
+  SanCovTracePCIndir =
+      M.getOrInsertFunction(SanCovTracePCIndirName, VoidTy, IntptrTy);
+  // Make sure smaller parameters are zero-extended to i64 as required by the
+  // x86_64 ABI.
+  AttributeList SanCovTraceCmpZeroExtAL;
+  if (TargetTriple.getArch() == Triple::x86_64) {
+    SanCovTraceCmpZeroExtAL =
+        SanCovTraceCmpZeroExtAL.addParamAttribute(*C, 0, Attribute::ZExt);
+    SanCovTraceCmpZeroExtAL =
+        SanCovTraceCmpZeroExtAL.addParamAttribute(*C, 1, Attribute::ZExt);
+  }
+
+  SanCovTraceCmpFunction[0] =
+      M.getOrInsertFunction(SanCovTraceCmp1, SanCovTraceCmpZeroExtAL, VoidTy,
+                            IRB.getInt8Ty(), IRB.getInt8Ty());
+  SanCovTraceCmpFunction[1] =
+      M.getOrInsertFunction(SanCovTraceCmp2, SanCovTraceCmpZeroExtAL, VoidTy,
+                            IRB.getInt16Ty(), IRB.getInt16Ty());
+  SanCovTraceCmpFunction[2] =
+      M.getOrInsertFunction(SanCovTraceCmp4, SanCovTraceCmpZeroExtAL, VoidTy,
+                            IRB.getInt32Ty(), IRB.getInt32Ty());
+  SanCovTraceCmpFunction[3] =
+      M.getOrInsertFunction(SanCovTraceCmp8, VoidTy, Int64Ty, Int64Ty);
+
+  SanCovTraceConstCmpFunction[0] = M.getOrInsertFunction(
+      SanCovTraceConstCmp1, SanCovTraceCmpZeroExtAL, VoidTy, Int8Ty, Int8Ty);
+  SanCovTraceConstCmpFunction[1] = M.getOrInsertFunction(
+      SanCovTraceConstCmp2, SanCovTraceCmpZeroExtAL, VoidTy, Int16Ty, Int16Ty);
+  SanCovTraceConstCmpFunction[2] = M.getOrInsertFunction(
+      SanCovTraceConstCmp4, SanCovTraceCmpZeroExtAL, VoidTy, Int32Ty, Int32Ty);
+  SanCovTraceConstCmpFunction[3] =
+      M.getOrInsertFunction(SanCovTraceConstCmp8, VoidTy, Int64Ty, Int64Ty);
+
+  {
+    AttributeList AL;
+    if (TargetTriple.getArch() == Triple::x86_64)
+      AL = AL.addParamAttribute(*C, 0, Attribute::ZExt);
+    SanCovTraceDivFunction[0] =
+        M.getOrInsertFunction(SanCovTraceDiv4, AL, VoidTy, IRB.getInt32Ty());
+  }
+  SanCovTraceDivFunction[1] =
+      M.getOrInsertFunction(SanCovTraceDiv8, VoidTy, Int64Ty);
+  SanCovTraceGepFunction =
+      M.getOrInsertFunction(SanCovTraceGep, VoidTy, IntptrTy);
+  SanCovTraceSwitchFunction =
+      M.getOrInsertFunction(SanCovTraceSwitchName, VoidTy, Int64Ty, Int64PtrTy);
+
+  Constant *SanCovLowestStackConstant =
+      M.getOrInsertGlobal(SanCovLowestStackName, IntptrTy);
+  SanCovLowestStack = dyn_cast&lt;GlobalVariable&gt;(SanCovLowestStackConstant);
+  if (!SanCovLowestStack) {
+    C-&gt;emitError(StringRef(&quot;'&quot;) + SanCovLowestStackName +
+                 &quot;' should not be declared by the user&quot;);
+    return true;
+  }
+  SanCovLowestStack-&gt;setThreadLocalMode(
+      GlobalValue::ThreadLocalMode::InitialExecTLSModel);
+  if (Options.StackDepth &amp;&amp; !SanCovLowestStack-&gt;isDeclaration())
+    SanCovLowestStack-&gt;setInitializer(Constant::getAllOnesValue(IntptrTy));
+
+  SanCovTracePC = M.getOrInsertFunction(SanCovTracePCName, VoidTy);
+  SanCovTracePCGuard =
+      M.getOrInsertFunction(SanCovTracePCGuardName, VoidTy, Int32PtrTy);
+
+/*
+
+static const char *const SanCovTracePCName = &quot;__sanitizer_cov_trace_pc&quot;;
+static const char *const SanCovTraceCmp1 = &quot;__sanitizer_cov_trace_cmp1&quot;;
+static const char *const SanCovTraceCmp2 = &quot;__sanitizer_cov_trace_cmp2&quot;;
+static const char *const SanCovTraceCmp4 = &quot;__sanitizer_cov_trace_cmp4&quot;;
+static const char *const SanCovTraceCmp8 = &quot;__sanitizer_cov_trace_cmp8&quot;;
+
+*/
+</code></pre>
+<p>上面的逻辑代码逻辑主要就是从LLVMContext中获取常见变量类型和根据函数名获取SanitizerCoverage的内部函数以初始化,然后就遍历Module中的所有Function,开始插桩.</p>
+<pre><code class="language-c++">  for (auto &amp;F : M)
+    instrumentFunction(F, DTCallback, PDTCallback);
+</code></pre>
+<pre><code class="language-c++">
+void ModuleSanitizerCoverage::instrumentFunction(
+    Function &amp;F, DomTreeCallback DTCallback, PostDomTreeCallback PDTCallback) {
+  if (F.empty())
+    return;
+  if (F.getName().find(&quot;.module_ctor&quot;) != std::string::npos)
+    return; // Should not instrument sanitizer init functions.
+  if (F.getName().startswith(&quot;__sanitizer_&quot;))
+    return; // Don't instrument __sanitizer_* callbacks.
+  // 省略很多不插桩的逻辑
+
+  SmallVector&lt;Instruction *, 8&gt; IndirCalls;
+  SmallVector&lt;BasicBlock *, 16&gt; BlocksToInstrument;
+  SmallVector&lt;Instruction *, 8&gt; CmpTraceTargets;
+  SmallVector&lt;Instruction *, 8&gt; SwitchTraceTargets;
+  SmallVector&lt;BinaryOperator *, 8&gt; DivTraceTargets;
+  SmallVector&lt;GetElementPtrInst *, 8&gt; GepTraceTargets;
+  // 这些变量分别用于不同参数的插桩方法
+  // -fsanitize-coverage=trace-pc-guard,indirect-calls,trace-cmp,trace-div,trace-gep
+
+  for (auto &amp;BB : F) {  // 遍历当前函数所有BasicBlock代码块
+    if (shouldInstrumentBlock(F, &amp;BB, DT, PDT, Options))
+      BlocksToInstrument.push_back(&amp;BB);  // 记录所有可以进行插桩的BasicBlock
+    for (auto &amp;Inst : BB) {  // 遍历BasicBlock中所有指令
+      if (Options.IndirectCalls) {  // 如果启用参数-fsanitize-coverage=indirect-calls
+        CallBase *CB = dyn_cast&lt;CallBase&gt;(&amp;Inst);
+        if (CB &amp;&amp; !CB-&gt;getCalledFunction())  // 如果是Call指令,dyn_case会返回非NULL指针
+          IndirCalls.push_back(&amp;Inst);  // 记录所有Call指令
+      }
+      if (Options.TraceCmp) {
+        if (ICmpInst *CMP = dyn_cast&lt;ICmpInst&gt;(&amp;Inst))
+          if (IsInterestingCmp(CMP, DT, Options))
+            CmpTraceTargets.push_back(&amp;Inst);
+        if (isa&lt;SwitchInst&gt;(&amp;Inst))
+          SwitchTraceTargets.push_back(&amp;Inst);
+      }
+      if (Options.TraceDiv)
+        if (BinaryOperator *BO = dyn_cast&lt;BinaryOperator&gt;(&amp;Inst))
+          if (BO-&gt;getOpcode() == Instruction::SDiv ||
+              BO-&gt;getOpcode() == Instruction::UDiv)
+            DivTraceTargets.push_back(BO);
+      if (Options.TraceGep)
+        if (GetElementPtrInst *GEP = dyn_cast&lt;GetElementPtrInst&gt;(&amp;Inst))
+          GepTraceTargets.push_back(GEP);
+      if (Options.StackDepth)
+        if (isa&lt;InvokeInst&gt;(Inst) ||
+            (isa&lt;CallInst&gt;(Inst) &amp;&amp; !isa&lt;IntrinsicInst&gt;(Inst)))
+          IsLeafFunc = false;
+    }
+  }
+
+  // 经过多次遍历之后获取到很多BasicBlock和Inst,然后分别使用不同方法进行插桩
+  InjectCoverage(F, BlocksToInstrument, IsLeafFunc);
+  InjectCoverageForIndirectCalls(F, IndirCalls);
+  InjectTraceForCmp(F, CmpTraceTargets);
+  InjectTraceForSwitch(F, SwitchTraceTargets);
+  InjectTraceForDiv(F, DivTraceTargets);
+  InjectTraceForGep(F, GepTraceTargets);
+}
+</code></pre>
+<p>由于文章篇幅关系,在此就只介绍<code>InjectCoverage()</code>的插桩逻辑,简单地说,接下来<code>InjectCoverage()</code>会直接根据前面的筛选出来的BlocksToInstrument的入口处插入对<code>__sanitizer_cov_trace_pc_guard()</code>函数调用.</p>
+<pre><code class="language-c++">bool ModuleSanitizerCoverage::InjectCoverage(Function &amp;F, ArrayRef&lt;BasicBlock *&gt; AllBlocks,bool IsLeafFunc) {
+  if (AllBlocks.empty()) return false;
+    CreateFunctionLocalArrays(F, AllBlocks);  // 这里就是创建SantizerCoverage的分支ID记录内存区域
+  for (size_t i = 0, N = AllBlocks.size(); i &lt; N; i++)
+    InjectCoverageAtBlock(F, *AllBlocks[i], i, IsLeafFunc);  // 遍历所有BasicBlock
+  return true;
+}
+
+void ModuleSanitizerCoverage::CreateFunctionLocalArrays(
+    Function &amp;F, ArrayRef&lt;BasicBlock *&gt; AllBlocks) {
+  if (Options.TracePCGuard)
+    FunctionGuardArray = CreateFunctionLocalArrayInSection(
+        AllBlocks.size(), F, Int32Ty, SanCovGuardsSectionName);  // 记住这个变量,这里的意思是根据当前获取到的所有BasicBlock的数量去创建一个整数数组,用于收集TracePCGuard插桩方法的分支ID记录内存区域
+  // 省略其它代码
+}
+
+void ModuleSanitizerCoverage::InjectCoverageAtBlock(Function &amp;F, BasicBlock &amp;BB,size_t Idx,bool IsLeafFunc) {
+  BasicBlock::iterator IP = BB.getFirstInsertionPt();
+  bool IsEntryBB = &amp;BB == &amp;F.getEntryBlock();
+  DebugLoc EntryLoc;
+  if (IsEntryBB) {
+    if (auto SP = F.getSubprogram())
+      EntryLoc = DebugLoc::get(SP-&gt;getScopeLine(), 0, SP);
+    // Keep static allocas and llvm.localescape calls in the entry block.  Even
+    // if we aren't splitting the block, it's nice for allocas to be before
+    // calls.
+    IP = PrepareToSplitEntryBlock(BB, IP);
+  } else {
+    EntryLoc = IP-&gt;getDebugLoc();
+  }
+
+  IRBuilder&lt;&gt; IRB(&amp;*IP);  // 前面一通操作是为了获取BasicBlock的第一条指令
+  // 省略其它代码
+  if (Options.TracePCGuard) {
+    auto GuardPtr = IRB.CreateIntToPtr(
+        IRB.CreateAdd(IRB.CreatePointerCast(FunctionGuardArray, IntptrTy),
+                      ConstantInt::get(IntptrTy, Idx * 4)),
+        Int32PtrTy);  // 创建整数指针引用,等价于FunctionGuardArray[Idx]
+    IRB.CreateCall(SanCovTracePCGuard, GuardPtr)-&gt;setCannotMerge();  // 使用前面创建的引用来创建函数调用,等价于__sanitizer_cov_trace_pc_guard(FunctionGuardArray[Idx]);
+  }
+  // 省略其它代码
+}
+</code></pre>
+<p>完成所有插桩之后,最后一步就是程序启动时插入对<code>__sanitizer_cov_trace_pc_guard_init()</code>函数的调用.</p>
+<pre><code class="language-c++">  Function *Ctor = nullptr;
+
+  if (FunctionGuardArray)
+    Ctor = CreateInitCallsForSections(M, SanCovModuleCtorTracePcGuardName,
+                                      SanCovTracePCGuardInitName, Int32PtrTy,
+                                      SanCovGuardsSectionName);
+</code></pre>
+<p>细心的读者可能会想起还有个细节没有提到,那就是LLVM默认的<code>__sanitizer_cov_trace_pc_guard_init()</code>函数再哪个地方声明引入的呢?其实这些LLVM内置的函数都在<code>Compiler-RT</code>中实现(后面ASAN会用到),代码目录在<code>\llvm-project\compiler-rt\lib\sanitizer_common</code>.</p>
+<pre><code class="language-c++">// sanitizer_coverage_fuchsia.cpp
+
+SANITIZER_INTERFACE_WEAK_DEF(void, __sanitizer_cov_trace_pc_guard_init,
+                             u32 *start, u32 *end) {  // LLVM默认__sanitizer_cov_trace_pc_guard_init()函数实现代码
+  if (start == end || *start)
+    return;
+  __sancov::pc_guard_controller.InitTracePcGuard(start, end);
+}
+
+void InitTracePcGuard(u32 *start, u32 *end) {  // 初始化分支ID内存区域
+  if (end &gt; start &amp;&amp; *start == 0 &amp;&amp; common_flags()-&gt;coverage) {
+    // Complete the setup before filling in any guards with indices.
+    // This avoids the possibility of code called from Setup reentering
+    // TracePcGuard.
+    u32 idx = Setup(end - start);
+    for (u32 *p = start; p &lt; end; ++p) {
+      *p = idx++;
+    }
+  }
+}
+</code></pre>
+<h4 id="定制sanitizercoverage"><a class="header" href="#定制sanitizercoverage">定制SanitizerCoverage</a></h4>
+<p>笔者在实现Fuzzer的时候,遇到了个真实的场景.在使用二次开发或者针对某个模块做单元测试时,往往这个模块的代码只占程序全部代码的很小的部分.举个例子,如果模块代码只占全部代码的5%,但是Fuzzer的测试用例可以覆盖这个模块的80%代码,那么最后统计代码覆盖率是使用5%还是80%呢?笔者认为应该是80%的代码覆盖率才是最接近真实的,所以我的思路是:根据执行过的每个函数的总分支数除以每个函数执行过的分支数即可,示例图如下:</p>
+<p><img src="./pic12/1.png" alt="" /></p>
+<p>最终的结果是</p>
+<pre><code>(6 + 2 + 1 + 1) / (10 + 4 + 1 + 2) = 58.82%
+</code></pre>
+<p>现在遇到的难题有两个:</p>
+<ul>
+<li>
+<p>每个函数的分支总数怎么获取呢?</p>
+</li>
+<li>
+<p>插桩只能获取到插桩处的PC地址,怎么样知道我们当前执行到了哪个函数地址?</p>
+<p>为了实现这个功能,需要对原有的插桩代码做一些简短的修改,改动如下:</p>
+</li>
+</ul>
+<pre><code class="language-c++">bool ModuleSanitizerCoverage::instrumentModule() {
+   // ...
+  SanCovTracePCGuard =
+      M.getOrInsertFunction(SanCovTracePCGuardName, VoidTy, Int32PtrTy, Int32PtrTy, Int32PtrTy);  // 修改__sanitizer_cov_trace_pc_guard()的调用声明,改成__sanitizer_cov_trace_pc_guard(int,int,int)
+   // ...
+}
+
+bool ModuleSanitizerCoverage::InjectCoverage(Function &amp;F,ArrayRef&lt;BasicBlock *&gt; AllBlocks,bool IsLeafFunc) {
+  if (AllBlocks.empty()) return false;
+  CreateFunctionLocalArrays(F, AllBlocks);
+  for (size_t i = 0, N = AllBlocks.size(); i &lt; N; i++)
+    InjectCoverageAtBlock(F, *AllBlocks[i], i, IsLeafFunc, N);  // 遍历出来的BasicBlock总数其实就是当前函数的所有分支
+  return true;
+}
+
+void ModuleSanitizerCoverage::InjectCoverageAtBlock(Function &amp;F, BasicBlock &amp;BB,size_t Idx,bool IsLeafFunc,size_t EdgeCount) {  // 新增参数EdgeCount
+   // ...
+  if (Options.TracePCGuard) {
+    std::vector&lt;Value*&gt; SanCovTracePCGuardArgumentList;  // 创建参数调用列表
+    auto GuardPtr = IRB.CreateIntToPtr(
+        IRB.CreateAdd(IRB.CreatePointerCast(FunctionGuardArray, IntptrTy),
+                      ConstantInt::get(IntptrTy, Idx * 4)),
+        Int32PtrTy);  // 从FunctionGuardArray中获取到的分支ID数据
+    auto FunctionPtr = IRB.CreateIntToPtr(IRB.CreatePointerCast(static_cast&lt;Value*&gt;(&amp;F), IntptrTy),Int32PtrTy);  // 获取当前函数地址,转换为指针传递
+    Constant* ConstFunctionInsideEdgeCount = ConstantInt::get(IntptrTy, EdgeCount);  //  获取当前函数分支总数,作为int值传递
+
+    SanCovTracePCGuardArgumentList.push_back(GuardPtr);
+    SanCovTracePCGuardArgumentList.push_back(ConstFunctionInsideEdgeCount);
+    SanCovTracePCGuardArgumentList.push_back(FunctionPtr);
+
+    IRB.CreateCall(SanCovTracePCGuard, static_cast&lt;ArrayRef&lt;Value *&gt;&gt;(SanCovTracePCGuardArgumentList))-&gt;setCannotMerge();
+  }
+   // ...
+}
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/深入解析libFuzzer参数与回显.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next" href="../../#.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../12.libfuzzer-asan/深入解析libfuzzer与asan/深入解析libFuzzer参数与回显.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next" href="../../#.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <!-- Livereload script (if served using the cli tool) -->
+        <script>
+            const wsProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsAddress = wsProtocol + "//" + location.host + "/" + "__livereload";
+            const socket = new WebSocket(wsAddress);
+            socket.onmessage = function (event) {
+                if (event.data === "reload") {
+                    socket.close();
+                    location.reload();
+                }
+            };
+
+            window.onbeforeunload = function() {
+                socket.close();
+            }
+        </script>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../elasticlunr.min.js"></script>
+        <script src="../../mark.min.js"></script>
+        <script src="../../searcher.js"></script>
+
+        <script src="../../clipboard.min.js"></script>
+        <script src="../../highlight.js"></script>
+        <script src="../../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../../theme/pagetoc.js"></script>
+
+
+    </div>
+    </body>
+</html>
